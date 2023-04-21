@@ -53,7 +53,6 @@ public class ConnectService {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         ConnectService connectService = new ConnectService();
-
         connectService.getConnection("","","");
     }
 }
