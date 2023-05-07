@@ -28,14 +28,34 @@ public class ConnectService {
         Connection con= DriverManager.getConnection("jdbc:mysql://localhost:3306/test2023?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true","root","root");
 
         DatabaseMetaData meta = con.getMetaData();
-        ResultSet rs = meta.getTables("blog", null, null,
+        ResultSet rs = meta.getTables("test2023", null, null,
                 new String[] { "TABLE" });
         while (rs.next()) {
-            System.out.println("表名：" + rs.getString(3));
+            String tableName = rs.getString("TABLE_NAME");
+            System.out.println("表名：" + tableName);
+            System.out.println("表类型:"+rs.getString("TABLE_TYPE"));
+            System.out.println("表注释:"+rs.getString("REMARKS"));
             System.out.println("表所属用户名：" + rs.getString(2));
+            ResultSet primaryKeys = meta.getPrimaryKeys(null, null, tableName);
+            while (primaryKeys.next()){
+                System.out.println("表主键： "+ primaryKeys.getString("COLUMN_NAME"));
+            }
+            ResultSet columns = meta.getColumns(null, null, tableName, "%");
+
+            System.out.println("======字段========");
+            while (columns.next()){
+                System.out.println("字段名:"+columns.getString("COLUMN_NAME")+
+                                    "  字段类型："+columns.getString("DATA_TYPE")+
+                                    "  字段类型名:"+columns.getString("TYPE_NAME")+
+                                    "  TABLE_CAT:"+columns.getString("TABLE_CAT")+
+                                    "  TABLE_SCHEM:"+columns.getString("TABLE_SCHEM")+
+                                    "  TABLE_NAME:"+columns.getString("TABLE_NAME")+
+                                    "  COLUMN_SIZE:"+columns.getString("COLUMN_SIZE")+
+                                    "  DECIMAL_DIGITS:"+columns.getString("DECIMAL_DIGITS")+
+                                    "  NUM_PREC_RADIX:"+columns.getString("NUM_PREC_RADIX")+
+                                    "  REMARKS:"+columns.getString("REMARKS"));
+            }
             System.out.println("------------------------------");
-            ResultSet columns = meta.getColumns("blog", null, rs.getString(3), "menu_id");
-            System.out.println(columns);
         }
 //        this.dbBaseInfo(con);
     }
