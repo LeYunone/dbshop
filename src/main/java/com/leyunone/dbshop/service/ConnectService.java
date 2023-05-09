@@ -16,48 +16,74 @@ public class ConnectService {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         ConnectService connectService = new ConnectService();
-        connectService.getConnection("","","");
+        String url = "jdbc:mysql://localhost:3306/test2023?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true";
+        String userName ="root";
+        String passWord="root";
+        connectService.getConnection(url,userName,passWord);
     }
 
-    public void getConnection(String url,String userName,String passWord) throws SQLException, ClassNotFoundException {
+    public Connection getConnection(String url,String userName,String passWord) throws SQLException, ClassNotFoundException {
         //组装连接信息
         DBInfo dbInfo = DBInfo.builder().url(url).userName(userName).passWord(passWord).build();
-
         Class.forName("com.mysql.jdbc.Driver");
+        Connection con = DriverManager.getConnection(url,userName,passWord);
+//        this.dbColumnInfo(con,"t_code");
+        this.dbTableInfo(con,"test2023");
+//        this.dbBaseInfo(con);
+        return con;
+    }
 
-        Connection con= DriverManager.getConnection("jdbc:mysql://localhost:3306/test2023?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true","root","root");
-
-        DatabaseMetaData meta = con.getMetaData();
-        ResultSet rs = meta.getTables("test2023", null, null,
-                new String[] { "TABLE" });
-        while (rs.next()) {
-            String tableName = rs.getString("TABLE_NAME");
-            System.out.println("表名：" + tableName);
-            System.out.println("表类型:"+rs.getString("TABLE_TYPE"));
-            System.out.println("表注释:"+rs.getString("REMARKS"));
-            System.out.println("表所属用户名：" + rs.getString(2));
-            ResultSet primaryKeys = meta.getPrimaryKeys(null, null, tableName);
-            while (primaryKeys.next()){
-                System.out.println("表主键： "+ primaryKeys.getString("COLUMN_NAME"));
+    /**
+     * 表信息
+     * @param con
+     */
+    private void dbTableInfo(Connection con,String dbName) {
+        try {
+            DatabaseMetaData meta = con.getMetaData();
+            ResultSet rs = meta.getTables(dbName, null, null,
+                    new String[] { "TABLE" });
+            while (rs.next()) {
+                String tableName = rs.getString("TABLE_NAME");
+                System.out.println("表名：" + tableName);
+                System.out.println("表类型:"+rs.getString("TABLE_TYPE"));
+                System.out.println("表注释:"+rs.getString("REMARKS"));
+                System.out.println("表所属用户名：" + rs.getString(2));
+                ResultSet primaryKeys = meta.getPrimaryKeys(null, null, tableName);
+                while (primaryKeys.next()){
+                    System.out.println("表主键： "+ primaryKeys.getString("COLUMN_NAME"));
+                    System.out.println("PKNAME:"+primaryKeys.getString("PK_NAME"));
+                }
             }
-            ResultSet columns = meta.getColumns(null, null, tableName, "%");
+        }catch (Exception e){
+            
+        }
+    }
 
+    /**
+     * 表字段信息
+     * @param con
+     * @param tableName
+     */
+    private void dbColumnInfo(Connection con,String tableName){
+        try {
+            DatabaseMetaData meta = con.getMetaData();
+            ResultSet columns = meta.getColumns(null, null, tableName, "%");
             System.out.println("======字段========");
             while (columns.next()){
                 System.out.println("字段名:"+columns.getString("COLUMN_NAME")+
-                                    "  字段类型："+columns.getString("DATA_TYPE")+
-                                    "  字段类型名:"+columns.getString("TYPE_NAME")+
-                                    "  TABLE_CAT:"+columns.getString("TABLE_CAT")+
-                                    "  TABLE_SCHEM:"+columns.getString("TABLE_SCHEM")+
-                                    "  TABLE_NAME:"+columns.getString("TABLE_NAME")+
-                                    "  COLUMN_SIZE:"+columns.getString("COLUMN_SIZE")+
-                                    "  DECIMAL_DIGITS:"+columns.getString("DECIMAL_DIGITS")+
-                                    "  NUM_PREC_RADIX:"+columns.getString("NUM_PREC_RADIX")+
-                                    "  REMARKS:"+columns.getString("REMARKS"));
+                        "  字段类型："+columns.getString("DATA_TYPE")+
+                        "  字段类型名:"+columns.getString("TYPE_NAME")+
+                        "  TABLE_CAT:"+columns.getString("TABLE_CAT")+
+                        "  TABLE_SCHEM:"+columns.getString("TABLE_SCHEM")+
+                        "  TABLE_NAME:"+columns.getString("TABLE_NAME")+
+                        "  COLUMN_SIZE:"+columns.getString("COLUMN_SIZE")+
+                        "  DECIMAL_DIGITS:"+columns.getString("DECIMAL_DIGITS")+
+                        "  NUM_PREC_RADIX:"+columns.getString("NUM_PREC_RADIX")+
+                        "  REMARKS:"+columns.getString("REMARKS"));
             }
             System.out.println("------------------------------");
+        }catch (Exception e){
         }
-//        this.dbBaseInfo(con);
     }
 
     /**

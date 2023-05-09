@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * @author LeYuna
  * @email 365627310@qq.com
@@ -23,4 +25,6 @@ public class DBInfo {
     private String userName;
 
     private String passWord;
+    
+    private List<TableInfo> tableInfos;
 }
