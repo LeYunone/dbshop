@@ -1,6 +1,6 @@
 package com.leyunone.dbshop.service;
 
-import com.leyunone.dbshop.model.DBInfo;
+import com.leyunone.dbshop.util.DbClose;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
@@ -31,6 +31,19 @@ public class ConnectService {
             
         }
         return con;
+    }
+
+    public DatabaseMetaData getConnectionToData(String url,String userName,String passWord) {
+        Connection con = null;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            con = DriverManager.getConnection(url,userName,passWord);
+            return con.getMetaData();
+        }catch (Exception e){
+        }finally {
+            DbClose.close(con);
+        }
+        return null;
     }
 }
 

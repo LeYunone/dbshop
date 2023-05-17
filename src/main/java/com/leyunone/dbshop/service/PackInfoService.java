@@ -1,6 +1,5 @@
 package com.leyunone.dbshop.service;
 
-
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.DbInfo;
 import com.leyunone.dbshop.bean.info.TableInfo;
@@ -10,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -30,13 +28,12 @@ public class PackInfoService {
 
     /**
      * 数据库信息
-     * @param con
+     * @param data
      * @return
      */
-    public DbInfo getDbInfo(Connection con) {
+    public DbInfo getDbInfo(DatabaseMetaData data) {
         DbInfo dbInfo = null;
         try {
-            DatabaseMetaData data = con.getMetaData();
             dbInfo = DbInfo.builder().userName(data.getUserName())
                     .systemFunctions(data.getSystemFunctions())
                     .timeDateFunctions(data.getTimeDateFunctions())
@@ -57,13 +54,12 @@ public class PackInfoService {
 
     /**
      * 表信息
-     * @param con
+     * @param meta
      * @param dbName
      */
-    public List<TableInfo> getTables(Connection con, String dbName) {
+    public List<TableInfo> getTables(DatabaseMetaData meta, String dbName) {
         List<TableInfo> tableInfos = new ArrayList<>();
         try {
-            DatabaseMetaData meta = con.getMetaData();
             ResultSet rs = meta.getTables(dbName, null, null,
                     new String[] { "TABLE" });
             while (rs.next()) {
@@ -83,10 +79,9 @@ public class PackInfoService {
         return tableInfos;
     }
     
-    public List<ColumnInfo> getColumns(Connection con,String dbName,String tableName) {
+    public List<ColumnInfo> getColumns(DatabaseMetaData meta,String dbName,String tableName) {
         List<ColumnInfo> columnInfos = new ArrayList<>();
         try {
-            DatabaseMetaData meta = con.getMetaData();
             ResultSet columns = meta.getColumns(null, null, tableName, null);
             while (columns.next()){
                 ColumnInfo column = ColumnInfo.builder().columnName(columns.getString(ColumnResultEnum.COLUMN_NAME.getType()))
