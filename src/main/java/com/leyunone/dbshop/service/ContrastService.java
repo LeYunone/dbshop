@@ -3,7 +3,7 @@ package com.leyunone.dbshop.service;
 import cn.hutool.core.collection.CollectionUtil;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.query.ContrastQuery;
-import com.leyunone.dbshop.bean.vo.ColumnContrastVO;
+import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import com.leyunone.dbshop.constant.DbShopConstant;
 import com.leyunone.dbshop.system.factory.DBDataFactory;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,6 @@ import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -31,50 +30,57 @@ public class ContrastService {
     private final DBDataFactory dataFactory;
     private final PackInfoService packInfoService;
 
-    public void columnContrastToTable(ContrastQuery contrastQuery) {
-        String leftStrategy = contrastQuery.getLeftStrategy();
-
+    public List<TableColumnContrastVO> columnContrastToTable(ContrastQuery contrastQuery) {
         //左表数据
-        DatabaseMetaData leftData = dataFactory.getData(leftStrategy);
+        DatabaseMetaData leftData = dataFactory.getData(contrastQuery.getLeftStrategy());
         List<ColumnInfo> leftColumn = packInfoService.getColumns(leftData, contrastQuery.getDbName(), contrastQuery.getTableName());
 
         //右表数据
         DatabaseMetaData rightData = dataFactory.getData(contrastQuery.getRightStrategy());
         List<ColumnInfo> rightColumn = packInfoService.getColumns(rightData, contrastQuery.getDbName(), contrastQuery.getTableName());
+
+        return this.columnContrastdoing(leftColumn, rightColumn);
     }
 
-    public List<ColumnContrastVO> columnContrastdoing(List<ColumnInfo> left, List<ColumnInfo> right) {
-        List<ColumnContrastVO> result = new ArrayList<>();
+    private List<TableColumnContrastVO> columnContrastdoing(List<ColumnInfo> left, List<ColumnInfo> right) {
+        List<TableColumnContrastVO> result = new ArrayList<>();
         if (CollectionUtil.isEmpty(right)) {
             //对比表不存在
         }
         Map<String, ColumnInfo> rightMap = right.stream().collect(Collectors.toMap(ColumnInfo::getColumnName, Function.identity()));
         //比较相同字段名 并且填充空白
         for (ColumnInfo lc : left) {
-            ColumnContrastVO columnContrastVO = new ColumnContrastVO();
-            columnContrastVO.setLeftColumn(lc);
+            TableColumnContrastVO tableColumnContrastVO = new TableColumnContrastVO();
+            tableColumnContrastVO.setLeftColumn(lc);
             if (rightMap.containsKey(lc.getColumnName())) {
-                columnContrastVO.setRightColumn(lc);
-                columnContrastVO.setNameDifferent(DbShopConstant.SAME);
+                tableColumnContrastVO.setRightColumn(lc);
+                tableColumnContrastVO.setNameDifferent(DbShopConstant.SAME);
                 rightMap.remove(lc.getColumnName());
             } else {
-                columnContrastVO.setNameDifferent(DbShopConstant.DIFFERENT);
+                tableColumnContrastVO.setNameDifferent(DbShopConstant.DIFFERENT);
             }
-            result.add(columnContrastVO);
+            result.add(tableColumnContrastVO);
         }
         if (CollectionUtil.isNotEmpty(rightMap)) {
             rightMap.values().forEach((t) -> {
-                ColumnContrastVO columnContrastVO = new ColumnContrastVO();
-                columnContrastVO.setRightColumn(t);
-                columnContrastVO.setNameDifferent(DbShopConstant.DIFFERENT);
-                result.add(columnContrastVO);
+                TableColumnContrastVO tableColumnContrastVO = new TableColumnContrastVO();
+                tableColumnContrastVO.setRightColumn(t);
+                tableColumnContrastVO.setNameDifferent(DbShopConstant.DIFFERENT);
+                result.add(tableColumnContrastVO);
             });
         }
         //比较相同字段名下的字段类型 - size和type和remark
         if (CollectionUtil.isEmpty(result)) return result;
-        for (ColumnContrastVO contrast : result) {
-            if (contrast.getNameDifferent().equals(DbShopConstant.SAME)) {
-                
+        for (TableColumnContrastVO contrast : result) {
+            if (contrast.getNameDifferent()) {
+                ColumnInfo leftColumn = contrast.getLeftColumn();
+                ColumnInfo rightColumn = contrast.getRightColumn();
+                //比较size
+                contrast.setSizeDifferent(leftColumn.getColumnSize().equals(rightColumn.getColumnSize()));
+                //比较type
+                contrast.setTypeDifferent(leftColumn.getDataType().equals(rightColumn.getDataType()));
+                //比较remark
+                contrast.setRemarkDifferent(leftColumn.getRemarks().equals(rightColumn.getRemarks()));
             }
         }
         return result;

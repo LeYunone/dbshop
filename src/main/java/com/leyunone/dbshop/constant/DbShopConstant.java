@@ -7,7 +7,7 @@ package com.leyunone.dbshop.constant;
  */
 public class DbShopConstant {
 
-    public static final Integer SAME = 0;
+    public static final Boolean SAME = true;
     
-    public static final Integer DIFFERENT = 1;
+    public static final Boolean DIFFERENT = false;
 }

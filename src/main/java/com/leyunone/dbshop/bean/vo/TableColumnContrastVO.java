@@ -5,26 +5,26 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 字段对比的结果集
+ * 表中字段对比的结果集
  * @author LeYunone
  * @email 365627310@qq.com
  * @date 2023-05-22
  */
 @Getter
 @Setter
-public class ColumnContrastVO {
+public class TableColumnContrastVO {
 
     private ColumnInfo leftColumn;
     
     private ColumnInfo rightColumn;
     
     //名 0相同 1不同
-    private Integer nameDifferent;
+    private Boolean nameDifferent;
     //长度 0相同 1不同
-    private Integer sizeDifferent;
+    private Boolean sizeDifferent;
     //类型 0相同 1不同
-    private Integer typeDifferent;
+    private Boolean typeDifferent;
     //注释 0相同 1不同
-    private Integer remarkDifferent;
+    private Boolean remarkDifferent;
     //TODO 索引
 }
