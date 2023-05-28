@@ -1,6 +1,8 @@
 package com.leyunone.dbshop.service;
 
 import com.leyunone.dbshop.util.DbClose;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
@@ -14,6 +16,8 @@ import java.sql.*;
 @Service
 public class ConnectService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ConnectService.class);
+    
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         ConnectService connectService = new ConnectService();
         String url = "jdbc:mysql://localhost:3306/test2023?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true";
@@ -28,7 +32,7 @@ public class ConnectService {
             Class.forName("com.mysql.jdbc.Driver");
             con = DriverManager.getConnection(url,userName,passWord);
         }catch (Exception e){
-            
+            logger.error(e.getMessage());
         }
         return con;
     }

@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 @Component
 public class DBDataFactory {
 
+    /**
+     * 存储策略 数据库 URL + db名
+     */
     public Map<String, DatabaseMetaData> dataMap = new HashMap<>();
     
     public final static Logger logger = LoggerFactory.getLogger(DbDocFactory.class);
@@ -44,8 +47,7 @@ public class DBDataFactory {
      * @param strategy
      */
     public List<DatabaseMetaData> getDataMatch(String strategy) {
-        List<DatabaseMetaData> datas = dataMap.keySet().stream().filter((t) -> t.matches(strategy)).map(dataMap::get).collect(Collectors.toList());
-        return datas;
+        return dataMap.keySet().stream().filter((t) -> t.matches(strategy)).map(dataMap::get).collect(Collectors.toList());
     }
 }
 

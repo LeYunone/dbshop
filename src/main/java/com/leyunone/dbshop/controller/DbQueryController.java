@@ -1,11 +1,16 @@
 package com.leyunone.dbshop.controller;
 
 import com.leyunone.dbshop.bean.DataResponse;
+import com.leyunone.dbshop.bean.info.ColumnInfo;
+import com.leyunone.dbshop.bean.info.TableInfo;
 import com.leyunone.dbshop.bean.query.DBQuery;
+import com.leyunone.dbshop.service.DBQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 查询db
@@ -16,24 +21,27 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/dbquery")
 public class DbQueryController {
+    
+    @Autowired
+    private DBQueryService dbQueryService;
 
     /**
      * 一个指定数据库库的信息
      */
-    @GetMapping("/alonedbinfo")
-    public DataResponse aloneDbInfo(DBQuery query) {
-        //将这个数据库的所有表罗列出来
-        return DataResponse.of();
+    @GetMapping("/tables")
+    public DataResponse<List<TableInfo>> dbTables(DBQuery query) {
+        List<TableInfo> tableInfos = dbQueryService.getTableInfos(query);
+        return DataResponse.of(tableInfos);
     }
 
     /**
-     * 查看指定数据库 指定表的信息
+     * 字段
+     * @param query
+     * @return
      */
-    @GetMapping("/alonetableinfo")
-    public DataResponse aloneTableInfo(DBQuery query){
-        return DataResponse.of();
+    @GetMapping("/columns")
+    public DataResponse<List<ColumnInfo>> dbColumns(DBQuery query){
+        List<ColumnInfo> columnInfos = dbQueryService.getColumnInfos(query);
+        return DataResponse.of(columnInfos);
     }
-    
-    
-    
 }

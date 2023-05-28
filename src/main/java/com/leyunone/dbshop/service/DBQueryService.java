@@ -1,15 +1,15 @@
 package com.leyunone.dbshop.service;
 
-import cn.hutool.core.util.ObjectUtil;
-import com.leyunone.dbshop.bean.info.DbInfo;
+import com.leyunone.dbshop.bean.info.ColumnInfo;
+import com.leyunone.dbshop.bean.info.TableInfo;
 import com.leyunone.dbshop.bean.query.DBQuery;
-import com.leyunone.dbshop.util.AssertUtil;
-import com.leyunone.dbshop.util.DbClose;
+import com.leyunone.dbshop.system.factory.DBDataFactory;
+import com.leyunone.dbshop.util.DBUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.util.List;
 
 /**
  * @author LeYunone
@@ -23,13 +23,21 @@ public class DBQueryService {
     private ConnectService connectService;
     @Autowired
     private PackInfoService packInfoService;
-    
-    public void getConnectionToData(DBQuery query) {
-        String url = query.getUrl();
-        DatabaseMetaData connectionToData = connectService.getConnectionToData(query.getUrl(), query.getUserName(), query.getPassWord());
-        AssertUtil.isFalse(ObjectUtil.isNull(connectionToData),"connection is fail");
-        DbInfo dbInfo = packInfoService.getDbInfo(connectionToData);
+    @Autowired
+    private DBDataFactory dbDataFactory;
+
+    /**
+     * 
+     * @param query
+     */
+    public List<TableInfo> getTableInfos(DBQuery query) {
+        DatabaseMetaData data = dbDataFactory.getData(DBUtil.getStrategy(query));
+        return packInfoService.getTables(data, query.getDbName());
     }
     
+    public List<ColumnInfo> getColumnInfos(DBQuery query){
+        DatabaseMetaData data = dbDataFactory.getData(DBUtil.getStrategy(query));
+        return packInfoService.getColumns(data, query.getDbName(),query.getTableName());
+    }
     
 }

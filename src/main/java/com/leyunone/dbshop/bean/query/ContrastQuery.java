@@ -11,18 +11,16 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ContrastQuery {
-
-    /**
-     * 左表策略
-     */
-    private String leftStrategy;
-
-    /**
-     * 右表策略
-     */
-    private String rightStrategy;
     
-    private String tableName;
+    private String leftUrl;
     
-    private String dbName;
+    private String rightUrl;
+    
+    private String leftDbName;
+    
+    private String rightDbName;
+    
+    private String leftTablName;
+    
+    private String rightTableName;
 }

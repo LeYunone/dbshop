@@ -2,10 +2,12 @@ package com.leyunone.dbshop.service;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
+import com.leyunone.dbshop.bean.info.TableInfo;
 import com.leyunone.dbshop.bean.query.ContrastQuery;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import com.leyunone.dbshop.constant.DbShopConstant;
 import com.leyunone.dbshop.system.factory.DBDataFactory;
+import com.leyunone.dbshop.util.DBUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,16 +34,35 @@ public class ContrastService {
 
     public List<TableColumnContrastVO> columnContrastToTable(ContrastQuery contrastQuery) {
         //左表数据
-        DatabaseMetaData leftData = dataFactory.getData(contrastQuery.getLeftStrategy());
-        List<ColumnInfo> leftColumn = packInfoService.getColumns(leftData, contrastQuery.getDbName(), contrastQuery.getTableName());
+        DatabaseMetaData leftData = dataFactory.getData(DBUtil.getLeftStrategy(contrastQuery));
+        List<ColumnInfo> leftColumn = packInfoService.getColumns(leftData, contrastQuery.getLeftDbName(), contrastQuery.getLeftTablName());
 
         //右表数据
-        DatabaseMetaData rightData = dataFactory.getData(contrastQuery.getRightStrategy());
-        List<ColumnInfo> rightColumn = packInfoService.getColumns(rightData, contrastQuery.getDbName(), contrastQuery.getTableName());
+        DatabaseMetaData rightData = dataFactory.getData(DBUtil.getRightStrategy(contrastQuery));
+        List<ColumnInfo> rightColumn = packInfoService.getColumns(rightData, contrastQuery.getRightDbName(), contrastQuery.getRightTableName());
 
         return this.columnContrastdoing(leftColumn, rightColumn);
     }
 
+    /**
+     * 两个数据库对比结果集
+     * @param contrastQuery
+     */
+    public void dbTableContrast(ContrastQuery contrastQuery){
+        
+        DatabaseMetaData leftData = dataFactory.getData(DBUtil.getLeftStrategy(contrastQuery));
+        List<TableInfo> leftTables = packInfoService.getTables(leftData, contrastQuery.getLeftDbName());
+        
+        DatabaseMetaData rightData = dataFactory.getData(DBUtil.getRightStrategy(contrastQuery));
+        List<TableInfo> rightTables = packInfoService.getTables(rightData, contrastQuery.getRightDbName());
+    }
+
+    /**
+     * 对比左右表字段
+     * @param left
+     * @param right
+     * @return
+     */
     private List<TableColumnContrastVO> columnContrastdoing(List<ColumnInfo> left, List<ColumnInfo> right) {
         List<TableColumnContrastVO> result = new ArrayList<>();
         if (CollectionUtil.isEmpty(right)) {
@@ -84,5 +105,14 @@ public class ContrastService {
             }
         }
         return result;
+    }
+
+    /**
+     * 对比左右表名
+     * @param left
+     * @param right
+     */
+    private void tableContrastdoing(List<TableInfo> left,List<TableInfo> right){
+        
     }
 }
