@@ -1,6 +1,5 @@
 package com.leyunone.dbshop.system.cache;
 
-import com.leyunone.dbshop.model.DBInfo;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,8 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * 连接桶缓存
  */
 public class ConnectionInfoCache {
-
-    public static Map<String, DBInfo> connectionInfos = new ConcurrentHashMap<>();
 
     
 }

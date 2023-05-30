@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,7 +83,7 @@ public class PackInfoService {
     public List<ColumnInfo> getColumns(DatabaseMetaData meta,String dbName,String tableName) {
         List<ColumnInfo> columnInfos = new ArrayList<>();
         try {
-            ResultSet columns = meta.getColumns(null, null, tableName, null);
+            ResultSet columns = meta.getColumns(dbName, null, tableName, null);
             while (columns.next()){
                 ColumnInfo column = ColumnInfo.builder().columnName(columns.getString(ColumnResultEnum.COLUMN_NAME.getType()))
                         .dataType(columns.getString(ColumnResultEnum.DATA_TYPE.getType()))
@@ -97,5 +98,13 @@ public class PackInfoService {
             logger.error("db列解析失败+：Exception：{}",e.getMessage());
         }
         return columnInfos;
+    }
+    
+    //No operations allowed after connection closed.
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+        DatabaseMetaData databaseMetaData = ConnectService.toTest();
+        PackInfoService packInfoService = new PackInfoService();
+        List<ColumnInfo> columns = packInfoService.getColumns(databaseMetaData, "test2023", null);
+        System.out.println(columns.size());
     }
 }

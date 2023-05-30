@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.TableInfo;
 import com.leyunone.dbshop.bean.query.ContrastQuery;
+import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import com.leyunone.dbshop.constant.DbShopConstant;
 import com.leyunone.dbshop.system.factory.DBDataFactory;
@@ -46,19 +47,21 @@ public class ContrastService {
 
     /**
      * 两个数据库对比结果集
+     *
      * @param contrastQuery
      */
-    public void dbTableContrast(ContrastQuery contrastQuery){
-        
+    public void dbTableContrast(ContrastQuery contrastQuery) {
+
         DatabaseMetaData leftData = dataFactory.getData(DBUtil.getLeftStrategy(contrastQuery));
         List<TableInfo> leftTables = packInfoService.getTables(leftData, contrastQuery.getLeftDbName());
-        
+
         DatabaseMetaData rightData = dataFactory.getData(DBUtil.getRightStrategy(contrastQuery));
         List<TableInfo> rightTables = packInfoService.getTables(rightData, contrastQuery.getRightDbName());
     }
 
     /**
      * 对比左右表字段
+     *
      * @param left
      * @param right
      * @return
@@ -109,10 +112,21 @@ public class ContrastService {
 
     /**
      * 对比左右表名
+     *
      * @param left
      * @param right
      */
-    private void tableContrastdoing(List<TableInfo> left,List<TableInfo> right){
-        
+    private void tableContrastdoing(List<TableInfo> left, List<TableInfo> right) {
+        List<DbTableContrastVO> result = new ArrayList<>();
+        if(CollectionUtil.isEmpty(right)){
+            //对比数据库中没有表存在
+        }
+//        Map<String, TableInfo> rightMap = right.stream().collect(Collectors.toMap(TableInfo::getTableName, Function.identity()));
+//        for (TableInfo lt : left) {
+//            DbTableContrastVO dbTableContrastVO = new DbTableContrastVO();
+//            if(rightMap)
+//        }
+        //拿到表所有字段关系
+         
     }
 }

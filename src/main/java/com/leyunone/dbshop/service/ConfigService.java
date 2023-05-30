@@ -9,6 +9,7 @@ import com.leyunone.dbshop.util.DBUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 
 /**
@@ -32,9 +33,17 @@ public class ConfigService {
      * @param query
      */
     public DbInfo loadConnectionToData(DBQuery query) {
-        DatabaseMetaData connectionToData = connectService.getConnectionToData(query.getUrl(), query.getUserName(), query.getPassWord());
-        AssertUtil.isFalse(ObjectUtil.isNull(connectionToData),"connection is fail");
-        dbDataFactory.regist(DBUtil.getStrategy(query),connectionToData);
-        return packInfoService.getDbInfo(connectionToData);
+        Connection connection = connectService.getConnection(query.getUrl(), query.getUserName(), query.getPassWord());
+//        AssertUtil.isFalse(ObjectUtil.isNull(connectionToData),"connection is fail");
+//        dbDataFactory.regist(DBUtil.getStrategy(query),connectionToData);
+//        return packInfoService.getDbInfo(connectionToData);
+        
+        //加载数据库信息
+        
+        //加载表信息
+        
+        //加载字段信息
+        
+        
     }
 }

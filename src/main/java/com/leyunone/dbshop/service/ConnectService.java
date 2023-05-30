@@ -18,12 +18,12 @@ public class ConnectService {
 
     private static final Logger logger = LoggerFactory.getLogger(ConnectService.class);
     
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+    public static DatabaseMetaData toTest() throws SQLException, ClassNotFoundException {
         ConnectService connectService = new ConnectService();
         String url = "jdbc:mysql://localhost:3306/test2023?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true";
         String userName ="root";
         String passWord="root";
-        connectService.getConnection(url,userName,passWord);
+        return connectService.getConnectionToData(url,userName,passWord);
     }
 
     public Connection getConnection(String url,String userName,String passWord) {
@@ -45,7 +45,7 @@ public class ConnectService {
             return con.getMetaData();
         }catch (Exception e){
         }finally {
-            DbClose.close(con);
+//            DbClose.close(con);
         }
         return null;
     }
