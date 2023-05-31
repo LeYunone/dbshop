@@ -19,7 +19,9 @@ public enum ColumnResultEnum {
 
     DECIMAL_DIGITS("DECIMAL_DIGITS","小数位"),
 
-    REMARKS("REMARKS","备注")
+    REMARKS("REMARKS","备注"),
+    
+    TABLE_NAME("TABLE_NAME","表名")
 
     ;
 

@@ -14,6 +14,8 @@ import lombok.*;
 @Builder
 public class ColumnInfo {
     
+    private String tableName;
+    
     private String columnName;
     
     private String dataType;

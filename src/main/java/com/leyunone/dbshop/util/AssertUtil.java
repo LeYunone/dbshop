@@ -12,6 +12,10 @@ public class AssertUtil {
         isFalse(condition,new RuntimeException(message));
     }
 
+    public static void isFalse(boolean condition){
+        isFalse(condition,new RuntimeException("system error"));
+    }
+
     public static void isFalse(boolean condition,RuntimeException ex){
         isTrue(!condition,ex);
     }

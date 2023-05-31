@@ -4,11 +4,9 @@ import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.TableInfo;
 import com.leyunone.dbshop.bean.query.DBQuery;
 import com.leyunone.dbshop.system.factory.DBDataFactory;
-import com.leyunone.dbshop.util.DBUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.DatabaseMetaData;
 import java.util.List;
 
 /**
@@ -31,13 +29,11 @@ public class DBQueryService {
      * @param query
      */
     public List<TableInfo> getTableInfos(DBQuery query) {
-        DatabaseMetaData data = dbDataFactory.getData(DBUtil.getStrategy(query));
-        return packInfoService.getTables(data, query.getDbName());
+        return null;
     }
     
     public List<ColumnInfo> getColumnInfos(DBQuery query){
-        DatabaseMetaData data = dbDataFactory.getData(DBUtil.getStrategy(query));
-        return packInfoService.getColumns(data, query.getDbName(),query.getTableName());
+        return null;
     }
     
 }

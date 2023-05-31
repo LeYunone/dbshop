@@ -1,5 +1,6 @@
 package com.leyunone.dbshop.service;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.DbInfo;
 import com.leyunone.dbshop.bean.info.TableInfo;
@@ -65,7 +66,7 @@ public class PackInfoService {
                     new String[] { "TABLE" });
             while (rs.next()) {
                 TableInfo tableInfo = TableInfo.builder().tableName(rs.getString(TableResultEnum.TABLE_NAME.getType()))
-                        .tableType(rs.getString(TableResultEnum.TABLE_TYPE.getType()))
+                        .tableType(rs.getString(TableResultEnum.TABLE_TYPE.getType())).primarys(CollectionUtil.newHashSet())
                         .remarks(rs.getString(TableResultEnum.REMARKS.getType())).build();
                 ResultSet primaryKeys = meta.getPrimaryKeys(null, null, rs.getString(TableResultEnum.TABLE_NAME.getType()));
                 while (primaryKeys.next()){
@@ -75,6 +76,7 @@ public class PackInfoService {
                 tableInfos.add(tableInfo);
             }
         }catch (Exception e){
+            e.printStackTrace();
             logger.error("db表解析失败+：Exception：{}",e.getMessage());
         }
         return tableInfos;
@@ -86,6 +88,7 @@ public class PackInfoService {
             ResultSet columns = meta.getColumns(dbName, null, tableName, null);
             while (columns.next()){
                 ColumnInfo column = ColumnInfo.builder().columnName(columns.getString(ColumnResultEnum.COLUMN_NAME.getType()))
+                        .tableName(columns.getString(ColumnResultEnum.TABLE_NAME.getType()))
                         .dataType(columns.getString(ColumnResultEnum.DATA_TYPE.getType()))
                         .tableCat(columns.getString(ColumnResultEnum.TABLE_CAT.getType()))
                         .columnSize(columns.getString(ColumnResultEnum.COLUMN_SIZE.getType()))
@@ -105,6 +108,9 @@ public class PackInfoService {
         DatabaseMetaData databaseMetaData = ConnectService.toTest();
         PackInfoService packInfoService = new PackInfoService();
         List<ColumnInfo> columns = packInfoService.getColumns(databaseMetaData, "test2023", null);
+
+        List<TableInfo> test2023 = packInfoService.getTables(databaseMetaData, "test2023");
+        System.out.println(test2023.size());
         System.out.println(columns.size());
     }
 }

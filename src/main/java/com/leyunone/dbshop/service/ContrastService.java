@@ -8,7 +8,7 @@ import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import com.leyunone.dbshop.constant.DbShopConstant;
 import com.leyunone.dbshop.system.factory.DBDataFactory;
-import com.leyunone.dbshop.util.DBUtil;
+import com.leyunone.dbshop.util.DbStrategyUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -35,12 +35,10 @@ public class ContrastService {
 
     public List<TableColumnContrastVO> columnContrastToTable(ContrastQuery contrastQuery) {
         //左表数据
-        DatabaseMetaData leftData = dataFactory.getData(DBUtil.getLeftStrategy(contrastQuery));
-        List<ColumnInfo> leftColumn = packInfoService.getColumns(leftData, contrastQuery.getLeftDbName(), contrastQuery.getLeftTablName());
+        List<ColumnInfo> leftColumn = dataFactory.getColumnData(DbStrategyUtil.getLeftStrategy(contrastQuery));
 
         //右表数据
-        DatabaseMetaData rightData = dataFactory.getData(DBUtil.getRightStrategy(contrastQuery));
-        List<ColumnInfo> rightColumn = packInfoService.getColumns(rightData, contrastQuery.getRightDbName(), contrastQuery.getRightTableName());
+        List<ColumnInfo> rightColumn = dataFactory.getColumnData(DbStrategyUtil.getRightStrategy(contrastQuery));
 
         return this.columnContrastdoing(leftColumn, rightColumn);
     }
@@ -51,12 +49,9 @@ public class ContrastService {
      * @param contrastQuery
      */
     public void dbTableContrast(ContrastQuery contrastQuery) {
+        List<TableInfo> leftTables = dataFactory.getTableData(DbStrategyUtil.getLeftStrategy(contrastQuery));
 
-        DatabaseMetaData leftData = dataFactory.getData(DBUtil.getLeftStrategy(contrastQuery));
-        List<TableInfo> leftTables = packInfoService.getTables(leftData, contrastQuery.getLeftDbName());
-
-        DatabaseMetaData rightData = dataFactory.getData(DBUtil.getRightStrategy(contrastQuery));
-        List<TableInfo> rightTables = packInfoService.getTables(rightData, contrastQuery.getRightDbName());
+        List<TableInfo> rightTables = dataFactory.getTableData(DbStrategyUtil.getRightStrategy(contrastQuery));
     }
 
     /**
