@@ -1,12 +1,14 @@
 package com.leyunone.dbshop.service;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.db.DbUtil;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.DbInfo;
 import com.leyunone.dbshop.bean.info.TableInfo;
 import com.leyunone.dbshop.bean.query.DBQuery;
 import com.leyunone.dbshop.system.factory.DBDataFactory;
 import com.leyunone.dbshop.util.AssertUtil;
+import com.leyunone.dbshop.util.DbClose;
 import com.leyunone.dbshop.util.DbStrategyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,10 +57,16 @@ public class ConfigService {
         dbDataFactory.regist(DbStrategyUtil.getDbStrategy(query),dbInfo,DbInfo.class);
         //加载表信息
         List<TableInfo> tables = packInfoService.getTables(metaData, query.getDbName());
+        dbDataFactory.regist(DbStrategyUtil.getTableStrategy(query),tables,TableInfo.class);
+
         //加载字段信息
         List<ColumnInfo> columns = packInfoService.getColumns(metaData, query.getDbName(), null);
         Map<String, List<ColumnInfo>> columnMap = columns.stream().collect(Collectors.groupingBy(ColumnInfo::getTableName));
-
+        for(String tableNam: columnMap.keySet()){
+            query.setTableName(tableNam);
+            dbDataFactory.regist(DbStrategyUtil.getColumnStrategy(query),columnMap.get(tableNam),ColumnInfo.class);
+        }
+        DbClose.close(connection);
         return dbInfo;
     }
 }
