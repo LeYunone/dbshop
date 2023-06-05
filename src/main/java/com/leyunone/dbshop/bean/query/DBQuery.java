@@ -1,7 +1,6 @@
 package com.leyunone.dbshop.bean.query;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * @author LeYunone
@@ -10,6 +9,9 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class DBQuery {
 
     /**

@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.TableInfo;
 import com.leyunone.dbshop.bean.query.ContrastQuery;
+import com.leyunone.dbshop.bean.query.DBQuery;
 import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import com.leyunone.dbshop.constant.DbShopConstant;
@@ -35,10 +36,10 @@ public class ContrastService {
 
     public List<TableColumnContrastVO> columnContrastToTable(ContrastQuery contrastQuery) {
         //左表数据
-        List<ColumnInfo> leftColumn = dataFactory.getColumnData(DbStrategyUtil.getLeftStrategy(contrastQuery));
+        List<ColumnInfo> leftColumn = dataFactory.getColumnData(DbStrategyUtil.getColumnStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, true)));
 
         //右表数据
-        List<ColumnInfo> rightColumn = dataFactory.getColumnData(DbStrategyUtil.getRightStrategy(contrastQuery));
+        List<ColumnInfo> rightColumn = dataFactory.getColumnData(DbStrategyUtil.getColumnStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, false)));
 
         return this.columnContrastdoing(leftColumn, rightColumn);
     }
@@ -49,9 +50,12 @@ public class ContrastService {
      * @param contrastQuery
      */
     public void dbTableContrast(ContrastQuery contrastQuery) {
-        List<TableInfo> leftTables = dataFactory.getTableData(DbStrategyUtil.getLeftStrategy(contrastQuery));
-
-        List<TableInfo> rightTables = dataFactory.getTableData(DbStrategyUtil.getRightStrategy(contrastQuery));
+        //左边数据库的所有表
+        List<TableInfo> leftTables = dataFactory.getTableData(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery,true)));
+        //右表数据库的所有表
+        List<TableInfo> rightTables = dataFactory.getTableData(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery,false)));
+        
+        
     }
 
     /**
@@ -91,7 +95,7 @@ public class ContrastService {
         //比较相同字段名下的字段类型 - size和type和remark
         if (CollectionUtil.isEmpty(result)) return result;
         for (TableColumnContrastVO contrast : result) {
-            if (contrast.getNameDifferent()) {
+            if (!contrast.getNameDifferent()) {
                 ColumnInfo leftColumn = contrast.getLeftColumn();
                 ColumnInfo rightColumn = contrast.getRightColumn();
                 //比较size
@@ -113,15 +117,22 @@ public class ContrastService {
      */
     private void tableContrastdoing(List<TableInfo> left, List<TableInfo> right) {
         List<DbTableContrastVO> result = new ArrayList<>();
-        if(CollectionUtil.isEmpty(right)){
+        if (CollectionUtil.isEmpty(right)) {
             //对比数据库中没有表存在
         }
-//        Map<String, TableInfo> rightMap = right.stream().collect(Collectors.toMap(TableInfo::getTableName, Function.identity()));
-//        for (TableInfo lt : left) {
-//            DbTableContrastVO dbTableContrastVO = new DbTableContrastVO();
-//            if(rightMap)
-//        }
-        //拿到表所有字段关系
-         
+        Map<String, TableInfo> rightMap = right.stream().collect(Collectors.toMap(TableInfo::getTableName, Function.identity()));
+        for (TableInfo lt : left) {
+            DbTableContrastVO dbTableContrastVO = new DbTableContrastVO();
+            dbTableContrastVO.setLeftTableInfo(lt);
+            if(rightMap.containsKey(lt.getTableName())){
+                dbTableContrastVO.setNameDifference(DbShopConstant.SAME);
+                dbTableContrastVO.setRightTableInfo(rightMap.get(lt.getTableName()));
+                rightMap.remove(lt.getTableName());
+            }else{
+                dbTableContrastVO.setNameDifference(DbShopConstant.DIFFERENT);
+            }
+        }
+//        拿到表所有字段关系
+
     }
 }

@@ -13,31 +13,31 @@ import java.util.concurrent.atomic.AtomicLong;
  * @date 2022-12-25
  */
 public class DbStrategyUtil {
-    
+
     public static final String DB_STRATEGY = ":db";
-    
+
     public static final String COLUMN_STRATEGY = ":column";
-    
+
     public static final String TABLE_STRATEGY = ":table";
-    
-    
-    public static String getDbStrategy(DBQuery query){
-        return query.getUrl()+":"+query.getDbName()+DB_STRATEGY;
+
+
+    public static String getDbStrategy(DBQuery query) {
+        return query.getUrl() + ":" + query.getDbName() + DB_STRATEGY;
     }
-    
+
     public static String getTableStrategy(DBQuery query) {
-        return query.getUrl()+":"+query.getDbName()+TABLE_STRATEGY;
-    }
-    
-    public static String getColumnStrategy(DBQuery query){
-        return query.getUrl()+":"+query.getDbName()+":"+query.getTableName()+COLUMN_STRATEGY;
+        return query.getUrl() + ":" + query.getDbName() + TABLE_STRATEGY;
     }
 
-    public static String getLeftStrategy(ContrastQuery query) {
-        return query.getLeftUrl()+":"+query.getLeftDbName();
+    public static String getColumnStrategy(DBQuery query) {
+        return query.getUrl() + ":" + query.getDbName() + ":" + query.getTableName() + COLUMN_STRATEGY;
     }
 
-    public static String getRightStrategy(ContrastQuery query) {
-        return query.getRightUrl()+":"+query.getRightDbName();
+    public static DBQuery loadContrastRule(ContrastQuery contrastQuery, boolean yesLeft) {
+        if (yesLeft) {
+            return DBQuery.builder().tableName(contrastQuery.getLeftTablName()).dbName(contrastQuery.getLeftDbName()).url(contrastQuery.getLeftUrl()).build();
+        }else{
+            return DBQuery.builder().tableName(contrastQuery.getRightTableName()).dbName(contrastQuery.getRightDbName()).url(contrastQuery.getRightUrl()).build();
+        }
     }
 }

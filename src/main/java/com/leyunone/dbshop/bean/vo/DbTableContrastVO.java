@@ -1,5 +1,6 @@
 package com.leyunone.dbshop.bean.vo;
 
+import com.leyunone.dbshop.bean.info.TableInfo;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,9 +16,13 @@ import java.util.List;
 @Setter
 public class DbTableContrastVO {
 
-    private String tableName;
+    private TableInfo leftTableInfo;
+    
+    private TableInfo rightTableInfo;
     
     private List<TableColumnContrastVO> columnContrastVOS;
     
     private Boolean hasDifference;
+
+    private Boolean nameDifference;
 }
