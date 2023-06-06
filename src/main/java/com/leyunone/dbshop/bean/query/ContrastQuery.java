@@ -23,4 +23,9 @@ public class ContrastQuery {
     private String leftTablName;
     
     private String rightTableName;
+
+    /**
+     * 是否进行深度比对 0否 1是
+     */
+    private Integer goDeep;
 }

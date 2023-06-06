@@ -1,4 +1,4 @@
-package com.leyunone.dbshop;
+package com.leyunone.dbshop.service;
 
 import com.leyunone.dbshop.bean.query.DBQuery;
 import com.leyunone.dbshop.service.ConfigService;

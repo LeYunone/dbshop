@@ -10,4 +10,8 @@ public class DbShopConstant {
     public static final Boolean SAME = true;
     
     public static final Boolean DIFFERENT = false;
+    
+    public static final Integer Rule_Yes = 1;
+    
+    public static final Integer Rule_No = 0;
 }

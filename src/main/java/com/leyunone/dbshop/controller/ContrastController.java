@@ -35,6 +35,7 @@ public class ContrastController {
     
     @RequestMapping("/leftRightDbDo")
     public DataResponse<List<DbTableContrastVO>> leftRightDbContrast(ContrastQuery query){
-        return DataResponse.of();
+        List<DbTableContrastVO> dbTableContrastVOS = contrastService.dbTableContrast(query);
+        return DataResponse.of(dbTableContrastVOS);
     }
 }
