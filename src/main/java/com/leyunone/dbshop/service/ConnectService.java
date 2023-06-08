@@ -1,5 +1,6 @@
 package com.leyunone.dbshop.service;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.leyunone.dbshop.util.DbClose;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,13 @@ public class ConnectService {
             logger.error(e.getMessage());
         }
         return con;
+    }
+    
+    public Connection getLongConnection(String url,String userName,String passWord){
+        Connection connection = this.getConnection(url, userName, passWord);
+        if(ObjectUtil.isNotNull(connection)){
+        }
+        return connection;
     }
 
     public DatabaseMetaData getConnectionToData(String url,String userName,String passWord) {

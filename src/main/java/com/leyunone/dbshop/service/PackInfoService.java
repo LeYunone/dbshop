@@ -62,7 +62,7 @@ public class PackInfoService {
     public List<TableInfo> getTables(DatabaseMetaData meta, String dbName) {
         List<TableInfo> tableInfos = new ArrayList<>();
         try {
-            ResultSet rs = meta.getTables(dbName, null, null,
+            ResultSet rs = meta.getTables(dbName, "%", "%",
                     new String[] { "TABLE" });
             while (rs.next()) {
                 TableInfo tableInfo = TableInfo.builder().tableName(rs.getString(TableResultEnum.TABLE_NAME.getType()))

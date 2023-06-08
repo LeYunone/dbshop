@@ -28,4 +28,9 @@ public class ContrastQuery {
      * 是否进行深度比对 0否 1是
      */
     private Integer goDeep;
+
+    /**
+     * 是否进行备注级比对 0否 1是
+     */
+    private Integer goRemark;
 }

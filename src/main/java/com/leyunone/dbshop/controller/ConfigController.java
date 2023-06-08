@@ -19,7 +19,12 @@ public class ConfigController {
 
     @Autowired
     private ConfigService configService;
-    
+
+    /**
+     * 短连接版本 捕捉当前数据库的快照信息
+     * @param dbQuery
+     * @return
+     */
     @RequestMapping("/loadConnection")
     public DataResponse<DbInfo> loadConnection(DBQuery dbQuery){
         DbInfo dbInfo = configService.loadConnectionToData(dbQuery);
