@@ -16,20 +16,28 @@ public class SqlPackUtil {
         String sql = "";
         switch (modelEnum){
             case MODIFY_COLUMN:
-                sql = modifyPacking(modelEnum,info.getTableName(),info.getColumnName(),info.getDataType(),info.getColumnSize(),info.getRemarks());
+                sql = modifyColumnPacking(modelEnum,info.getTableName(),info.getColumnName(),info.getTypeName(),info.getColumnSize(),info.getRemarks());
                 break;
             case ADD_COLUMN:
-                sql = addColumnPcacking(modelEnum,info.getTableName(),info.getColumnName(),info.getDataType(),info.getColumnSize(),info.getRemarks());
+                sql = addColumnPcacking(modelEnum,info.getTableName(),info.getColumnName(),info.getTypeName(),info.getColumnSize(),info.getRemarks());
+                break;
+            case DELETE_COLUMN:
+                sql = deleteColumnPacking(modelEnum,info.getTableName(),info.getColumnName());
+                break;
             default:
         }
         return sql;
     }
 
-    private static String modifyPacking(SqlModelEnum modelEnum, String tableName, String columnName, String dataType, String size, String remark) {
-        return TextFillUtil.fillStr(modelEnum.getSqlModel(),new String [] {tableName,columnName,dataType,size,remark});
+    private static String modifyColumnPacking(SqlModelEnum modelEnum, String tableName, String columnName, String typeName, String size, String remark) {
+        return TextFillUtil.fillStr(modelEnum.getSqlModel(),new String [] {tableName,columnName,typeName,size,remark});
     }
     
-    public static String addColumnPcacking(SqlModelEnum modelEnum,String tableName,String columnName,String dataType, String size, String remark){
-        return TextFillUtil.fillStr(modelEnum.getSqlModel(),new String [] {tableName,columnName,dataType,size,remark});
+    private static String addColumnPcacking(SqlModelEnum modelEnum,String tableName,String columnName,String typeName, String size, String remark){
+        return TextFillUtil.fillStr(modelEnum.getSqlModel(),new String [] {tableName,columnName,typeName,size,remark});
+    }
+    
+    private static String deleteColumnPacking(SqlModelEnum modelEnum,String tableName,String columnName){
+        return TextFillUtil.fillStr(modelEnum.getSqlModel(),new String [] {tableName,columnName});
     }
 }

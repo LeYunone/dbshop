@@ -27,9 +27,9 @@ public class SqlPackService {
      *
      * @param sqlProductionDTO
      */
-    public void columnContrastPack(SqlProductionDTO sqlProductionDTO) {
+    public List<String> columnContrastPack(SqlProductionDTO sqlProductionDTO) {
         List<TableColumnContrastDTO> columns = sqlProductionDTO.getColumns();
-        if (CollectionUtil.isEmpty(columns) || ObjectUtil.isNull(sqlProductionDTO.getLeftOrRight())) return;
+        if (CollectionUtil.isEmpty(columns) || ObjectUtil.isNull(sqlProductionDTO.getLeftOrRight())) return new ArrayList<>();
 
         List<String> resultSql = new ArrayList<>();
 
@@ -39,16 +39,26 @@ public class SqlPackService {
                 //字段名相同 猜疑是修改
                 //0 左表主 1 右表主
                 //如果表字段有不同
-                if(columnContrastDTO.getSizeDifferent() 
-                        || columnContrastDTO.getRemarkDifferent() 
-                        || Integer.valueOf(1).equals(sqlProductionDTO.getGoRemark())){
-                    SqlPackUtil.packing(SqlModelEnum.MODIFY_COLUMN,mainColumn);
+                if (columnContrastDTO.getSizeDifferent()
+                        || columnContrastDTO.getRemarkDifferent()
+                        || Integer.valueOf(1).equals(sqlProductionDTO.getGoRemark())) {
+                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.MODIFY_COLUMN, mainColumn));
                 }
             } else {
-                //字段名不同 一定是新增字段
-                
+                //字段名不同 新增或删除
+                if(ObjectUtil.isNull(mainColumn)){
+                    //主表不存在字段则删除
+                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.DELETE_COLUMN, mainColumn));
+                }else{
+                    //主表存在字段新增
+                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.ADD_COLUMN, mainColumn));
+                }
             }
-
         }
+        return resultSql;
+    }
+
+    public void tableContrastPack(SqlProductionDTO sqlProductionDTO) {
+        
     }
 }

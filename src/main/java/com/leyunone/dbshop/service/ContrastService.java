@@ -130,7 +130,7 @@ public class ContrastService {
         }
         //比较相同字段名下的字段类型 - size和type和remark
         for (TableColumnContrastVO contrast : result) {
-            if (contrast.getNameDifferent()) {
+            if (!contrast.getNameDifferent()) {
                 ColumnInfo leftColumn = contrast.getLeftColumn();
                 ColumnInfo rightColumn = contrast.getRightColumn();
                 //比较size

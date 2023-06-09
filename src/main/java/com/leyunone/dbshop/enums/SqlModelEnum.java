@@ -13,6 +13,8 @@ public enum SqlModelEnum {
     ADD_COLUMN("ALTER TABLE {} ADD COLUMN {} {}({}) COMMENT '{}' ;", "新增字段"),
 
     MODIFY_COLUMN("ALTER TABLE {} modify column {} {}({}) COMMENT '{}';", "修改字段"),
+    
+    DELETE_COLUMN("ALTER TABLE {} DROP COLUMN {}","删除字段"),
 
     CREATE_TABLE("CREATE TABLE {}", "创建表"),
 
