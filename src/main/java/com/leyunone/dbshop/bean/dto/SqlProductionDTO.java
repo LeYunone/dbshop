@@ -17,4 +17,10 @@ import java.util.List;
 public class SqlProductionDTO {
 
     private List<TableColumnContrastDTO> columns;
+    
+    //左右表主副判断  0 左表  1 右表
+    private Integer leftOrRight;
+    
+    //是否进行备注级解析 0否 1是
+    private Integer goRemark;
 }
