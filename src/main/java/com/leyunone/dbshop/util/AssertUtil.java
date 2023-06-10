@@ -1,5 +1,7 @@
 package com.leyunone.dbshop.util;
 
+import com.leyunone.dbshop.bean.ResponseCode;
+
 /**
  * @author leyunone
  * @create 2021-08-13 09:31
@@ -7,6 +9,10 @@ package com.leyunone.dbshop.util;
  * 报错处理
  */
 public class AssertUtil {
+
+    public static void isFalse(boolean condition, ResponseCode code){
+        isFalse(condition,code.getDesc());
+    }
 
     public static void isFalse(boolean condition,String message){
         isFalse(condition,new RuntimeException(message));
