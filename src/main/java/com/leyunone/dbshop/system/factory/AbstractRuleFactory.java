@@ -5,7 +5,7 @@ import com.leyunone.dbshop.rule.AbstractRule;
 /**
  * :)
  *
- * @Author pengli
+ * @Author LeYunone
  * @Date 2023/6/10 17:10
  */
 public abstract class AbstractRuleFactory {

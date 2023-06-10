@@ -3,7 +3,7 @@ package com.leyunone.dbshop.bean.rule;
 /**
  * :)
  * sql类型转化规则
- * @Author pengli
+ * @Author LeYunone
  * @Date 2023/6/10 17:22
  */
 public class SqlDataTypeTransformRule {

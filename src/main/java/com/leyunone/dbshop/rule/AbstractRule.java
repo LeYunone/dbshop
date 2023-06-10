@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * :)
  *
- * @Author pengli
+ * @Author LeYunone
  * @Date 2023/6/9 14:20
  */
 public abstract class AbstractRule implements InitializingBean {
@@ -28,7 +28,13 @@ public abstract class AbstractRule implements InitializingBean {
 
     public abstract AbstractRuleFactory registRuleFactory();
 
+    //T 为泛型
     public abstract void handler();
+
+    public void runHandler(){
+        //策略执行前的服务方逻辑
+        this.handler();
+    }
     
     @Override
     public void afterPropertiesSet() {
