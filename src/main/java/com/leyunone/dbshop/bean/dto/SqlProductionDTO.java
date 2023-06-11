@@ -1,5 +1,6 @@
 package com.leyunone.dbshop.bean.dto;
 
+import com.leyunone.dbshop.bean.rule.SqlDataTypeTransformRule;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,5 +26,5 @@ public class SqlProductionDTO {
     private Integer goRemark;
     
     //sql类型转化规则 [0:datetime为datetime(0)]
-    private List<Integer> sqlTransformRule;
+    private SqlDataTypeTransformRule typeTransformRule;
 }

@@ -15,4 +15,6 @@ public class SqlDataTypeTransformRule extends TargetRule{
 
     //datetime字段定位时 长度为0
     private Integer dateTimeTo_0;
+
+    private String sql;
 }

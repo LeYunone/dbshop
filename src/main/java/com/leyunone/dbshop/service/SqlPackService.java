@@ -6,7 +6,10 @@ import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
 import com.leyunone.dbshop.bean.dto.TableColumnContrastDTO;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.enums.SqlModelEnum;
+import com.leyunone.dbshop.excutor.RulePointExcutor;
+import com.leyunone.dbshop.system.factory.TransformRuleHandlerFactory;
 import com.leyunone.dbshop.util.SqlPackUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,6 +25,11 @@ import java.util.List;
 @Service
 public class SqlPackService {
 
+    @Autowired
+    private RulePointExcutor rulePointExcutor;
+    @Autowired
+    private TransformRuleHandlerFactory factory;
+    
     /**
      * 列字段比对结果 组装sql
      *
@@ -54,6 +62,13 @@ public class SqlPackService {
                     resultSql.add(SqlPackUtil.packing(SqlModelEnum.ADD_COLUMN, mainColumn));
                 }
             }
+        }
+        
+        if(CollectionUtil.isNotEmpty(resultSql)){
+            //sql转化规则
+            //TODO 暂时指定策略工厂
+            List<String> execute = rulePointExcutor.execute(factory, sqlProductionDTO.getTypeTransformRule());
+            //二次处理结果集
         }
         return resultSql;
     }
