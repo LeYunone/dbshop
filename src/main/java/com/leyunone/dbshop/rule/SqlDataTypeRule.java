@@ -1,6 +1,7 @@
 package com.leyunone.dbshop.rule;
 
 import com.leyunone.dbshop.annotate.RuleHandler;
+import com.leyunone.dbshop.bean.rule.SqlDataTypeTransformRule;
 import com.leyunone.dbshop.system.factory.AbstractRuleFactory;
 import com.leyunone.dbshop.system.factory.TransformRuleHandlerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @Date 2023/6/9 14:20
  */
 @RuleHandler("type_transform")
-public class SqlDataTypeRule extends AbstractRule {
+public class SqlDataTypeRule extends ResultRule<SqlDataTypeTransformRule> {
 
     @Autowired
     private TransformRuleHandlerFactory factory;
@@ -23,7 +24,7 @@ public class SqlDataTypeRule extends AbstractRule {
     }
 
     @Override
-    public void handler() {
-        
+    public String resultHandler(SqlDataTypeTransformRule sqlDataTypeTransformRule) {
+        return null;
     }
 }
