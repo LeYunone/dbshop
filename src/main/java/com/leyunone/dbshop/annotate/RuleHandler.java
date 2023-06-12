@@ -20,7 +20,8 @@ import org.springframework.stereotype.Component;
 @Target({ElementType.TYPE})
 @Documented
 public @interface RuleHandler {
-    @AliasFor("identif")
+    
+    @AliasFor("identifs")
     String[] value() default {""};
 
     //标识
