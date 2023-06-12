@@ -90,6 +90,7 @@ public class PackInfoService {
                 ColumnInfo column = ColumnInfo.builder().columnName(columns.getString(ColumnResultEnum.COLUMN_NAME.getType()))
                         .tableName(columns.getString(ColumnResultEnum.TABLE_NAME.getType()))
                         .dataType(columns.getString(ColumnResultEnum.DATA_TYPE.getType()))
+                        .typeName(columns.getString(ColumnResultEnum.TYPE_NAME.getType()))
                         .tableCat(columns.getString(ColumnResultEnum.TABLE_CAT.getType()))
                         .columnSize(columns.getString(ColumnResultEnum.COLUMN_SIZE.getType()))
                         .decimailDigits(columns.getString(ColumnResultEnum.DECIMAL_DIGITS.getType()))

@@ -11,10 +11,14 @@ public enum  ResponseCode {
     ERROR("404", "操作失败"),
     RPC_UNKNOWN_ERROR("100017", "远程服务调用未知错误"),
     RPC_TIMEOUT("100016", "远程服务调用超时"),
-    RPC_ERROR_503("100015", "远程服务不可用");
+    RPC_ERROR_503("100015", "远程服务不可用"),
+    
+    
+    //==========1000000001
+    RULE_LOAD_FAIL("1000000001","规则加载失败")   
 
 
-
+;
     private final String code;
     private final String desc;
 
