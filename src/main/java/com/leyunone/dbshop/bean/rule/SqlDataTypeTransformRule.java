@@ -19,4 +19,6 @@ public class SqlDataTypeTransformRule extends TargetRule{
 
     //datetime字段定位时 长度为0
     private Integer dateTimeTo_0;
+    //bit1 转为原本的tinyint(1) 
+    private Integer tinyInt1Reserve;
 }

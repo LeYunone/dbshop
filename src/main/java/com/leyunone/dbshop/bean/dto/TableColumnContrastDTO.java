@@ -18,13 +18,13 @@ public class TableColumnContrastDTO {
     
     private ColumnInfo rightColumn;
     
-    //名 0相同 1不同
+    //名 true为有差异
     private Boolean nameDifferent;
-    //长度 0相同 1不同
+    //长度 true为有差异
     private Boolean sizeDifferent;
-    //类型 0相同 1不同
+    //类型 true为有差异
     private Boolean typeDifferent;
-    //注释 0相同 1不同
+    //注释 true为有差异
     private Boolean remarkDifferent;
     //TODO 索引
 }

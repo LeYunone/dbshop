@@ -1,7 +1,8 @@
-package com.leyunone.dbshop.bean.vo;
+package com.leyunone.dbshop.bean.dto;
 
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.TableInfo;
+import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,7 +16,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class DbTableContrastVO {
+public class DbTableContrastDTO {
 
     private TableInfo leftTableInfo;
     
@@ -25,7 +26,7 @@ public class DbTableContrastVO {
     
     private List<ColumnInfo> rightColumnInfo;
     
-    private List<TableColumnContrastVO> columnContrasts;
+    private List<TableColumnContrastDTO> columnContrasts;
     
     private Boolean hasDifference;
 
