@@ -16,4 +16,9 @@ import java.util.List;
 public class TargetRule {
     
     private List<String> strategys;
+    
+    //待处理数据
+    private String pendingData;
+    //目标数据
+    private String targetData;
 }

@@ -110,7 +110,7 @@ public class ContrastService {
             TableColumnContrastVO tableColumnContrastVO = new TableColumnContrastVO();
             tableColumnContrastVO.setLeftColumn(lc);
             if (rightMap.containsKey(lc.getColumnName())) {
-                tableColumnContrastVO.setRightColumn(lc);
+                tableColumnContrastVO.setRightColumn(rightMap.get(lc.getColumnName()));
                 tableColumnContrastVO.setNameDifferent(DbShopConstant.SAME);
                 rightMap.remove(lc.getColumnName());
             } else {
@@ -134,15 +134,15 @@ public class ContrastService {
                 ColumnInfo leftColumn = contrast.getLeftColumn();
                 ColumnInfo rightColumn = contrast.getRightColumn();
                 //比较size
-                contrast.setSizeDifferent(leftColumn.getColumnSize().equals(rightColumn.getColumnSize()));
+                contrast.setSizeDifferent(!leftColumn.getColumnSize().equals(rightColumn.getColumnSize()));
                 //比较type
-                contrast.setTypeDifferent(leftColumn.getDataType().equals(rightColumn.getDataType()));
+                contrast.setTypeDifferent(!leftColumn.getDataType().equals(rightColumn.getDataType()));
                 //比较remark
-                contrast.setRemarkDifferent(leftColumn.getRemarks().equals(rightColumn.getRemarks()));
-                if (!contrast.getSizeDifferent() || !contrast.getTypeDifferent()) {
+                contrast.setRemarkDifferent(!leftColumn.getRemarks().equals(rightColumn.getRemarks()));
+                if (contrast.getSizeDifferent() || contrast.getTypeDifferent()) {
                     different = true;
                 }
-                if (ObjectUtil.isNotNull(goRemark) && DbShopConstant.Rule_Yes.equals(goRemark) && !contrast.getRemarkDifferent()) {
+                if (ObjectUtil.isNotNull(goRemark) && DbShopConstant.Rule_Yes.equals(goRemark) && contrast.getRemarkDifferent()) {
                     different = true;
                 }
             }

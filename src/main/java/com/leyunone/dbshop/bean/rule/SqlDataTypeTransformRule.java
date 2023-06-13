@@ -1,7 +1,8 @@
 package com.leyunone.dbshop.bean.rule;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.List;
 
 /**
  * :)
@@ -11,10 +12,11 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class SqlDataTypeTransformRule extends TargetRule{
 
     //datetime字段定位时 长度为0
     private Integer dateTimeTo_0;
-
-    private String sql;
 }

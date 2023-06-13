@@ -2,9 +2,11 @@ package com.leyunone.dbshop.service;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
 import com.leyunone.dbshop.bean.dto.TableColumnContrastDTO;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
+import com.leyunone.dbshop.bean.rule.SqlDataTypeTransformRule;
 import com.leyunone.dbshop.enums.SqlModelEnum;
 import com.leyunone.dbshop.excutor.RulePointExcutor;
 import com.leyunone.dbshop.system.factory.TransformRuleHandlerFactory;
@@ -48,15 +50,15 @@ public class SqlPackService {
                 //0 左表主 1 右表主
                 //如果表字段有不同
                 if (columnContrastDTO.getSizeDifferent()
-                        || columnContrastDTO.getRemarkDifferent()
-                        || Integer.valueOf(1).equals(sqlProductionDTO.getGoRemark())) {
+                        || columnContrastDTO.getTypeDifferent()
+                        || (Integer.valueOf(1).equals(sqlProductionDTO.getGoRemark()) && columnContrastDTO.getRemarkDifferent())) {
                     resultSql.add(SqlPackUtil.packing(SqlModelEnum.MODIFY_COLUMN, mainColumn));
                 }
             } else {
                 //字段名不同 新增或删除
                 if(ObjectUtil.isNull(mainColumn)){
                     //主表不存在字段则删除
-                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.DELETE_COLUMN, mainColumn));
+                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.DELETE_COLUMN, sqlProductionDTO.getLeftOrRight().equals(0) ? columnContrastDTO.getRightColumn() : columnContrastDTO.getLeftColumn()));
                 }else{
                     //主表存在字段新增
                     resultSql.add(SqlPackUtil.packing(SqlModelEnum.ADD_COLUMN, mainColumn));
@@ -67,8 +69,16 @@ public class SqlPackService {
         if(CollectionUtil.isNotEmpty(resultSql)){
             //sql转化规则
             //TODO 暂时指定策略工厂
-            List<String> execute = rulePointExcutor.execute(factory, sqlProductionDTO.getTypeTransformRule());
+            SqlDataTypeTransformRule sqlDataTypeTransformRule = SqlDataTypeTransformRule.builder().dateTimeTo_0(sqlProductionDTO.getDateTimeBecome0()).build();
+            sqlDataTypeTransformRule.setPendingData(JSONObject.toJSONString(resultSql));
+//            sqlDataTypeTransformRule.setStrategys(sqlProductionDTO.getProductionStrategys());
+            //TODO 测试
+            sqlDataTypeTransformRule.setStrategys(CollectionUtil.newArrayList("type_transform"));
+            List<String> execute = rulePointExcutor.execute(factory, sqlDataTypeTransformRule);
             //二次处理结果集
+            //TODO 最后一条结果为最终转化结果 ； （可能需要考虑到规则的执行顺序）
+            String resultJson = CollectionUtil.getLast(execute);
+            resultSql = JSONObject.parseArray(resultJson,String.class);
         }
         return resultSql;
     }
