@@ -40,6 +40,8 @@ public class SqlDataTypeRule extends ResultRule<SqlDataTypeTransformRule> {
         if (StringUtils.isBlank(pendingData)) return pendingData;
         List<String> sqls = JSONObject.parseArray(pendingData, String.class);
         List<String> result = new ArrayList<>();
+        List<Pattern> patterns = new ArrayList<>();
+        
         if (ObjectUtil.isNotNull(sqlDataTypeTransformRule.getDateTimeTo_0())) {
             //datetime类型 不管字符长度转为 datetime(0);
             String reg = "DATETIME[(][0-9]*[)]";

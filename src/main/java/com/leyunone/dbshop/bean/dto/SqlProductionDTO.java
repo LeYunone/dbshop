@@ -19,6 +19,8 @@ public class SqlProductionDTO {
 
     private List<TableColumnContrastDTO> columns;
     
+    private List<DbTableContrastDTO> dbs;
+    
     //左右表主副判断  0 左表  1 右表
     private Integer leftOrRight;
     
@@ -28,8 +30,10 @@ public class SqlProductionDTO {
     /**
      * 以下为sql类型转化规则
      */
-    // [0:datetime为datetime(0)]
+    // [0：datetime为datetime(0)]
     private Integer dateTimeBecome0;
+    // [0：tinyInt(1)变成tinyInt(1)]
+    private Integer bit1BecomeTinyInt1;
     
     private List<String> productionStrategys;
 

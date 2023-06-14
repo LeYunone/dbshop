@@ -6,17 +6,14 @@ import com.leyunone.dbshop.bean.ResponseCell;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.TableInfo;
 import com.leyunone.dbshop.bean.query.ContrastQuery;
-import com.leyunone.dbshop.bean.query.DBQuery;
 import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import com.leyunone.dbshop.constant.DbShopConstant;
 import com.leyunone.dbshop.system.factory.DBDataFactory;
 import com.leyunone.dbshop.util.DbStrategyUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.stereotype.Service;
 
-import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +69,7 @@ public class ContrastService {
                     rightColumns = dataFactory.getColumnData(DbStrategyUtil.getColumnStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, false)));
                     ResponseCell<Boolean, List<TableColumnContrastVO>> booleanListResponseCell = this.columnContrastdoing(leftColumns, rightColumns, contrastQuery.getGoRemark());
                     dbTableContrastVO.setHasDifference(booleanListResponseCell.getCellData());
-                    dbTableContrastVO.setColumnContrastVOS(booleanListResponseCell.getMateDate());
+                    dbTableContrastVO.setColumnContrasts(booleanListResponseCell.getMateDate());
                 }
                 if (ObjectUtil.isNull(leftTableInfo)) {
                     //填充右表字段
