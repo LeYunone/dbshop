@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.annotate.RuleHandler;
 import com.leyunone.dbshop.bean.rule.SqlDataTypeTransformRule;
+import com.leyunone.dbshop.enums.DataTypeRegularEnum;
 import com.leyunone.dbshop.enums.RuleTypeEnum;
 import com.leyunone.dbshop.system.factory.AbstractRuleFactory;
 import com.leyunone.dbshop.system.factory.TransformRuleHandlerFactory;
@@ -40,23 +41,20 @@ public class SqlDataTypeRule extends ResultRule<SqlDataTypeTransformRule> {
         if (StringUtils.isBlank(pendingData)) return pendingData;
         List<String> sqls = JSONObject.parseArray(pendingData, String.class);
         List<String> result = new ArrayList<>();
-        List<Pattern> patterns = new ArrayList<>();
+        List<DataTypeRegularEnum> transformReg = sqlDataTypeTransformRule.getTransformReg();
         
-        if (ObjectUtil.isNotNull(sqlDataTypeTransformRule.getDateTimeTo_0())) {
-            //datetime类型 不管字符长度转为 datetime(0);
-            String reg = "DATETIME[(][0-9]*[)]";
-            String datetime_o = "DATETIME(0)";
-            Pattern pattern = Pattern.compile(reg);
-            //处理正则匹对
-            sqls.forEach((sql) -> {
-                Matcher matcher = pattern.matcher(sql);
-                while(matcher.find()){
-                    String datetime_ = matcher.group();
-                    sql = sql.replace(datetime_,datetime_o);
+        //TODO 双重循环 将每一条sql穿过转化流
+        sqls.forEach((sql)->{
+            String rs = sql;
+            for(DataTypeRegularEnum transformEnum : transformReg){
+                String reg = transformEnum.getReg();
+                Matcher matcher = Pattern.compile(reg).matcher(rs);
+                while (matcher.find()){
+                    rs = rs.replace(matcher.group(),transformEnum.getToBecome());
                 }
-                result.add(sql);
-            });
-        }
+            }
+            result.add(rs);
+        });
         //反填信息，等待下一规则捕获处理
         String json = JSONObject.toJSONString(result);
         sqlDataTypeTransformRule.setTargetData(json);

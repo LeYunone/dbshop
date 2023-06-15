@@ -2,6 +2,7 @@ package com.leyunone.dbshop.bean.dto;
 
 import com.leyunone.dbshop.bean.rule.SqlDataTypeTransformRule;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
+import com.leyunone.dbshop.enums.DataTypeRegularEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,12 +30,14 @@ public class SqlProductionDTO {
 
     /**
      * 以下为sql类型转化规则
+     * [0：tinyInt(1)变成tinyInt(1)]
+     * [0：datetime为datetime(0)]
      */
-    // [0：datetime为datetime(0)]
-    private Integer dateTimeBecome0;
-    // [0：tinyInt(1)变成tinyInt(1)]
-    private Integer bit1BecomeTinyInt1;
-    
+    private List<Integer> transformReg;
+    /**
+     * 策略
+     * [type_transform 类型转换] 
+     */
     private List<String> productionStrategys;
 
 }

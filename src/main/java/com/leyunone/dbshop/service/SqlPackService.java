@@ -7,7 +7,9 @@ import com.leyunone.dbshop.bean.dto.DbTableContrastDTO;
 import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
 import com.leyunone.dbshop.bean.dto.TableColumnContrastDTO;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
+import com.leyunone.dbshop.bean.info.TableInfo;
 import com.leyunone.dbshop.bean.rule.SqlDataTypeTransformRule;
+import com.leyunone.dbshop.enums.DataTypeRegularEnum;
 import com.leyunone.dbshop.enums.SqlModelEnum;
 import com.leyunone.dbshop.excutor.RulePointExcutor;
 import com.leyunone.dbshop.system.factory.TransformRuleHandlerFactory;
@@ -49,9 +51,9 @@ public class SqlPackService {
             //sql转化规则
             //TODO 暂时指定策略工厂
             SqlDataTypeTransformRule sqlDataTypeTransformRule = SqlDataTypeTransformRule.builder()
-                    .tinyInt1Reserve(sqlProductionDTO.getBit1BecomeTinyInt1()).dateTimeTo_0(sqlProductionDTO.getDateTimeBecome0()).build();
+                    .transformReg(DataTypeRegularEnum.getEnums(sqlProductionDTO.getTransformReg())).build();
             sqlDataTypeTransformRule.setPendingData(JSONObject.toJSONString(resultSql));
-//            sqlDataTypeTransformRule.setStrategys(sqlProductionDTO.getProductionStrategys());
+            sqlDataTypeTransformRule.setStrategys(sqlProductionDTO.getProductionStrategys());
             //TODO 测试
             sqlDataTypeTransformRule.setStrategys(CollectionUtil.newArrayList("type_transform"));
             List<String> execute = rulePointExcutor.execute(factory, sqlDataTypeTransformRule);
@@ -76,7 +78,14 @@ public class SqlPackService {
         List<String> result = new ArrayList<>();
         for (DbTableContrastDTO db : dbs) {
             if (db.getNameDifference()) {
-                //表名字不同，新增表
+                //表名字不同 猜疑是新增表或删除表
+                TableInfo mainTable = sqlProductionDTO.getLeftOrRight().equals(0)?db.getLeftTableInfo():db.getRightTableInfo();
+                if(ObjectUtil.isNull(mainTable)){
+                    //删除
+                    
+                }else{
+                    
+                }
                 continue;
             }
             if (db.getHasDifference()) {
