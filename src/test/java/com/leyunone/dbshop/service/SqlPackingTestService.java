@@ -1,6 +1,7 @@
 package com.leyunone.dbshop.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.leyunone.dbshop.bean.dto.DbTableContrastDTO;
 import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
 import com.leyunone.dbshop.bean.dto.TableColumnContrastDTO;
@@ -64,9 +65,10 @@ public class SqlPackingTestService {
         SqlProductionDTO sqlProductionDTO = new SqlProductionDTO();
         sqlProductionDTO.setLeftOrRight(0);
         sqlProductionDTO.setGoRemark(contrastQuery.getGoRemark());
-        sqlProductionDTO.setDateTimeBecome0(1);
+        sqlProductionDTO.setTransformReg(CollectionUtil.newArrayList(0,1));
         sqlProductionDTO.setColumns(BeanUtil.copyToList(tableColumnContrastVOS, TableColumnContrastDTO.class));
-        sqlPackService.columnContrastPack(sqlProductionDTO);
+        List<String> strings = sqlPackService.columnContrastPack(sqlProductionDTO);
+        System.out.println();
     }
 
     @Test
@@ -100,7 +102,7 @@ public class SqlPackingTestService {
         SqlProductionDTO sqlProductionDTO = new SqlProductionDTO();
         sqlProductionDTO.setLeftOrRight(1);
         sqlProductionDTO.setGoRemark(contrastQuery.getGoRemark());
-        sqlProductionDTO.setDateTimeBecome0(1);
+        sqlProductionDTO.setTransformReg(CollectionUtil.newArrayList(0,1));
         sqlProductionDTO.setDbs(BeanUtil.copyToList(dbTableContrastVOS, DbTableContrastDTO.class));
         sqlPackService.tableContrastPack(sqlProductionDTO);
     }

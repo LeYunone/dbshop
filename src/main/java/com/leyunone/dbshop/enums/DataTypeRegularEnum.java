@@ -1,5 +1,10 @@
 package com.leyunone.dbshop.enums;
 
+import cn.hutool.core.collection.CollectionUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * :)
  *
@@ -7,16 +12,14 @@ package com.leyunone.dbshop.enums;
  * @email 365627310@qq.com
  * @date 2023-06-13
  */
-public enum  DataTypeRegularEnum {
+public enum DataTypeRegularEnum {
 
     /**
      * 类型转化替换正则
      */
-    DATETIME_TO_0(0,"DATETIME[(][0-9]*[)]","DATETIME(0)","datetime(?)类型变为datetime(0)"),
-    
-    BIT1_TO_TINYINT1(0,"BIT[(][1][)]","TINYINT(1)","bit(1)类型变为tinyint(1)")
-    
-    ;
+    DATETIME_TO_0(0, "DATETIME[(][0-9]*[)]", "DATETIME(0)", "datetime(?)类型变为datetime(0)"),
+
+    BIT1_TO_TINYINT1(1, "BIT[(][1][)]", "TINYINT(1)", "bit(1)类型变为tinyint(1)");
 
     DataTypeRegularEnum(Integer type, String reg, String toBecome, String desc) {
         this.type = type;
@@ -26,9 +29,9 @@ public enum  DataTypeRegularEnum {
     }
 
     private Integer type;
-    
+
     private String reg;
-    
+
     private String toBecome;
 
     private String desc;
@@ -64,6 +67,19 @@ public enum  DataTypeRegularEnum {
 
     public void setToBecome(String toBecome) {
         this.toBecome = toBecome;
+    }
+
+    public static List<DataTypeRegularEnum> getEnums(List<Integer> types) {
+        List<DataTypeRegularEnum> enums = new ArrayList<>();
+        if(CollectionUtil.isEmpty(types)) return enums;
+        for(Integer type:types){
+            for(DataTypeRegularEnum dataTypeRegularEnum : DataTypeRegularEnum.values()){
+                if(dataTypeRegularEnum.getType().equals(type)){
+                    enums.add(dataTypeRegularEnum);
+                }
+            }
+        }
+        return enums;
     }
 }
 

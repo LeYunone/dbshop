@@ -24,6 +24,10 @@ public class SqlPackUtil {
             case DELETE_COLUMN:
                 sql = deleteColumnPacking(modelEnum,info.getTableName(),info.getColumnName());
                 break;
+            case CREATE_TABLE:
+                break;
+            case CREATE_TABLE_COLUMN:
+                break;
             default:
         }
         return sql;
@@ -40,4 +44,6 @@ public class SqlPackUtil {
     private static String deleteColumnPacking(SqlModelEnum modelEnum,String tableName,String columnName){
         return TextFillUtil.fillStr(modelEnum.getSqlModel(),new String [] {tableName,columnName});
     }
+    
+    private static String createTableInColumnPacking(SqlModelEnum modelEnum,List<>)
 }

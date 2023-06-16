@@ -2,6 +2,7 @@ package com.leyunone.dbshop.service;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.leyunone.dbshop.DbshopApplication;
 import com.leyunone.dbshop.bean.ResponseCell;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.TableInfo;
@@ -165,9 +166,11 @@ public class ContrastService {
             if (rightMap.containsKey(lt.getTableName())) {
                 dbTableContrastVO.setNameDifference(DbShopConstant.SAME);
                 dbTableContrastVO.setRightTableInfo(rightMap.get(lt.getTableName()));
+                dbTableContrastVO.setHasDifference(DbShopConstant.SAME);
                 rightMap.remove(lt.getTableName());
             } else {
                 dbTableContrastVO.setNameDifference(DbShopConstant.DIFFERENT);
+                dbTableContrastVO.setHasDifference(DbShopConstant.DIFFERENT);
             }
             result.add(dbTableContrastVO);
         }
@@ -177,6 +180,7 @@ public class ContrastService {
                 DbTableContrastVO dbTableContrastVO = new DbTableContrastVO();
                 dbTableContrastVO.setNameDifference(DbShopConstant.DIFFERENT);
                 dbTableContrastVO.setRightTableInfo(t);
+                dbTableContrastVO.setHasDifference(DbShopConstant.SAME);
                 result.add(dbTableContrastVO);
             });
         }
