@@ -18,7 +18,7 @@ public class TextFillUtil {
      * @param content
      * @return
      */
-    public static String fillStr(String fill, String[] content) {
+    public static String fillStr(String fill, String ... content) {
         if (ObjectUtil.isEmpty(content)) return fill;
         StringBuilder sbuf = new StringBuilder(fill.length() + 50);
         int j;

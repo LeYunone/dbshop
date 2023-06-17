@@ -27,6 +27,9 @@ public class SqlProductionDTO {
     
     //是否进行备注级解析 0否 1是
     private Integer goRemark;
+    
+    //是否删除表 0否 1是
+    private Integer deleteTable;
 
     /**
      * 以下为sql类型转化规则

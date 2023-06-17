@@ -9,6 +9,7 @@ import com.leyunone.dbshop.bean.dto.TableColumnContrastDTO;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.TableInfo;
 import com.leyunone.dbshop.bean.rule.SqlDataTypeTransformRule;
+import com.leyunone.dbshop.constant.DbShopConstant;
 import com.leyunone.dbshop.enums.DataTypeRegularEnum;
 import com.leyunone.dbshop.enums.SqlModelEnum;
 import com.leyunone.dbshop.excutor.RulePointExcutor;
@@ -46,23 +47,8 @@ public class SqlPackService {
             return new ArrayList<>();
 
         List<String> resultSql = this.getColumnCompareSqls(columns, sqlProductionDTO.getLeftOrRight(), sqlProductionDTO.getGoRemark());
-
-        if (CollectionUtil.isNotEmpty(resultSql)) {
-            //sql转化规则
-            //TODO 暂时指定策略工厂
-            SqlDataTypeTransformRule sqlDataTypeTransformRule = SqlDataTypeTransformRule.builder()
-                    .transformReg(DataTypeRegularEnum.getEnums(sqlProductionDTO.getTransformReg())).build();
-            sqlDataTypeTransformRule.setPendingData(JSONObject.toJSONString(resultSql));
-            sqlDataTypeTransformRule.setStrategys(sqlProductionDTO.getProductionStrategys());
-            //TODO 测试
-            sqlDataTypeTransformRule.setStrategys(CollectionUtil.newArrayList("type_transform"));
-            List<String> execute = rulePointExcutor.execute(factory, sqlDataTypeTransformRule);
-            //二次处理结果集
-            //TODO 最后一条结果为最终转化结果 ； （可能需要考虑到规则的执行顺序）
-            String resultJson = CollectionUtil.getLast(execute);
-            resultSql = JSONObject.parseArray(resultJson, String.class);
-        }
-        return resultSql;
+        //策略处理流
+        return this.strategysDoing(resultSql,sqlProductionDTO.getTransformReg(),sqlProductionDTO.getProductionStrategys());
     }
 
     /**
@@ -79,12 +65,15 @@ public class SqlPackService {
         for (DbTableContrastDTO db : dbs) {
             if (db.getNameDifference()) {
                 //表名字不同 猜疑是新增表或删除表
-                TableInfo mainTable = sqlProductionDTO.getLeftOrRight().equals(0)?db.getLeftTableInfo():db.getRightTableInfo();
-                if(ObjectUtil.isNull(mainTable)){
+                TableInfo mainTable = sqlProductionDTO.getLeftOrRight().equals(0) ? db.getLeftTableInfo() : db.getRightTableInfo();
+                List<ColumnInfo> columnInfos = sqlProductionDTO.getLeftOrRight().equals(0) ? db.getLeftColumnInfo() : db.getRightColumnInfo();
+                if (ObjectUtil.isNull(mainTable) && 
+                        ObjectUtil.isNotNull(sqlProductionDTO.getDeleteTable())
+                        && DbShopConstant.Rule_Yes.equals(sqlProductionDTO.getDeleteTable())) {
                     //删除
-                    
-                }else{
-                    
+                } else {
+                    //新增，封装语句
+                    result.add(SqlPackUtil.packing(SqlModelEnum.CREATE_TABLE, mainTable, columnInfos));
                 }
                 continue;
             }
@@ -93,7 +82,8 @@ public class SqlPackService {
                 result.addAll(this.getColumnCompareSqls(db.getColumnContrasts(), sqlProductionDTO.getLeftOrRight(), sqlProductionDTO.getGoRemark()));
             }
         }
-        return null;
+        //进入类型转化策略流中
+        return strategysDoing(result, sqlProductionDTO.getTransformReg(), sqlProductionDTO.getProductionStrategys());
     }
 
     private List<String> getColumnCompareSqls(List<TableColumnContrastDTO> columns, Integer leftOrRight, Integer goRemark) {
@@ -122,5 +112,22 @@ public class SqlPackService {
             }
         }
         return resultSql;
+    }
+    
+    private List<String> strategysDoing(List<String> resultSql,List<Integer> transformRegs,List<String> strategys){
+        if(CollectionUtil.isEmpty(resultSql)) return resultSql;
+        //sql转化规则
+        //TODO 暂时指定策略工厂
+        SqlDataTypeTransformRule sqlDataTypeTransformRule = SqlDataTypeTransformRule.builder()
+                .transformReg(DataTypeRegularEnum.getEnums(transformRegs)).build();
+        sqlDataTypeTransformRule.setPendingData(JSONObject.toJSONString(resultSql));
+        sqlDataTypeTransformRule.setStrategys(strategys);
+        //TODO 测试
+        sqlDataTypeTransformRule.setStrategys(CollectionUtil.newArrayList("type_transform"));
+        List<String> execute = rulePointExcutor.execute(factory, sqlDataTypeTransformRule);
+        //二次处理结果集
+        //TODO 最后一条结果为最终转化结果 ； （可能需要考虑到规则的执行顺序）
+        String resultJson = CollectionUtil.getLast(execute);
+        return JSONObject.parseArray(resultJson, String.class);
     }
 }

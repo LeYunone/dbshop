@@ -10,6 +10,7 @@ import com.leyunone.dbshop.bean.query.ContrastQuery;
 import com.leyunone.dbshop.bean.query.DBQuery;
 import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
+import com.leyunone.dbshop.constant.DbShopConstant;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -67,6 +68,7 @@ public class SqlPackingTestService {
         sqlProductionDTO.setGoRemark(contrastQuery.getGoRemark());
         sqlProductionDTO.setTransformReg(CollectionUtil.newArrayList(0,1));
         sqlProductionDTO.setColumns(BeanUtil.copyToList(tableColumnContrastVOS, TableColumnContrastDTO.class));
+        sqlPackService.columnContrastPack(sqlProductionDTO);
         List<String> strings = sqlPackService.columnContrastPack(sqlProductionDTO);
         System.out.println();
     }
@@ -89,6 +91,7 @@ public class SqlPackingTestService {
 
         ContrastQuery contrastQuery = new ContrastQuery();
         contrastQuery.setGoRemark(1);
+        contrastQuery.setGoDeep(DbShopConstant.Rule_Yes);
         contrastQuery.setLeftTablName("t_test");
         contrastQuery.setRightTableName("t_test");
 
@@ -100,10 +103,11 @@ public class SqlPackingTestService {
         List<DbTableContrastVO> dbTableContrastVOS = contrastService.dbTableContrast(contrastQuery);
 
         SqlProductionDTO sqlProductionDTO = new SqlProductionDTO();
-        sqlProductionDTO.setLeftOrRight(1);
+        sqlProductionDTO.setLeftOrRight(0);
         sqlProductionDTO.setGoRemark(contrastQuery.getGoRemark());
         sqlProductionDTO.setTransformReg(CollectionUtil.newArrayList(0,1));
         sqlProductionDTO.setDbs(BeanUtil.copyToList(dbTableContrastVOS, DbTableContrastDTO.class));
         sqlPackService.tableContrastPack(sqlProductionDTO);
     }
 }
+
