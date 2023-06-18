@@ -83,7 +83,8 @@ public class SqlPackService {
             }
         }
         //进入类型转化策略流中
-        return strategysDoing(result, sqlProductionDTO.getTransformReg(), sqlProductionDTO.getProductionStrategys());
+        List<String> resultsql = strategysDoing(result, sqlProductionDTO.getTransformReg(), sqlProductionDTO.getProductionStrategys());
+        return resultsql;
     }
 
     private List<String> getColumnCompareSqls(List<TableColumnContrastDTO> columns, Integer leftOrRight, Integer goRemark) {

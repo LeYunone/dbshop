@@ -1,11 +1,14 @@
 package com.leyunone.dbshop.service;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.leyunone.dbshop.bean.info.ColumnInfo;
+import com.leyunone.dbshop.enums.ColumnResultEnum;
 import com.leyunone.dbshop.util.DbClose;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.security.MessageDigest;
 import java.sql.*;
 
 /**
@@ -25,6 +28,18 @@ public class ConnectService {
         String userName ="root";
         String passWord="root";
         return connectService.getConnectionToData(url,userName,passWord);
+    }
+
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+        DatabaseMetaData meta = toTest();
+        ResultSet columns = meta.getColumns("test2023", null, "t_code", null);
+        while (columns.next()){
+            for(ColumnResultEnum resultEnum : ColumnResultEnum.values()){
+                String string = columns.getString(resultEnum.getType());
+                System.out.println(resultEnum.getType()+":: "+string);
+            }
+            System.out.println("==========================");
+        }
     }
 
     public Connection getConnection(String url,String userName,String passWord) {

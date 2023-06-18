@@ -10,18 +10,18 @@ public enum SqlModelEnum {
     //SQL语句模板
     //采用{}进行内容填充
 
-    ADD_COLUMN("ALTER TABLE {} ADD COLUMN {} {}({}) COMMENT '{}' ;", "新增字段"),
+    ADD_COLUMN("ALTER TABLE {} ADD COLUMN {} {}({}) {} COMMENT '{}' ;", "新增字段"),
 
-    MODIFY_COLUMN("ALTER TABLE {} modify column {} {}({}) COMMENT '{}';", "修改字段"),
+    MODIFY_COLUMN("ALTER TABLE {} modify column {} {}({}) {} COMMENT '{}' ;", "修改字段"),
 
-    DELETE_COLUMN("ALTER TABLE {} DROP COLUMN {}", "删除字段"),
+    DELETE_COLUMN("ALTER TABLE {} DROP COLUMN {} ;", "删除字段"),
 
     CREATE_TABLE("CREATE TABLE {} (" +
             "\n{}" +
             "\n{}" +
-            "\n)  ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;", "创建表"),
+            "\n )  ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;", "创建表"),
     //末尾有逗号 当后续无语句时 需自行摘除
-    CREATE_TABLE_COLUMN("`{}` {}({}) COMMENT '{}',","表中的字段"),
+    CREATE_TABLE_COLUMN("`{}` {}({}) {} COMMENT '{}',","表中的字段"),
     
     PRIMARY_KEY("PRIMARY KEY ({}) USING BTREE",""),
 

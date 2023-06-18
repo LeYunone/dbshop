@@ -3,6 +3,7 @@ package com.leyunone.dbshop.util;
 import cn.hutool.core.collection.CollectionUtil;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.TableInfo;
+import com.leyunone.dbshop.enums.SqlAssembleEnum;
 import com.leyunone.dbshop.enums.SqlModelEnum;
 import org.apache.commons.lang3.StringUtils;
 
@@ -54,13 +55,21 @@ public class SqlPackUtil {
     }
 
     private static String modifyColumnPacking(SqlModelEnum modelEnum, ColumnInfo columnInfo) {
+        String attr = "";
+        if(columnInfo.getAutoincrement()){
+            attr = SqlAssembleEnum.CREATE_TABLE_AUTOINCREMENT.getSql();
+        }
         return TextFillUtil.fillStr(modelEnum.getSqlModel(),
-                columnInfo.getTableName(), columnInfo.getColumnName(), columnInfo.getTypeName(), columnInfo.getColumnSize(), columnInfo.getRemarks());
+                columnInfo.getTableName(), columnInfo.getColumnName(), columnInfo.getTypeName(), columnInfo.getColumnSize(), attr, columnInfo.getRemarks());
     }
 
     private static String addColumnPcacking(SqlModelEnum modelEnum, ColumnInfo columnInfo) {
+        String attr = "";
+        if(columnInfo.getAutoincrement()){
+            attr = SqlAssembleEnum.CREATE_TABLE_AUTOINCREMENT.getSql();
+        }
         return TextFillUtil.fillStr(modelEnum.getSqlModel(),
-                columnInfo.getTableName(), columnInfo.getColumnName(), columnInfo.getTypeName(), columnInfo.getColumnSize(), columnInfo.getRemarks());
+                columnInfo.getTableName(), columnInfo.getColumnName(), columnInfo.getTypeName(), columnInfo.getColumnSize(), attr, columnInfo.getRemarks());
     }
 
     private static String deleteColumnPacking(SqlModelEnum modelEnum, ColumnInfo columnInfo) {
@@ -75,19 +84,30 @@ public class SqlPackUtil {
         }
         String primarykeys = primaryKeyPacking(SqlModelEnum.PRIMARY_KEY, tableInfo, columnInfos);
         String columnSqls = CollectionUtil.join(sqls, "\n");
-        if(StringUtils.isBlank(primarykeys)){
+        if (StringUtils.isBlank(primarykeys)) {
             //TODO 22.6.17版本 建表语句中字段后只涉及主键
             //删除字段语句中的最后一个逗号
-            if(StringUtils.isNotBlank(columnSqls)){
-                columnSqls = columnSqls.substring(0,columnSqls.length()-1);
+            if (StringUtils.isNotBlank(columnSqls)) {
+                columnSqls = columnSqls.substring(0, columnSqls.length() - 1);
             }
         }
-        return TextFillUtil.fillStr(modelEnum.getSqlModel(), tableInfo.getTableName(),columnSqls,primarykeys);
+        return TextFillUtil.fillStr(modelEnum.getSqlModel(), tableInfo.getTableName(), columnSqls, primarykeys);
     }
 
     private static String createTableInColumnPacking(SqlModelEnum modelEnum, ColumnInfo columnInfo) {
+        StringBuilder attr = new StringBuilder("");
+        if(!columnInfo.getNullable()){
+            attr.append(SqlAssembleEnum.NULLABLE.getSql());
+        }else{
+            attr.append(SqlAssembleEnum.NULL.getSql());
+        }
+        if (columnInfo.getAutoincrement()) {
+            //主键自增
+            attr.append(SqlAssembleEnum.CREATE_TABLE_AUTOINCREMENT.getSql());
+        }
+        
         return TextFillUtil.fillStr(modelEnum.getSqlModel(),
-                columnInfo.getColumnName(), columnInfo.getTypeName(), columnInfo.getColumnSize(), columnInfo.getRemarks());
+                columnInfo.getColumnName(), columnInfo.getTypeName(), columnInfo.getColumnSize(), attr.toString(), columnInfo.getRemarks());
     }
 
     private static String primaryKeyPacking(SqlModelEnum modelEnum, TableInfo tableInfo, List<ColumnInfo> columnInfos) {
@@ -98,13 +118,13 @@ public class SqlPackUtil {
         if (CollectionUtil.isNotEmpty(primarys)) {
             //匹配主键
             columnInfos.forEach((columnInfo) -> {
-                if(primarys.contains(columnInfo.getColumnName())){
-                    primaryNames.add("`"+columnInfo.getColumnName()+"`");
+                if (primarys.contains(columnInfo.getColumnName())) {
+                    primaryNames.add("`" + columnInfo.getColumnName() + "`");
                 }
             });
         }
         //阈值保护
-        if(CollectionUtil.isEmpty(primaryNames)) return "";
-        return TextFillUtil.fillStr(modelEnum.getSqlModel(), CollectionUtil.join(primaryNames,","));
+        if (CollectionUtil.isEmpty(primaryNames)) return "";
+        return TextFillUtil.fillStr(modelEnum.getSqlModel(), CollectionUtil.join(primaryNames, ","));
     }
 }

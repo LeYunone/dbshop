@@ -7,6 +7,9 @@ package com.leyunone.dbshop.enums;
  */
 public enum ColumnResultEnum {
 
+    /**
+     * 列
+     */
     COLUMN_NAME("COLUMN_NAME","字段名"),
 
     DATA_TYPE("DATA_TYPE","字段类型"),
@@ -21,8 +24,40 @@ public enum ColumnResultEnum {
 
     REMARKS("REMARKS","备注"),
     
-    TABLE_NAME("TABLE_NAME","表名")
+    TABLE_NAME("TABLE_NAME","表名"),
 
+    IS_AUTOINCREMENT("IS_AUTOINCREMENT","整形自增"),
+
+    //以下未知
+    TABLE_SCHEM("TABLE_SCHEM",""),
+
+    SQL_DATETIME_SUB("SQL_DATETIME_SUB",""),
+
+    SQL_DATA_TYPE("SQL_DATA_TYPE",""),
+
+    SOURCE_DATA_TYPE("SOURCE_DATA_TYPE",""),
+
+    SCOPE_TABLE("SCOPE_TABLE",""),
+
+    SCOPE_SCHEMA("SCOPE_SCHEMA",""),
+
+    SCOPE_CATALOG("SCOPE_CATALOG",""),
+
+    ORDINAL_POSITION("ORDINAL_POSITION",""),
+
+    NUM_PREC_RADIX("NUM_PREC_RADIX",""),
+
+    NULLABLE("NULLABLE",""),
+
+    IS_NULLABLE("IS_NULLABLE",""),
+
+    IS_GENERATEDCOLUMN("IS_GENERATEDCOLUMN",""),
+
+    COLUMN_DEF("COLUMN_DEF",""),
+
+    CHAR_OCTET_LENGTH("CHAR_OCTET_LENGTH",""),
+
+    BUFFER_LENGTH("BUFFER_LENGTH","")
     ;
 
     ColumnResultEnum(String type, String desc) {

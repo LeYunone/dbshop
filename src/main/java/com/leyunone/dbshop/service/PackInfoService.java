@@ -96,6 +96,8 @@ public class PackInfoService {
                         .decimailDigits(columns.getString(ColumnResultEnum.DECIMAL_DIGITS.getType()))
                         .remarks(columns.getString(ColumnResultEnum.REMARKS.getType()))
                         .build();
+                column.setAutoincrement("YES".equals(columns.getString(ColumnResultEnum.IS_AUTOINCREMENT.getType())));
+                column.setNullable("YES".equals(columns.getString(ColumnResultEnum.IS_NULLABLE.getType())));
                 columnInfos.add(column);
             }
         }catch (Exception e){
@@ -108,9 +110,10 @@ public class PackInfoService {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         DatabaseMetaData databaseMetaData = ConnectService.toTest();
         PackInfoService packInfoService = new PackInfoService();
+        packInfoService.getTables(databaseMetaData,"test2023");
         List<ColumnInfo> columns = packInfoService.getColumns(databaseMetaData, "test2023", null);
-
         List<TableInfo> test2023 = packInfoService.getTables(databaseMetaData, "test2023");
+        
         System.out.println(test2023.size());
         System.out.println(columns.size());
     }
