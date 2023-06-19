@@ -29,4 +29,14 @@ public class ColumnInfo {
     private String decimailDigits;
     
     private String remarks;
+
+    /**
+     * 是否整形自增
+     */
+    private Boolean autoincrement;
+
+    /**
+     * 是否可以为空 true为不可
+     */
+    private Boolean nullable;
 }

@@ -63,24 +63,20 @@ public class ContrastService {
                 List<ColumnInfo> rightColumns = null;
                 TableInfo leftTableInfo = dbTableContrastVO.getLeftTableInfo();
                 TableInfo rightTableInfo = dbTableContrastVO.getRightTableInfo();
-                if (ObjectUtil.isNotNull(leftTableInfo) && ObjectUtil.isNotNull(rightTableInfo)) {
+                //字段值
+                if(ObjectUtil.isNotNull(leftTableInfo)){
                     contrastQuery.setLeftTablName(leftTableInfo.getTableName());
                     leftColumns = dataFactory.getColumnData(DbStrategyUtil.getColumnStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, true)));
+                }
+                if(ObjectUtil.isNotNull(rightTableInfo)){
                     contrastQuery.setRightTableName(rightTableInfo.getTableName());
                     rightColumns = dataFactory.getColumnData(DbStrategyUtil.getColumnStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, false)));
+                }
+                //当两表存在 且名字相同时，进行表字段间的结果对比
+                if (ObjectUtil.isNotNull(leftTableInfo) && ObjectUtil.isNotNull(rightTableInfo) && !dbTableContrastVO.getNameDifference()) {
                     ResponseCell<Boolean, List<TableColumnContrastVO>> booleanListResponseCell = this.columnContrastdoing(leftColumns, rightColumns, contrastQuery.getGoRemark());
                     dbTableContrastVO.setHasDifference(booleanListResponseCell.getCellData());
                     dbTableContrastVO.setColumnContrasts(booleanListResponseCell.getMateDate());
-                }
-                if (ObjectUtil.isNull(leftTableInfo)) {
-                    //填充右表字段
-                    contrastQuery.setRightTableName(rightTableInfo.getTableName());
-                    rightColumns = dataFactory.getColumnData(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, true)));
-                }
-                if (ObjectUtil.isNull(rightTableInfo)) {
-                    //填充左表字段
-                    contrastQuery.setLeftTablName(leftTableInfo.getTableName());
-                    leftColumns = dataFactory.getColumnData(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, true)));
                 }
                 dbTableContrastVO.setLeftColumnInfo(leftColumns);
                 dbTableContrastVO.setRightColumnInfo(rightColumns);
