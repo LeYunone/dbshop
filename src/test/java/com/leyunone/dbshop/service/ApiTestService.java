@@ -12,6 +12,7 @@ import com.leyunone.dbshop.bean.query.ContrastQuery;
 import com.leyunone.dbshop.bean.query.DBQuery;
 import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
 import com.leyunone.dbshop.constant.DbShopConstant;
+import com.leyunone.dbshop.enums.DataTypeRegularEnum;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,8 +47,9 @@ public class ApiTestService {
         SqlRuleDTO sqlRuleDTO = new SqlRuleDTO();
         sqlRuleDTO.setGoRemark(1);
         sqlRuleDTO.setGoDeep(1);
-        sqlRuleDTO.setLeftOrRight(1);
-        sqlRuleDTO.setTransformReg(CollectionUtil.newArrayList(0,1));
+        sqlRuleDTO.setLeftOrRight(0);
+        sqlRuleDTO.setDeleteTable(1);
+        sqlRuleDTO.setTransformReg(CollectionUtil.newArrayList(DataTypeRegularEnum.BIT1_TO_TINYINT1,DataTypeRegularEnum.DATETIME_TO_0));
         dbShopStartAPIService.leftRightDb(leftQuery,rightQuery,sqlRuleDTO);
     }
 }

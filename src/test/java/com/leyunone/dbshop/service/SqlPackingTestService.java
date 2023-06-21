@@ -11,6 +11,7 @@ import com.leyunone.dbshop.bean.query.DBQuery;
 import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import com.leyunone.dbshop.constant.DbShopConstant;
+import com.leyunone.dbshop.enums.DataTypeRegularEnum;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -66,7 +67,7 @@ public class SqlPackingTestService {
         SqlProductionDTO sqlProductionDTO = new SqlProductionDTO();
         sqlProductionDTO.setLeftOrRight(0);
         sqlProductionDTO.setGoRemark(contrastQuery.getGoRemark());
-        sqlProductionDTO.setTransformReg(CollectionUtil.newArrayList(0,1));
+        sqlProductionDTO.setTransformReg(CollectionUtil.newArrayList(DataTypeRegularEnum.values()));
         sqlProductionDTO.setColumns(BeanUtil.copyToList(tableColumnContrastVOS, TableColumnContrastDTO.class));
         sqlPackService.columnContrastPack(sqlProductionDTO);
         List<String> strings = sqlPackService.columnContrastPack(sqlProductionDTO);
@@ -105,7 +106,7 @@ public class SqlPackingTestService {
         SqlProductionDTO sqlProductionDTO = new SqlProductionDTO();
         sqlProductionDTO.setLeftOrRight(0);
         sqlProductionDTO.setGoRemark(contrastQuery.getGoRemark());
-        sqlProductionDTO.setTransformReg(CollectionUtil.newArrayList(0,1));
+        sqlProductionDTO.setTransformReg(CollectionUtil.newArrayList(DataTypeRegularEnum.values()));
         sqlProductionDTO.setDbs(BeanUtil.copyToList(dbTableContrastVOS, DbTableContrastDTO.class));
         sqlPackService.tableContrastPack(sqlProductionDTO);
     }

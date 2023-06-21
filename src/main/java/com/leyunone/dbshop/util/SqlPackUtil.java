@@ -53,6 +53,9 @@ public class SqlPackUtil {
             case CREATE_TABLE_COLUMN:
                 sql = createTableInColumnPacking(modelEnum, (ColumnInfo) info);
                 break;
+            case DROP_TABLE:
+                sql = dropTablePacking(modelEnum,tableInfo);
+                break;
             default:
         }
         return sql;
@@ -90,7 +93,7 @@ public class SqlPackUtil {
         if (CollectionUtil.isNotEmpty(columnInfos)) {
             columnInfos.forEach((t) -> sqls.add(createTableInColumnPacking(SqlModelEnum.CREATE_TABLE_COLUMN, t)));
         }
-        String primarykeys = primaryKeyPacking(SqlModelEnum.PRIMARY_KEY, tableInfo, columnInfos);
+        String primarykeys = primaryKeyPacking(tableInfo, columnInfos);
         String columnSqls = CollectionUtil.join(sqls, "\n");
         if (StringUtils.isBlank(primarykeys)) {
             //TODO 22.6.17版本 建表语句中字段后只涉及主键
@@ -118,7 +121,7 @@ public class SqlPackUtil {
                 columnInfo.getColumnName(), columnInfo.getTypeName(), columnInfo.getColumnSize(), attr.toString(), columnInfo.getRemarks());
     }
 
-    private static String primaryKeyPacking(SqlModelEnum modelEnum, TableInfo tableInfo, List<ColumnInfo> columnInfos) {
+    private static String primaryKeyPacking(TableInfo tableInfo, List<ColumnInfo> columnInfos) {
         //TODO 主键sql
         Set<String> primarys = tableInfo.getPrimarys();
         if (CollectionUtil.isEmpty(primarys) || CollectionUtil.isEmpty(columnInfos)) return "";
@@ -133,6 +136,10 @@ public class SqlPackUtil {
         }
         //阈值保护
         if (CollectionUtil.isEmpty(primaryNames)) return "";
-        return TextFillUtil.fillStr(modelEnum.getSqlModel(), CollectionUtil.join(primaryNames, ","));
+        return TextFillUtil.fillStr(SqlModelEnum.CREATE_TABLE_PRIMARY_KEY.getSqlModel(), CollectionUtil.join(primaryNames, ","));
+    }
+    
+    private static String dropTablePacking(SqlModelEnum modelEnum,TableInfo tableInfo){
+        return TextFillUtil.fillStr(SqlModelEnum.DROP_TABLE.getSqlModel(),tableInfo.getTableName());
     }
 }

@@ -2,6 +2,7 @@ package com.leyunone.dbshop.api;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.io.file.FileAppender;
 import com.leyunone.dbshop.bean.dto.DbShopDbDTO;
 import com.leyunone.dbshop.bean.dto.DbTableContrastDTO;
 import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
@@ -75,19 +76,18 @@ public class DbShopStartAPIServiceImpl implements DbShopStartAPIService{
         SqlProductionDTO sqlProductionDTO = new SqlProductionDTO();
         sqlProductionDTO.setLeftOrRight(sqlRuleDTO.getLeftOrRight());
         sqlProductionDTO.setGoRemark(contrastQuery.getGoRemark());
-        sqlProductionDTO.setTransformReg(sqlProductionDTO.getTransformReg());
+        sqlProductionDTO.setTransformReg(sqlRuleDTO.getTransformReg());
+        sqlProductionDTO.setDeleteTable(sqlRuleDTO.getDeleteTable());
         sqlProductionDTO.setDbs(BeanUtil.copyToList(dbTableContrast, DbTableContrastDTO.class));
         List<String> resultSql = sqlPackService.tableContrastPack(sqlProductionDTO);
         
         //写文件
         System.out.println("===========开始写文件，目标文件: /dbshop.sql");
-        try {
-            FileWriter writer = new FileWriter("dbshop.sql");
-            for(String sql:resultSql){
-                writer.write(sql);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        File file = new File("dbshop.sql");
+        file.delete();
+        FileAppender  writer = new FileAppender(file,16,true);
+        for(String sql:resultSql){
+            writer.append(sql);
         }
         System.out.println("========写入完成");
         

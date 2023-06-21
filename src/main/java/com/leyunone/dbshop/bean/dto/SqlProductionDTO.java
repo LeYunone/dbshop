@@ -36,7 +36,7 @@ public class SqlProductionDTO {
      * [0：tinyInt(1)变成tinyInt(1)]
      * [0：datetime为datetime(0)]
      */
-    private List<Integer> transformReg;
+    private List<DataTypeRegularEnum> transformReg;
     /**
      * 策略
      * [type_transform 类型转换] 

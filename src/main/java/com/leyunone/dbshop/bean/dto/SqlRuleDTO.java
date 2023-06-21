@@ -1,5 +1,6 @@
 package com.leyunone.dbshop.bean.dto;
 
+import com.leyunone.dbshop.enums.DataTypeRegularEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,5 +42,5 @@ public class SqlRuleDTO {
      * [0：tinyInt(1)变成tinyInt(1)]
      * [0：datetime为datetime(0)]
      */
-    private List<Integer> transformReg;
+    private List<DataTypeRegularEnum> transformReg;
 }

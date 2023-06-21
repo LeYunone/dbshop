@@ -23,7 +23,9 @@ public enum SqlModelEnum {
     //末尾有逗号 当后续无语句时 需自行摘除
     CREATE_TABLE_COLUMN("`{}` {}({}) {} COMMENT '{}',","表中的字段"),
     
-    PRIMARY_KEY("PRIMARY KEY ({}) USING BTREE",""),
+    CREATE_TABLE_PRIMARY_KEY("PRIMARY KEY ({}) USING BTREE","创建表时设置主键"),
+    
+    DROP_TABLE("DROP TABLE {} ;","删除表")
 
     /**
      CREATE TABLE `t_message_center` (
