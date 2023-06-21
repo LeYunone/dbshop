@@ -73,7 +73,9 @@ public class SqlPackService {
                     //删除
                 } else {
                     //新增，封装语句
-                    result.add(SqlPackUtil.packing(SqlModelEnum.CREATE_TABLE, mainTable, columnInfos));
+                    if(ObjectUtil.isNotNull(mainTable)){
+                        result.add(SqlPackUtil.packing(SqlModelEnum.CREATE_TABLE, mainTable, columnInfos));
+                    }
                 }
                 continue;
             }

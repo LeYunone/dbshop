@@ -22,9 +22,17 @@ public class SqlPackUtil {
 
     /**
      * 由包装工具决定入参类型
-     *
-     * @param modelEnum
-     * @param info
+     *   MODIFY_COLUMN = MODIFY_COLUMN
+     *   ADD_COLUMN = ADD_COLUMN
+     *   DELETE_COLUMN = DELETE_COLUMN
+     *   
+     *                    PRIMARY_KEY
+     *  CREATE_TABLE => = CREATE_TABLE_COLUMN
+     *  
+     *  CREATE_TABLE_COLUMN = ↑
+     * @param modelEnum 模板枚举
+     * @param tableInfo 表信息
+     * @param info 字段信息 可能是集合
      * @return
      */
     public static String packing(SqlModelEnum modelEnum, TableInfo tableInfo, Object info) {
