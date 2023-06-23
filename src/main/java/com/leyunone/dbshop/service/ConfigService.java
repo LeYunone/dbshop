@@ -60,12 +60,15 @@ public class ConfigService {
         dbDataFactory.regist(DbStrategyUtil.getTableStrategy(query),tables,TableInfo.class);
 
         //加载字段信息
-        List<ColumnInfo> columns = packInfoService.getColumns(metaData, query.getDbName(), null);
-        Map<String, List<ColumnInfo>> columnMap = columns.stream().collect(Collectors.groupingBy(ColumnInfo::getTableName));
-        for(String tableNam: columnMap.keySet()){
-            query.setTableName(tableNam);
-            dbDataFactory.regist(DbStrategyUtil.getColumnStrategy(query),columnMap.get(tableNam),ColumnInfo.class);
+        for(TableInfo tableInfo:tables){
+            List<ColumnInfo> columns = packInfoService.getColumns(metaData, query.getDbName(), tableInfo.getTableName());
+            Map<String, List<ColumnInfo>> columnMap = columns.stream().collect(Collectors.groupingBy(ColumnInfo::getTableName));
+            for(String tableNam: columnMap.keySet()){
+                query.setTableName(tableNam);
+                dbDataFactory.regist(DbStrategyUtil.getColumnStrategy(query),columnMap.get(tableNam),ColumnInfo.class);
+            }
         }
+
         DbClose.close(connection);
         return dbInfo;
     }

@@ -16,7 +16,9 @@ public enum SqlAssembleEnum {
 
     NULLABLE("NOT NULL ","不可为空"),
     
-    NULL("DEFAULT NULL ","可为空")
+    NULL("DEFAULT NULL ","可为空"),
+
+    PRIMARY_KEY("PRIMARY KEY ","主键")
     ;
 
     SqlAssembleEnum(String sql, String desc) {

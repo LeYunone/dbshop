@@ -14,7 +14,9 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 组装信息服务
@@ -86,6 +88,13 @@ public class PackInfoService {
         List<ColumnInfo> columnInfos = new ArrayList<>();
         try {
             ResultSet columns = meta.getColumns(dbName, null, tableName, null);
+
+            ResultSet primaryKeys = meta.getPrimaryKeys(null, null,tableName);
+            Set<String> primaryNames = new HashSet<>();
+            while (primaryKeys.next()){
+                //表主键
+                primaryNames.add(primaryKeys.getString(TableResultEnum.PK_COLUMN_NAME.getType()));
+            }
             while (columns.next()){
                 ColumnInfo column = ColumnInfo.builder().columnName(columns.getString(ColumnResultEnum.COLUMN_NAME.getType()))
                         .tableName(columns.getString(ColumnResultEnum.TABLE_NAME.getType()))
@@ -98,10 +107,12 @@ public class PackInfoService {
                         .build();
                 column.setAutoincrement("YES".equals(columns.getString(ColumnResultEnum.IS_AUTOINCREMENT.getType())));
                 column.setNullable("YES".equals(columns.getString(ColumnResultEnum.IS_NULLABLE.getType())));
+                column.setPrimaryKey(primaryNames.contains(column.getColumnName()));
                 columnInfos.add(column);
             }
         }catch (Exception e){
             logger.error("db列解析失败+：Exception：{}",e.getMessage());
+            e.printStackTrace();
         }
         return columnInfos;
     }

@@ -26,5 +26,9 @@ public class TableColumnContrastDTO {
     private Boolean typeDifferent;
     //注释 true为有差异
     private Boolean remarkDifferent;
+    //主键 true为差异
+    private Boolean primaryKeyDifferent;
+    //整形自增 true为差异
+    private Boolean autoincrementDifferent;
     //TODO 索引
 }

@@ -35,6 +35,8 @@ public class SqlPackService {
     private RulePointExcutor rulePointExcutor;
     @Autowired
     private TransformRuleHandlerFactory factory;
+    @Autowired
+    private AnalysisSqlService analysisSqlService;
 
     /**
      * 列字段比对结果 组装sql
@@ -49,7 +51,7 @@ public class SqlPackService {
         if (CollectionUtil.isEmpty(columns) || ObjectUtil.isNull(sqlProductionDTO.getLeftOrRight()))
             return new ArrayList<>();
 
-        List<String> resultSql = this.getColumnCompareSqls(columns, sqlProductionDTO.getLeftOrRight(), sqlProductionDTO.getGoRemark());
+        List<String> resultSql = this.getColumnCompareSqls(columns, sqlProductionDTO);
         //策略处理流
         return this.strategysDoing(resultSql,sqlProductionDTO.getTransformReg(),sqlProductionDTO.getProductionStrategys());
     }
@@ -89,7 +91,7 @@ public class SqlPackService {
             }
             if (db.getHasDifference()) {
                 //表名相同，但是有差异，则关注里面的字段
-                result.addAll(this.getColumnCompareSqls(db.getColumnContrasts(), sqlProductionDTO.getLeftOrRight(), sqlProductionDTO.getGoRemark()));
+                result.addAll(this.getColumnCompareSqls(db.getColumnContrasts(), sqlProductionDTO));
             }
         }
         //进入类型转化策略流中
@@ -102,26 +104,19 @@ public class SqlPackService {
      * 
      * 
      * @param columns
-     * @param leftOrRight
-     * @param goRemark
+     * @param sqlProductionDTO
      * @return
      */
-    private List<String> getColumnCompareSqls(List<TableColumnContrastDTO> columns, Integer leftOrRight, Integer goRemark) {
+    private List<String> getColumnCompareSqls(List<TableColumnContrastDTO> columns, SqlProductionDTO sqlProductionDTO) {
         List<String> resultSql = new ArrayList<>();
 
         for (TableColumnContrastDTO columnContrastDTO : columns) {
-            ColumnInfo mainColumn = leftOrRight.equals(0) ? columnContrastDTO.getLeftColumn() : columnContrastDTO.getRightColumn();
-            ColumnInfo anotherColumn = !leftOrRight.equals(0) ? columnContrastDTO.getLeftColumn() : columnContrastDTO.getRightColumn();
+            //0 左表主 1 右表主
+            ColumnInfo mainColumn = sqlProductionDTO.getLeftOrRight().equals(0) ? columnContrastDTO.getLeftColumn() : columnContrastDTO.getRightColumn();
+            ColumnInfo anotherColumn = !sqlProductionDTO.getLeftOrRight().equals(0) ? columnContrastDTO.getLeftColumn() : columnContrastDTO.getRightColumn();
 
             if (!columnContrastDTO.getNameDifferent()) {
-                //字段名相同 猜疑是修改
-                //0 左表主 1 右表主
-                //如果表字段有不同
-                if (columnContrastDTO.getSizeDifferent()
-                        || columnContrastDTO.getTypeDifferent()
-                        || (Integer.valueOf(1).equals(goRemark) && columnContrastDTO.getRemarkDifferent())) {
-                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.MODIFY_COLUMN, mainColumn));
-                }
+                resultSql.addAll(analysisSqlService.modifyColumnSql(columnContrastDTO,sqlProductionDTO));
             } else {
                 //字段名不同 新增或删除
                 if (ObjectUtil.isNull(mainColumn)) {

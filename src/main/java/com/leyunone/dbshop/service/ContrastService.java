@@ -64,11 +64,11 @@ public class ContrastService {
                 TableInfo leftTableInfo = dbTableContrastVO.getLeftTableInfo();
                 TableInfo rightTableInfo = dbTableContrastVO.getRightTableInfo();
                 //字段值
-                if(ObjectUtil.isNotNull(leftTableInfo)){
+                if (ObjectUtil.isNotNull(leftTableInfo)) {
                     contrastQuery.setLeftTablName(leftTableInfo.getTableName());
                     leftColumns = dataFactory.getColumnData(DbStrategyUtil.getColumnStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, true)));
                 }
-                if(ObjectUtil.isNotNull(rightTableInfo)){
+                if (ObjectUtil.isNotNull(rightTableInfo)) {
                     contrastQuery.setRightTableName(rightTableInfo.getTableName());
                     rightColumns = dataFactory.getColumnData(DbStrategyUtil.getColumnStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, false)));
                 }
@@ -113,6 +113,7 @@ public class ContrastService {
             }
             result.add(tableColumnContrastVO);
         }
+        //处理未匹配集合
         if (CollectionUtil.isNotEmpty(rightMap)) {
             different = true;
             rightMap.values().forEach((t) -> {
@@ -124,6 +125,7 @@ public class ContrastService {
         }
         //比较相同字段名下的字段类型 - size和type和remark
         for (TableColumnContrastVO contrast : result) {
+            //名字相同 进行字段属性级比较
             if (!contrast.getNameDifferent()) {
                 ColumnInfo leftColumn = contrast.getLeftColumn();
                 ColumnInfo rightColumn = contrast.getRightColumn();
@@ -133,9 +135,16 @@ public class ContrastService {
                 contrast.setTypeDifferent(!leftColumn.getDataType().equals(rightColumn.getDataType()));
                 //比较remark
                 contrast.setRemarkDifferent(!leftColumn.getRemarks().equals(rightColumn.getRemarks()));
-                if (contrast.getSizeDifferent() || contrast.getTypeDifferent()) {
+                contrast.setPrimaryKeyDifferent(!leftColumn.getPrimaryKey().equals(rightColumn.getPrimaryKey()));
+                contrast.setAutoincrementDifferent(!leftColumn.getAutoincrement().equals(rightColumn.getAutoincrement()));
+                /**
+                 * 基础属性确认
+                 * sizeDifferent | typeDifferent | primaryKeyDifferent | autoincrementDifferent
+                 */
+                if (contrast.getSizeDifferent() || contrast.getTypeDifferent() || contrast.getPrimaryKeyDifferent() || contrast.getAutoincrementDifferent()) {
                     different = true;
                 }
+                //规则级确认 goRemark = 1 备注
                 if (ObjectUtil.isNotNull(goRemark) && DbShopConstant.Rule_Yes.equals(goRemark) && contrast.getRemarkDifferent()) {
                     different = true;
                 }

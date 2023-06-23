@@ -59,6 +59,7 @@ public class DbShopStartAPIServiceImpl implements DbShopStartAPIService{
         rightQuery.setUserName(rightDto.getUserName());
         rightQuery.setPassWord(rightDto.getPassWord());
 
+
         DbInfo leftDbInfo = configService.loadConnectionToData(leftQuery);
         DbInfo rightDbInfo = configService.loadConnectionToData(rightQuery);
 

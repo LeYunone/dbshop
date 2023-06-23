@@ -39,4 +39,9 @@ public class ColumnInfo {
      * 是否可以为空 true为不可
      */
     private Boolean nullable;
+
+    /**
+     * 是否为主键 true为是
+     */
+    private Boolean primaryKey;
 }

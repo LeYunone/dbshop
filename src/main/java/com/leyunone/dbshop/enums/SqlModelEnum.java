@@ -15,7 +15,7 @@ public enum SqlModelEnum {
     MODIFY_COLUMN("ALTER TABLE {} modify column {} {}({}) {} COMMENT '{}' ;", "修改字段"),
 
     DELETE_COLUMN("ALTER TABLE {} DROP COLUMN {} ;", "删除字段"),
-
+    
     CREATE_TABLE("CREATE TABLE {} (" +
             "\n{}" +
             "\n{}" +
@@ -25,27 +25,16 @@ public enum SqlModelEnum {
     
     CREATE_TABLE_PRIMARY_KEY("PRIMARY KEY ({}) USING BTREE","创建表时设置主键"),
     
-    DROP_TABLE("DROP TABLE {} ;","删除表")
+    DROP_TABLE("DROP TABLE {} ;","删除表"),
+    
+    DELETE_PRIMARY_KEY("ALTER TABLE {} DROP PRIMARY KEY","删除表主键"),
 
-    /**
-     CREATE TABLE `t_message_center` (
-     `message_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
-     `message_title` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '标题',
-     `message_type` tinyint(2) DEFAULT NULL COMMENT '消息类型 0：告警 1：家庭 2：通知',
-     `trigger_ids` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '触发id集合 格式： {"deviceId":"","scenesId":""...}',
-     `message_text` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '消息文本内容',
-     `message_trigger_text` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '消息触发文本',
-     `message_trigger_type` tinyint(2) DEFAULT NULL COMMENT '消息触发类型 ,
-     `message_operate` tinyint(2) DEFAULT NULL COMMENT '消息操作类型 0：',
-     `is_read` tinyint(2) DEFAULT NULL COMMENT '是否已读 0：未读  1：已读',
-     `user_id` bigint(20) DEFAULT NULL COMMENT '消息所属用户',
-     `icon` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '图标',
-     `is_action` tinyint(2) DEFAULT NULL COMMENT '是否处理 0：未处理 1：已处理',
-     `is_deleted` tinyint(2) DEFAULT NULL COMMENT '0未删除  1已删除',
-     `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-     PRIMARY KEY (`message_id`) USING BTREE
-     ) ENGINE=InnoDB AUTO_INCREMENT=13641 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='消息中心消息';
-     */
+    DELETE_AUTOINCREMENT("ALTER TABLE {} CHANGE {} {} {}({}) ;","删除字段自增"),
+    
+    ADD_PRIMARY_KEY("ALTER TABLE {} ADD PRIMARY KEY({});","新增主键"),
+    
+    ADD_AUTOINCREMENT("ALTER TABLE {} CHANGE {} {} {}({}) NOT NULL AUTO_INCREMENT","新增自增")
+    
     
     ;
 
