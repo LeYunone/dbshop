@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>dbshop-api</artifactId>
+    <name>dbshop-api</name>
+
+    <parent>
+        <groupId>com.leyunone</groupId>
+        <artifactId>dbshop</artifactId>
+        <version>1.0.0-RELEASE</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.leyunone</groupId>
+            <artifactId>dbshop-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>

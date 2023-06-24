@@ -1,17 +1,9 @@
 package com.leyunone.dbshop.service;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.leyunone.dbshop.api.DbShopStartAPIService;
 import com.leyunone.dbshop.bean.dto.DbShopDbDTO;
-import com.leyunone.dbshop.bean.dto.DbTableContrastDTO;
-import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
 import com.leyunone.dbshop.bean.dto.SqlRuleDTO;
-import com.leyunone.dbshop.bean.info.DbInfo;
-import com.leyunone.dbshop.bean.query.ContrastQuery;
-import com.leyunone.dbshop.bean.query.DBQuery;
-import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
-import com.leyunone.dbshop.constant.DbShopConstant;
 import com.leyunone.dbshop.enums.DataTypeRegularEnum;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

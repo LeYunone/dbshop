@@ -1,7 +1,6 @@
 package com.leyunone.dbshop.api;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.file.FileAppender;
 import cn.hutool.core.util.ObjectUtil;
 import com.leyunone.dbshop.bean.dto.DbShopDbDTO;
@@ -19,12 +18,9 @@ import com.leyunone.dbshop.service.ConfigService;
 import com.leyunone.dbshop.service.ContrastService;
 import com.leyunone.dbshop.service.SqlPackService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
