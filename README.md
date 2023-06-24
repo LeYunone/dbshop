@@ -1,84 +1,89 @@
-数据库比较工具
+# 🏪DBSHOP
+[![JDK](https://img.shields.io/badge/JDK-1.8+-green.svg)](https://www.oracle.com/java/technologies/downloads)
+[![Stars](https://img.shields.io/github/stars/leyunone/dbshop.svg?style=social)](https://github.com/Cocowwy/ShowDB)
 
-当应用工具，开箱即用，三个使用版本
+## 🔍背景
 
-## 使用版本
+在开发新需求或变更/迭代旧功能时，经常会发生数据库表字段变更或表新增/修改等操作；
 
-1、 自动读取项目数据库配置，选择对比目标数据库
+而在版本控制的开发流程中，我们会将代码，以及数据库变动的SQL语句一致发布到测试环境，再到正式环境；
 
-2、 在线页面模式，输入数据库一、数据库二，选择对比
+那么在这个过程中，我们都要严格的记录数据库级别的变动，如果刻意为之很容易影响开发思路；
 
-3、 控制台打印模式，配合（1），直接在控制台将对比结果输出
+所以，非常有必要用到 对比开发环境数据库 / 测试环境数据库 的表差异、字段差异，然后自动转换成所需的转换Sql的工具
 
+## 📙功能点
 
+- 开箱即用，支持API调用、页面交互、配置文件自动流三种模式
+- 可进行：两表之间、两个数据库之间、多个数据库之间...的对比，并输出对比后的表、字段、元属性级结果
+- 可支持：SQL语句类型的转化策略 [tinyint(1) = tinyint(1) ]、[datetime(??) = datetime(0) ]... 等转化策略
+- 可自动封装，但不限于：1、新增字段； 2、删除字段 ；3、字段类型变更；4、字段字节变更；5、字段备注变更；6、表备注变更；7、字段自增新增和删除；8、表主键新增或删除.....的SQL语句
+- 支持多种数据库
 
-## 随手记开发记录：
+## 使用
 
-### 数据库结果集
+依赖SpringBoot环境
 
-由于Connection的特性，即断开销毁；
-
-所以在连接中需要将load的目标数据库一次性解析成
-
-DB -> TALBE -> COLUMN
-
-的关联形式
-
-使用 **CompleteFuture** ，将主线程等待数据库Load加载信息的动作，拆成3个子线程完成；同事主线程等待结果，分别返回三个【DB、TABLE、COLUMN】的加载结果
-
-【DB、TABLE、COLUMN】的存储模式采用**策略存储**；
-
-URL+DB+TALBENAME+COLUMN
-
-...
-
-### 数据URL参数问题
+引入依赖：
 
 ```xml
-jdbc:mysql://地址:3306/数据库名?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&nullCatalogMeansCurrent=true
+<dependency>
+  <groupId>com.leyunone</groupId>
+  <artifactId>dbshop-service</artifactId>
+  <version>1.0.0-RELEASE</version>
+</dependency>
 ```
 
-1、nullCatalogMeansCurrent=true问题
+### API版本
 
-![](https://leyunone-img.oss-cn-hangzhou.aliyuncs.com/image/2023-06-13/4285c930-a0ed-46de-86eb-63e6c3f2fe47.png)
+目前为试用版本，只支持MySql数据库，并且只有两种类型转换规则
 
-### 类型转化策略
-
-见[策略工厂下的架构设计](https://leyunone.com/Interesting-design/strategy-factory-together.html)
-
-由于Mysql驱动与JDBC的设计一致性问题；
-
-会出现datetime 不设置长度，变成datetime(26)、tinyint(1)变成bit(1)，等等问题
-
-所以需要一个处理流做两件事，一是拿到对应规则工厂，二是执行策略
-
-并且需要对外放开，有结果集与无结果集两种处理模式供后续扩展
-
-在多数据库类型下 ，类型转化工厂类型居多，所以还需使用模板模式控制各数据库类型的sql和类型转化规则
-
-### SQL语句自动解析提取
-
-在表/字段 进行 **对比** 操作后，将最终结果集交给sqlProduction类分析处理。
-
-处理过程，采用消息模板+填充的方式
-
-见 [消息模板的设计](https://leyunone.com/unidentified-business/message-center-design.html#%E8%AE%BE%E8%AE%A1)
-
-预先设定好各sql语句，比如
+**创建单元测试Unit**
 
 ```java
-public enum SqlModelEnum {
+@SpringBootTest
+public class ApiTestService {
 
-    //SQL语句模板
-    //采用{}进行内容填充
-
-    ADD_COLUMN("ALTER TABLE {} ADD COLUMN {} {}({}) COMMENT '{}' ;", "新增字段"),
-	.......
+    @Autowired
+    private DbShopStartAPIService dbShopStartAPIService;
+    
+    @Test
+    public void startTest(){
+        DbShopDbDTO leftQuery = new DbShopDbDTO();
+        leftQuery.setUrl("jdbc:mysql://localhost:3306/test2023?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&nullCatalogMeansCurrent=true");
+        leftQuery.setDbName("test2023");
+        leftQuery.setUserName("root");
+        leftQuery.setPassWord("root");
+        DbShopDbDTO rightQuery = new DbShopDbDTO();
+        rightQuery.setUrl("jdbc:mysql://localhost:3306/test2023-1?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&nullCatalogMeansCurrent=true");
+        rightQuery.setDbName("test2023-1");
+        rightQuery.setUserName("root");
+        rightQuery.setPassWord("root");
+        SqlRuleDTO sqlRuleDTO = new SqlRuleDTO();
+        sqlRuleDTO.setGoRemark(1);
+        sqlRuleDTO.setGoDeep(1);
+        sqlRuleDTO.setLeftOrRight(0);
+        sqlRuleDTO.setDeleteTable(1);
+        sqlRuleDTO.setTransformReg(CollectionUtil.newArrayList(DataTypeRegularEnum.BIT1_TO_TINYINT1,DataTypeRegularEnum.DATETIME_TO_0));
+        dbShopStartAPIService.leftRightDb(leftQuery,rightQuery,sqlRuleDTO);
+    }
+}
 ```
 
-进行一系列主表/从表；名是否相同，类型是否相同，size是否相同，备注是否相同；得到一个对比出来的总sql集
 
+## **所有依赖**
 
+| 依赖           | 说明                |
+| -------------- | ------------------- |
+| dbshop-api     | dbshop-API版本      |
+| dbshop-web     | dbshop-页面版本     |
+| dbshop-service | dbshop-自动装配版本 |
 
-## 达成目标
+## TODO
+
+开发中....
+
+## 🚩FINALY
+
+意见收纳地与联系方式：[https://leyunone.com/](https://leyunone.com/)
 
