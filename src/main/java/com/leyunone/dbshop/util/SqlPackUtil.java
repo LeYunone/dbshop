@@ -87,7 +87,10 @@ public class SqlPackUtil {
     //新增字段语句包装
     private static String addColumnPcacking(SqlModelEnum modelEnum, ColumnInfo columnInfo) {
         StringBuilder sb = new StringBuilder("");
-        if(columnInfo.getNullable()) {
+            if(columnInfo.getPrimaryKey()){
+            sb.append(SqlAssembleEnum.PRIMARY_KEY.getSql());
+        }
+        if(!columnInfo.getNullable()) {
             sb.append(SqlAssembleEnum.NULLABLE.getSql());
         }
         return TextFillUtil.fillStr(modelEnum.getSqlModel(),

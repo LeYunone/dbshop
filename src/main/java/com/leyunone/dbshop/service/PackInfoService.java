@@ -70,7 +70,7 @@ public class PackInfoService {
                 TableInfo tableInfo = TableInfo.builder().tableName(rs.getString(TableResultEnum.TABLE_NAME.getType()))
                         .tableType(rs.getString(TableResultEnum.TABLE_TYPE.getType())).primarys(CollectionUtil.newHashSet())
                         .remarks(rs.getString(TableResultEnum.REMARKS.getType())).build();
-                ResultSet primaryKeys = meta.getPrimaryKeys(null, null, rs.getString(TableResultEnum.TABLE_NAME.getType()));
+                ResultSet primaryKeys = meta.getPrimaryKeys(dbName, null, tableInfo.getTableName());
                 while (primaryKeys.next()){
                     //表主键
                     tableInfo.getPrimarys().add(primaryKeys.getString(TableResultEnum.PK_COLUMN_NAME.getType()));
@@ -89,7 +89,7 @@ public class PackInfoService {
         try {
             ResultSet columns = meta.getColumns(dbName, null, tableName, null);
 
-            ResultSet primaryKeys = meta.getPrimaryKeys(null, null,tableName);
+            ResultSet primaryKeys = meta.getPrimaryKeys(dbName, null,tableName);
             Set<String> primaryNames = new HashSet<>();
             while (primaryKeys.next()){
                 //表主键

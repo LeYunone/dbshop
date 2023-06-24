@@ -27,13 +27,13 @@ public enum SqlModelEnum {
     
     DROP_TABLE("DROP TABLE {} ;","删除表"),
     
-    DELETE_PRIMARY_KEY("ALTER TABLE {} DROP PRIMARY KEY","删除表主键"),
+    DELETE_PRIMARY_KEY("ALTER TABLE {} DROP PRIMARY KEY ;","删除表主键"),
 
     DELETE_AUTOINCREMENT("ALTER TABLE {} CHANGE {} {} {}({}) ;","删除字段自增"),
     
     ADD_PRIMARY_KEY("ALTER TABLE {} ADD PRIMARY KEY({});","新增主键"),
     
-    ADD_AUTOINCREMENT("ALTER TABLE {} CHANGE {} {} {}({}) NOT NULL AUTO_INCREMENT","新增自增")
+    ADD_AUTOINCREMENT("ALTER TABLE {} CHANGE {} {} {}({}) NOT NULL AUTO_INCREMENT ;","新增自增")
     
     
     ;

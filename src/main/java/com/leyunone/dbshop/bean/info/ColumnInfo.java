@@ -36,7 +36,7 @@ public class ColumnInfo {
     private Boolean autoincrement;
 
     /**
-     * 是否可以为空 true为不可
+     * 是否可以为空 true为可为空
      */
     private Boolean nullable;
 

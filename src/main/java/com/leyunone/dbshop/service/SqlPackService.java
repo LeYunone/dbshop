@@ -3,6 +3,7 @@ package com.leyunone.dbshop.service;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.leyunone.dbshop.bean.bo.AnalysisSqlBO;
 import com.leyunone.dbshop.bean.dto.DbTableContrastDTO;
 import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
 import com.leyunone.dbshop.bean.dto.TableColumnContrastDTO;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * :)
@@ -109,14 +111,34 @@ public class SqlPackService {
      */
     private List<String> getColumnCompareSqls(List<TableColumnContrastDTO> columns, SqlProductionDTO sqlProductionDTO) {
         List<String> resultSql = new ArrayList<>();
-
+        List<String> deleteAutoincrement = new ArrayList<>();
+        List<String> deletePrimaryKey = new ArrayList<>();
         for (TableColumnContrastDTO columnContrastDTO : columns) {
             //0 左表主 1 右表主
             ColumnInfo mainColumn = sqlProductionDTO.getLeftOrRight().equals(0) ? columnContrastDTO.getLeftColumn() : columnContrastDTO.getRightColumn();
             ColumnInfo anotherColumn = !sqlProductionDTO.getLeftOrRight().equals(0) ? columnContrastDTO.getLeftColumn() : columnContrastDTO.getRightColumn();
 
             if (!columnContrastDTO.getNameDifferent()) {
-                resultSql.addAll(analysisSqlService.modifyColumnSql(columnContrastDTO,sqlProductionDTO));
+                //修改字段sql集
+                List<AnalysisSqlBO> modifySqls = analysisSqlService.modifyColumnSql(columnContrastDTO, sqlProductionDTO);
+                if(CollectionUtil.isNotEmpty(modifySqls)){
+                    /**
+                     * 单表规则
+                     * 删除自增sql和删除主键在最前面 ，  删除自增sql在删除主键前面
+                     */
+                    modifySqls.forEach((t)->{
+                        switch (t.getSqlModel()){
+                            case DELETE_AUTOINCREMENT:
+                                deleteAutoincrement.add(t.getSql());
+                                break;
+                            case DELETE_PRIMARY_KEY:
+                                deletePrimaryKey.add(t.getSql());
+                                break;
+                            default:
+                                resultSql.add(t.getSql());
+                        }
+                    });
+                }
             } else {
                 //字段名不同 新增或删除
                 if (ObjectUtil.isNull(mainColumn)) {
@@ -128,6 +150,8 @@ public class SqlPackService {
                 }
             }
         }
+        resultSql.addAll(0,deletePrimaryKey);
+        resultSql.addAll(0,deleteAutoincrement);
         return resultSql;
     }
     
