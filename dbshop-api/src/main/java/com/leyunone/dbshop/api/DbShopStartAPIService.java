@@ -6,7 +6,7 @@ import com.leyunone.dbshop.bean.dto.SqlRuleDTO;
 /**
  * :)
  *
- * @Author pengli
+ * @Author leyunone
  * @Date 2023/6/19 14:32
  */
 public interface DbShopStartAPIService {
