@@ -5,9 +5,16 @@
 
     <groupId>com.leyunone</groupId>
     <artifactId>dbshop</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-RELEASE</version>
     <name>dbshop</name>
-    <description>db-shop</description>
+    <packaging>pom</packaging>
+    
+    <description>数据库对比工具</description>
+    
+    <modules>
+        <module>dbshop-service</module>
+        <module>dbshop-api</module>
+    </modules>
 
     <properties>
         <java.version>8</java.version>
@@ -20,60 +27,142 @@
         <artifactId>spring-boot-starter-parent</artifactId>
     </parent>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-            <version>2.4.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.15</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
-            <version>5.8.0.M3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.70</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>2.0.1.Final</version>
-        </dependency>
-    </dependencies>
+
+    <!--协议-->
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <!--我的信息-->
+    <developers>
+        <developer>
+            <name>leyunone</name>
+            <email>365627310@qq.com</email>
+            <organization>https://leyuna.com</organization>
+        </developer>
+    </developers>
+
+    <!--本项目仓库-->
+    <scm>
+        <connection>scm:git@github.com:leyunone/spring-mqtt-leyunone.git</connection>
+        <developerConnection>scm:git@github.com:leyunone/spring-mqtt-leyunone.git</developerConnection>
+        <url>git@github.com:leyunone/spring-mqtt-leyunone.git</url>
+    </scm>
+
+    <profiles>
+        <profile>
+            <!--此id必须与setting.xml中指定的一致-->
+            <!--            <id>ossrh</id>-->
+            <id>release</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <!--发布到中央SNAPSHOT仓库插件-->
+                <pluginManagement>
+                    <plugins>
+                        <!--测试包插件-->
+<!--                        <plugin>-->
+<!--                            <groupId>org.sonatype.plugins</groupId>-->
+<!--                            <artifactId>nexus-staging-maven-plugin</artifactId>-->
+<!--                            <version>1.6.7</version>-->
+<!--                            <extensions>true</extensions>-->
+<!--                            <configuration>-->
+<!--                                <serverId>ossrh</serverId>-->
+<!--                                <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>-->
+<!--                                &lt;!&ndash;                                <autoReleaseAfterClose>true</autoReleaseAfterClose>&ndash;&gt;-->
+<!--                            </configuration>-->
+<!--                        </plugin>-->
+
+                        <!--正式环境插件-->
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-release-plugin</artifactId>
+                            <version>2.5.3</version>
+                            <configuration>
+                                <autoVersionSubmodules>true</autoVersionSubmodules>
+                                <useReleaseProfile>false</useReleaseProfile>
+                                <releaseProfiles>release</releaseProfiles>
+                                <goals>deploy</goals>
+                            </configuration>
+                        </plugin>
+
+
+                        <!--生成API文档插件-->
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-javadoc-plugin</artifactId>
+                            <version>2.10.3</version>
+                            <configuration>
+                                <!-- 忽略生成文档中的错误 -->
+                                <additionalparam>-Xdoclint:none</additionalparam>
+                                <aggregate>true</aggregate>
+                                <charset>UTF-8</charset><!-- utf-8读取文件 -->
+                                <encoding>UTF-8</encoding><!-- utf-8进行编码代码 -->
+                                <docencoding>UTF-8</docencoding><!-- utf-8进行编码文档 -->
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <id>attach-javadocs</id>
+                                    <goals>
+                                        <goal>jar</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                        </plugin>
+
+                        <!--生成源码插件-->
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-source-plugin</artifactId>
+                            <version>3.0.0</version>
+                            <executions>
+                                <execution>
+                                    <id>attach-sources</id>
+                                    <goals>
+                                        <goal>jar-no-fork</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                        </plugin>
+
+                        <!--gpg插件-->
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-gpg-plugin</artifactId>
+                            <version>1.6</version>
+                            <executions>
+                                <execution>
+                                    <id>sign-artifacts</id>
+                                    <phase>verify</phase>
+                                    <goals>
+                                        <goal>sign</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                        </plugin>
+
+                    </plugins>
+                </pluginManagement>
+            </build>
+
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+                </snapshotRepository>
+                <repository>
+                    <id>release</id>
+                    <url>https://s01.oss.sonatype.org/content/repositories/releases/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
+
     <dependencyManagement>
         <dependencies>
             <!-- spring boot 依赖 -->
@@ -83,6 +172,16 @@
                 <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.leyunone</groupId>
+                <artifactId>dbshop-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.leyunone</groupId>
+                <artifactId>dbshop-api</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
