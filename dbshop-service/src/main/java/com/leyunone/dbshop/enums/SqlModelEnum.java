@@ -19,7 +19,7 @@ public enum SqlModelEnum {
     CREATE_TABLE("CREATE TABLE {} (" +
             "\n{}" +
             "\n{}" +
-            "\n )  ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;", "创建表"),
+            "\n )  ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;", "创建表"),
     //末尾有逗号 当后续无语句时 需自行摘除
     CREATE_TABLE_COLUMN("`{}` {}({}) {} COMMENT '{}',","表中的字段"),
     

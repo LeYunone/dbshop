@@ -17,6 +17,79 @@
 </head>
 <body>
 <div id="app" style="width: 80%;margin-left: 200px;height: 100%;">
+    <div>
+        <div>
+            <!--左表树-->
+            <el-tree
+                    :data="data"
+                    show-checkbox
+                    node-key="id"
+                    :default-expanded-keys="[2, 3]"
+                    :default-checked-keys="[5]"
+                    :props="defaultProps">
+            </el-tree>
+        </div>
+        <div>
+            <!--右表树-->
+            <el-tree
+                    :data="data"
+                    show-checkbox
+                    node-key="id"
+                    :default-expanded-keys="[2, 3]"
+                    :default-checked-keys="[5]"
+                    :props="defaultProps">
+            </el-tree>
+        </div>
+    </div>
+    <div>
+        <div>
+            <!--左表结果集-->
+            <el-table
+                    :data="tableData"
+                    style="width: 100%">
+                <el-table-column
+                        prop="date"
+                        label="日期"
+                        width="180">
+                </el-table-column>
+                <el-table-column
+                        prop="name"
+                        label="姓名"
+                        width="180">
+                </el-table-column>
+                <el-table-column
+                        prop="address"
+                        label="地址">
+                </el-table-column>
+            </el-table>
+        </div>
+        <div>
+            <!--右表结果集-->
+            <el-table
+                    :data="tableData"
+                    style="width: 100%">
+                <el-table-column
+                        prop="date"
+                        label="日期"
+                        width="180">
+                </el-table-column>
+                <el-table-column
+                        prop="name"
+                        label="姓名"
+                        width="180">
+                </el-table-column>
+                <el-table-column
+                        prop="address"
+                        label="地址">
+                </el-table-column>
+            </el-table>
+        </div>
+    </div>
+    <div>
+        <div>
+            <!--最终结果集-->
+        </div>
+    </div>
 </div>
 </body>
 </html>
