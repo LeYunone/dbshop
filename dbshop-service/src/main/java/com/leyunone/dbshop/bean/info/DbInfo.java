@@ -26,7 +26,7 @@ public class DbInfo {
     //数据库URL
     private String url;
     //是否允许只读
-    private boolean isReadOnly;
+    private boolean readOnly;
     //数据库的产品名称
     private String databaseProductName;
     //数据库的版本

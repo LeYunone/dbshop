@@ -44,7 +44,7 @@ public class PackInfoService {
                     .stringFunctions(data.getStringFunctions())
                     .schemaTerm(data.getSchemaTerm())
                     .url(data.getURL())
-                    .isReadOnly(data.isReadOnly())
+                    .readOnly(data.isReadOnly())
                     .databaseProductName(data.getDatabaseProductName())
                     .databaseProductVersion(data.getDatabaseProductVersion())
                     .driverName(data.getDriverName())

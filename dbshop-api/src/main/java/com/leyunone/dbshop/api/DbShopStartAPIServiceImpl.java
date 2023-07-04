@@ -118,6 +118,7 @@ public class DbShopStartAPIServiceImpl implements DbShopStartAPIService{
         sqlProductionDTO.setGoRemark(contrastQuery.getGoRemark());
         sqlProductionDTO.setTransformReg(sqlRuleDTO.getTransformReg());
         sqlProductionDTO.setDeleteTable(sqlRuleDTO.getDeleteTable());
+        //TODO HUTOOL 版本问题 谨慎使用BeanUtil.copyToList
         sqlProductionDTO.setDbs(BeanUtil.copyToList(dbTableContrast, DbTableContrastDTO.class));
         List<String> resultSql = sqlPackService.tableContrastPack(sqlProductionDTO);
         
