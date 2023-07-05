@@ -18,16 +18,39 @@
 <body>
 <div id="app" style="width: 80%;margin-left: 200px;height: 100%;">
     <div>
+        <!--抬头布局-->
+        <div>
+            <!--左表-->
+            <el-form :inline="true" :model="leftDbForm" class="demo-form-inline">
+                <el-form-item label="URL">
+                    <el-input v-model="leftDbForm.url" placeholder="URL"></el-input>
+                </el-form-item>
+                <el-form-item label="账号">
+                    <el-input v-model="leftDbForm.userName" placeholder="账号"></el-input>
+                </el-form-item>
+                <el-form-item label="密码">
+                    <el-input v-model="leftDbForm.passWord" placeholder="密码"></el-input>
+                </el-form-item>
+                <el-form-item label="数据库">
+                    <el-input v-model="leftDbForm.dbName" placeholder="数据库"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="loadLeftDb">加载</el-button>
+                </el-form-item>
+            </el-form>
+            <el-descriptions title="自定义样式列表" :column="3" border>
+                <el-descriptions-item label="数据库url">{{leftDb.url}}</el-descriptions-item>
+                <el-descriptions-item label="账户名">{{leftDb.userName}}</el-descriptions-item>
+                <el-descriptions-item label="是否只读">{{leftDb.readOnly}}</el-descriptions-item>
+            </el-descriptions>
+        </div>
+    </div>
+    <div>
         <div>
             <!--左表树-->
-            <el-tree
-                    :data="data"
-                    show-checkbox
-                    node-key="id"
-                    :default-expanded-keys="[2, 3]"
-                    :default-checked-keys="[5]"
-                    :props="defaultProps">
-            </el-tree>
+            
+            <el-tree :data="leftTableTree" :props="defaultProps" @node-click="leftTableHandler"></el-tree>
+            
         </div>
         <div>
             <!--右表树-->
@@ -98,11 +121,47 @@
         el: '#app',
         data() {
             return {
+                leftTableTree:[],
+                defaultProps: {
+                    children: 'children',
+                    label: 'label'
+                },
+                leftDbForm:{
+                    url:"",
+                    userName:"",
+                    passWord:"",
+                    dbName:""
+                },
+                leftDb:{
+                    userName:"",
+                    url:"",
+                    readOnly:""
+                }
             }
         },
         mounted: function () {
+            
         },
         methods: {
+            //左库树点击事件
+            leftTableHandler(){
+                
+            },
+            //加载左库
+            loadLeftDb() {
+                axios({
+                    url: "/config/loadConnection",
+                    method:"GET",
+                    params:this.leftDbForm
+                }).then((res)=>{
+                    var data = res.data;
+                    if(data.status){
+                        this.leftDb = data.data;
+                    }else{
+                        this.$message.error(data.message);
+                    }
+                })
+            }
         }
     })
 </script>

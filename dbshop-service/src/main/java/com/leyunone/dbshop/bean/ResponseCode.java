@@ -7,6 +7,9 @@ package com.leyunone.dbshop.bean;
  * 响应control的编码
  */
 public enum  ResponseCode {
+    /**
+     * 响应结果集
+     */
     SUCCESS("200", "操作成功"),
     ERROR("404", "操作失败"),
     RPC_UNKNOWN_ERROR("100017", "远程服务调用未知错误"),
@@ -15,7 +18,8 @@ public enum  ResponseCode {
     
     
     //==========1000000001
-    RULE_LOAD_FAIL("1000000001","规则加载失败")   
+    RULE_LOAD_FAIL("1000000001","规则加载失败"),
+    INFO_NOT_FOUND("1000000002","数据库信息找不到或不存在")
 
 
 ;

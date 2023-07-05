@@ -4,6 +4,7 @@ import com.leyunone.dbshop.bean.DataResponse;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.TableInfo;
 import com.leyunone.dbshop.bean.query.DBQuery;
+import com.leyunone.dbshop.bean.vo.TableInfoVO;
 import com.leyunone.dbshop.service.DBQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,8 +30,8 @@ public class DbQueryController {
      * 一个指定数据库库的信息
      */
     @GetMapping("/tables")
-    public DataResponse<List<TableInfo>> dbTables(DBQuery query) {
-        List<TableInfo> tableInfos = dbQueryService.getTableInfos(query);
+    public DataResponse<List<TableInfoVO>> dbTables(DBQuery query) {
+        List<TableInfoVO> tableInfos = dbQueryService.getTableInfos(query);
         return DataResponse.of(tableInfos);
     }
 
