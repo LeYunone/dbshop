@@ -1,10 +1,12 @@
 package com.leyunone.dbshop.bean.vo;
 
+import com.leyunone.dbshop.bean.info.ColumnInfoVO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.util.List;
+
 
 /**
  * :)
@@ -23,6 +25,9 @@ public class TableInfoVO {
     private String tableType;
 
     private String remarks;
+
+    //树形节点名称
+    private String label;
     
     private List<ColumnInfoVO> columns;
 }

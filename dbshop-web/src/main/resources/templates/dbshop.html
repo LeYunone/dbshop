@@ -38,7 +38,7 @@
                     <el-button type="primary" @click="loadLeftDb">加载</el-button>
                 </el-form-item>
             </el-form>
-            <el-descriptions title="自定义样式列表" :column="3" border>
+            <el-descriptions title="数据库信息" :column="3" border>
                 <el-descriptions-item label="数据库url">{{leftDb.url}}</el-descriptions-item>
                 <el-descriptions-item label="账户名">{{leftDb.userName}}</el-descriptions-item>
                 <el-descriptions-item label="是否只读">{{leftDb.readOnly}}</el-descriptions-item>
@@ -48,9 +48,10 @@
     <div>
         <div>
             <!--左表树-->
-            
-            <el-tree :data="leftTableTree" :props="defaultProps" @node-click="leftTableHandler"></el-tree>
-            
+            <el-tree :data="leftTableTree" highlight-current ref="tree"
+                     node-key="id"
+                     :props="defaultProps" @node-click="leftTableHandler"></el-tree>
+
         </div>
         <div>
             <!--右表树-->
@@ -68,28 +69,32 @@
         <div>
             <!--左表结果集-->
             <el-table
-                    :data="tableData"
+                    :data="leftColumns"
                     style="width: 100%">
                 <el-table-column
-                        prop="date"
-                        label="日期"
+                        prop="columnName"
+                        label="字段名"
                         width="180">
                 </el-table-column>
                 <el-table-column
-                        prop="name"
-                        label="姓名"
+                        prop="typeName"
+                        label="类型"
                         width="180">
                 </el-table-column>
                 <el-table-column
-                        prop="address"
-                        label="地址">
+                        prop="columnSize"
+                        label="字段长度">
+                </el-table-column>
+                <el-table-column
+                        prop="remarks"
+                        label="备注">
                 </el-table-column>
             </el-table>
         </div>
         <div>
             <!--右表结果集-->
             <el-table
-                    :data="tableData"
+                    :data="rightColumns"
                     style="width: 100%">
                 <el-table-column
                         prop="date"
@@ -121,43 +126,91 @@
         el: '#app',
         data() {
             return {
-                leftTableTree:[],
+                leftTableTree: [],
                 defaultProps: {
-                    children: 'children',
-                    label: 'label'
+                    children: 'columns',
+                    label: 'label',
+                    disabled: 'columns'
                 },
-                leftDbForm:{
-                    url:"",
-                    userName:"",
-                    passWord:"",
-                    dbName:""
+                leftDbForm: {
+                    url: "jdbc:mysql://localhost:3306/test2023?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&nullCatalogMeansCurrent=true",
+                    dbName: "test2023",
+                    userName: "root",
+                    passWord: "root",
                 },
-                leftDb:{
-                    userName:"",
-                    url:"",
-                    readOnly:""
-                }
+                leftDb: {
+                    userName: "",
+                    url: "",
+                    readOnly: "",
+                    dbName: ""
+                },
+                leftColumns: [],
+                rightColumns:[],
+                leftTableName: ""
             }
         },
         mounted: function () {
-            
+
         },
         methods: {
             //左库树点击事件
-            leftTableHandler(){
-                
+            leftTableHandler(data) {
+                console.log(data);
+                if (this.leftTableName === data.tableName) return;
+                this.leftTableName = data.tableName;
+                if (data.columns!=null) {
+                    //点击表节点
+                    this.leftColumns = data.columns
+                } else {
+                    //点击字段
+                    axios({
+                        url: "/dbquery/columns",
+                        params: {
+                            url: this.leftDbForm.url,
+                            tableName: data.tableName,
+                            dbName: this.leftDbForm.dbName
+                        }
+                    }).then((res) => {
+                        var data = res.data;
+                        if (data.status) {
+                            this.leftColumns = data.data;
+                        } else {
+                            this.$message.error(data.message);
+                        }
+                    })
+                }
+            },
+            //刷新左表树
+            loadLeftTree() {
+                axios({
+                    url: "/dbquery/tables",
+                    method: "GET",
+                    params: {
+                        url: this.leftDbForm.url,
+                        dbName: this.leftDbForm.dbName
+                    }
+                }).then((res) => {
+                    var data = res.data;
+                    if (data.status) {
+                        this.leftTableTree = data.data;
+                    } else {
+                        this.$message.error(data.message);
+                    }
+                })
             },
             //加载左库
             loadLeftDb() {
                 axios({
                     url: "/config/loadConnection",
-                    method:"GET",
-                    params:this.leftDbForm
-                }).then((res)=>{
+                    method: "GET",
+                    params: this.leftDbForm
+                }).then((res) => {
                     var data = res.data;
-                    if(data.status){
+                    if (data.status) {
                         this.leftDb = data.data;
-                    }else{
+                        //属性左表树
+                        this.loadLeftTree();
+                    } else {
                         this.$message.error(data.message);
                     }
                 })
@@ -166,5 +219,5 @@
     })
 </script>
 <style>
-    
+
 </style>

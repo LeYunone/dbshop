@@ -35,4 +35,6 @@ public class DbInfo {
     private String driverName;
     //驱动程序的版本
     private String driverVersion;
+    
+    private String dbName;
 }

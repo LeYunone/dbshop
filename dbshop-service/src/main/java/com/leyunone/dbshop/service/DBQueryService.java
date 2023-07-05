@@ -2,18 +2,16 @@ package com.leyunone.dbshop.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.ResponseCode;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
+import com.leyunone.dbshop.bean.info.ColumnInfoVO;
 import com.leyunone.dbshop.bean.info.TableInfo;
 import com.leyunone.dbshop.bean.query.DBQuery;
-import com.leyunone.dbshop.bean.vo.ColumnInfoVO;
 import com.leyunone.dbshop.bean.vo.TableInfoVO;
 import com.leyunone.dbshop.system.factory.DBDataFactory;
 import com.leyunone.dbshop.util.AssertUtil;
 import com.leyunone.dbshop.util.DbStrategyUtil;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,8 +53,13 @@ public class DBQueryService {
         return result;
     }
     
-    public List<ColumnInfo> getColumnInfos(DBQuery query){
-        return dbDataFactory.getColumnData(DbStrategyUtil.getColumnStrategy(query));
+    public List<ColumnInfoVO> getColumnInfos(DBQuery query){
+        List<ColumnInfo> columnData = dbDataFactory.getColumnData(DbStrategyUtil.getColumnStrategy(query));
+        List<ColumnInfoVO> result = new ArrayList<>();
+        if(CollectionUtil.isNotEmpty(columnData)){
+            result.addAll(JSONObject.parseArray(JSONObject.toJSONString(columnData),ColumnInfoVO.class));
+        }
+        return result;
     }
     
 }

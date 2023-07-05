@@ -1,7 +1,9 @@
 package com.leyunone.dbshop.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.leyunone.dbshop.bean.DataResponse;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
+import com.leyunone.dbshop.bean.info.ColumnInfoVO;
 import com.leyunone.dbshop.bean.info.TableInfo;
 import com.leyunone.dbshop.bean.query.DBQuery;
 import com.leyunone.dbshop.bean.vo.TableInfoVO;
@@ -15,6 +17,7 @@ import java.util.List;
 
 /**
  * 查询db
+ *
  * @author LeYunone
  * @email 365627310@qq.com
  * @date 2023-05-09
@@ -22,7 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/dbquery")
 public class DbQueryController {
-    
+
     @Autowired
     private DBQueryService dbQueryService;
 
@@ -32,17 +35,28 @@ public class DbQueryController {
     @GetMapping("/tables")
     public DataResponse<List<TableInfoVO>> dbTables(DBQuery query) {
         List<TableInfoVO> tableInfos = dbQueryService.getTableInfos(query);
+        //后台做tree树结构封装
+        if (CollectionUtil.isNotEmpty(tableInfos)) {
+            tableInfos.forEach((table -> {
+                table.setLabel(table.getTableName());
+                if (CollectionUtil.isNotEmpty(table.getColumns())) {
+                    table.getColumns().forEach((column) -> column.setLabel(column.getColumnName()));
+                }
+            }));
+        }
         return DataResponse.of(tableInfos);
     }
 
+
     /**
      * 字段
+     *
      * @param query
      * @return
      */
     @GetMapping("/columns")
-    public DataResponse<List<ColumnInfo>> dbColumns(DBQuery query){
-        List<ColumnInfo> columnInfos = dbQueryService.getColumnInfos(query);
+    public DataResponse<List<ColumnInfoVO>> dbColumns(DBQuery query) {
+        List<ColumnInfoVO> columnInfos = dbQueryService.getColumnInfos(query);
         return DataResponse.of(columnInfos);
     }
 }
