@@ -25,10 +25,10 @@ public class SqlPackUtil {
      *   MODIFY_COLUMN = MODIFY_COLUMN
      *   ADD_COLUMN = ADD_COLUMN
      *   DELETE_COLUMN = DELETE_COLUMN
-     *   
+     *
      *                    PRIMARY_KEY
      *  CREATE_TABLE => = CREATE_TABLE_COLUMN
-     *  
+     *
      *  CREATE_TABLE_COLUMN = ↑
      * @param modelEnum 模板枚举
      * @param tableInfo 表信息
@@ -77,7 +77,7 @@ public class SqlPackUtil {
     //修改字段语句包装
     private static String modifyColumnPacking(SqlModelEnum modelEnum, ColumnInfo columnInfo) {
         StringBuilder sb = new StringBuilder("");
-        if(columnInfo.getNullable()) {
+        if(!columnInfo.getNullable()) {
             sb.append(SqlAssembleEnum.NULLABLE.getSql());
         }
         return TextFillUtil.fillStr(modelEnum.getSqlModel(),
@@ -87,11 +87,15 @@ public class SqlPackUtil {
     //新增字段语句包装
     private static String addColumnPcacking(SqlModelEnum modelEnum, ColumnInfo columnInfo) {
         StringBuilder sb = new StringBuilder("");
-            if(columnInfo.getPrimaryKey()){
+        if(columnInfo.getPrimaryKey()){
             sb.append(SqlAssembleEnum.PRIMARY_KEY.getSql());
         }
         if(!columnInfo.getNullable()) {
             sb.append(SqlAssembleEnum.NULLABLE.getSql());
+        }
+        if (columnInfo.getAutoincrement()) {
+            //主键自增
+            sb.append(SqlAssembleEnum.CREATE_TABLE_AUTOINCREMENT.getSql());
         }
         return TextFillUtil.fillStr(modelEnum.getSqlModel(),
                 columnInfo.getTableName(), columnInfo.getColumnName(), columnInfo.getTypeName(), columnInfo.getColumnSize(), sb.toString(), columnInfo.getRemarks());
@@ -133,11 +137,11 @@ public class SqlPackUtil {
             //主键自增
             attr.append(SqlAssembleEnum.CREATE_TABLE_AUTOINCREMENT.getSql());
         }
-        
+
         return TextFillUtil.fillStr(modelEnum.getSqlModel(),
                 columnInfo.getColumnName(), columnInfo.getTypeName(), columnInfo.getColumnSize(), attr.toString(), columnInfo.getRemarks());
     }
-    
+
     //新增表中 主键语句的包装
     private static String createTableprimaryKeyPacking(TableInfo tableInfo, List<ColumnInfo> columnInfos) {
         //TODO 主键sql
@@ -156,29 +160,29 @@ public class SqlPackUtil {
         if (CollectionUtil.isEmpty(primaryNames)) return "";
         return TextFillUtil.fillStr(SqlModelEnum.CREATE_TABLE_PRIMARY_KEY.getSqlModel(), CollectionUtil.join(primaryNames, ","));
     }
-    
+
     //删除表语句包装
     private static String dropTablePacking(SqlModelEnum modelEnum,TableInfo tableInfo){
         return TextFillUtil.fillStr(modelEnum.getSqlModel(),tableInfo.getTableName());
     }
-    
+
     private static String addAutoincrementPacking(SqlModelEnum modelEnum,ColumnInfo columnInfo){
         return TextFillUtil.fillStr(modelEnum.getSqlModel(),columnInfo.getTableName()
                 ,columnInfo.getColumnName(),columnInfo.getColumnName(),columnInfo.getTypeName(),columnInfo.getColumnSize());
     }
-    
+
     private static String addPrimaryKeyPacking(SqlModelEnum modelEnum,ColumnInfo columnInfo){
         return TextFillUtil.fillStr(modelEnum.getSqlModel(),columnInfo.getTableName(),columnInfo.getColumnName());
     }
-    
+
     private static String deleteAutoincrementPacking(SqlModelEnum modelEnum,ColumnInfo columnInfo){
         return TextFillUtil.fillStr(modelEnum.getSqlModel(),columnInfo.getTableName()
                 ,columnInfo.getColumnName(),columnInfo.getColumnName(),columnInfo.getTypeName(),columnInfo.getColumnSize());
     }
-    
+
     private static String deletePrimaryKeyPacking(SqlModelEnum modelEnum,ColumnInfo columnInfo){
         return TextFillUtil.fillStr(modelEnum.getSqlModel(),columnInfo.getTableName());
     }
-    
-    
+
+
 }

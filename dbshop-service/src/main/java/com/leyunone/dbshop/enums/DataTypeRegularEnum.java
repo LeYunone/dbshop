@@ -19,7 +19,10 @@ public enum DataTypeRegularEnum {
      */
     DATETIME_TO_0(0, "DATETIME[(][0-9]*[)]", "DATETIME(0)", "datetime(?)类型变为datetime(0)"),
 
-    BIT1_TO_TINYINT1(1, "BIT[(][1][)]", "TINYINT(1)", "bit(1)类型变为tinyint(1)");
+    BIT1_TO_TINYINT1(1, "BIT[(][1][)]", "TINYINT(1)", "bit(1)类型变为tinyint(1)"),
+
+    JSON_TO_0(2,"JSON[(][0-9]*[)]","JSON(0)","json(?)类型变为json(0)")
+    ;
 
     DataTypeRegularEnum(Integer type, String reg, String toBecome, String desc) {
         this.type = type;
@@ -83,3 +86,4 @@ public enum DataTypeRegularEnum {
     }
 }
 
+    

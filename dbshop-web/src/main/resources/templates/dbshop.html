@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>Db-shop</title>
     <script th:src="@{js/vue.js}" type="application/javascript"></script>
+    <!--    <script th:src="@{js/leftTable.js}" type="application/javascript"></script>-->
+    <!--    <script th:src="@{js/rightTable.js}" type="application/javascript"></script>-->
+
     <script src="https://code.hcharts.cn/plugins/zh_cn.js" type="application/javascript"></script>
     <!-- 引入样式 -->
     <!--    <link rel="stylesheet" th:href="@{/element/theme/index.css}"/>-->
@@ -44,6 +47,31 @@
                 <el-descriptions-item label="是否只读">{{leftDb.readOnly}}</el-descriptions-item>
             </el-descriptions>
         </div>
+        <div>
+            <!--右表-->
+            <el-form :inline="true" :model="rightDbForm" class="demo-form-inline">
+                <el-form-item label="URL">
+                    <el-input v-model="rightDbForm.url" placeholder="URL"></el-input>
+                </el-form-item>
+                <el-form-item label="账号">
+                    <el-input v-model="rightDbForm.userName" placeholder="账号"></el-input>
+                </el-form-item>
+                <el-form-item label="密码">
+                    <el-input v-model="rightDbForm.passWord" placeholder="密码"></el-input>
+                </el-form-item>
+                <el-form-item label="数据库">
+                    <el-input v-model="rightDbForm.dbName" placeholder="数据库"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="loadRightDb">加载</el-button>
+                </el-form-item>
+            </el-form>
+            <el-descriptions title="数据库信息" :column="3" border>
+                <el-descriptions-item label="数据库url">{{rightDb.url}}</el-descriptions-item>
+                <el-descriptions-item label="账户名">{{rightDb.userName}}</el-descriptions-item>
+                <el-descriptions-item label="是否只读">{{rightDb.readOnly}}</el-descriptions-item>
+            </el-descriptions>
+        </div>
     </div>
     <div>
         <div>
@@ -55,14 +83,10 @@
         </div>
         <div>
             <!--右表树-->
-            <el-tree
-                    :data="data"
-                    show-checkbox
-                    node-key="id"
-                    :default-expanded-keys="[2, 3]"
-                    :default-checked-keys="[5]"
-                    :props="defaultProps">
-            </el-tree>
+            <!--左表树-->
+            <el-tree :data="rightTableTree" highlight-current ref="tree"
+                     node-key="id"
+                     :props="defaultProps" @node-click="rightTableHandler"></el-tree>
         </div>
     </div>
     <div>
@@ -97,18 +121,22 @@
                     :data="rightColumns"
                     style="width: 100%">
                 <el-table-column
-                        prop="date"
-                        label="日期"
+                        prop="columnName"
+                        label="字段名"
                         width="180">
                 </el-table-column>
                 <el-table-column
-                        prop="name"
-                        label="姓名"
+                        prop="typeName"
+                        label="类型"
                         width="180">
                 </el-table-column>
                 <el-table-column
-                        prop="address"
-                        label="地址">
+                        prop="columnSize"
+                        label="字段长度">
+                </el-table-column>
+                <el-table-column
+                        prop="remarks"
+                        label="备注">
                 </el-table-column>
             </el-table>
         </div>
@@ -122,11 +150,14 @@
 </body>
 </html>
 <script>
+
+
     var app = new Vue({
         el: '#app',
         data() {
             return {
                 leftTableTree: [],
+                rightTableTree: [],
                 defaultProps: {
                     children: 'columns',
                     label: 'label',
@@ -138,15 +169,28 @@
                     userName: "root",
                     passWord: "root",
                 },
+                rightDbForm: {
+                    url: "jdbc:mysql://localhost:3306/test2023?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&nullCatalogMeansCurrent=true",
+                    dbName: "test2023",
+                    userName: "root",
+                    passWord: "root",
+                },
                 leftDb: {
                     userName: "",
                     url: "",
                     readOnly: "",
                     dbName: ""
                 },
+                rightDb: {
+                    userName: "",
+                    url: "",
+                    readOnly: "",
+                    dbName: ""
+                },
                 leftColumns: [],
-                rightColumns:[],
-                leftTableName: ""
+                rightColumns: [],
+                leftTableName: "",
+                rightTableName: ""
             }
         },
         mounted: function () {
@@ -158,7 +202,7 @@
                 console.log(data);
                 if (this.leftTableName === data.tableName) return;
                 this.leftTableName = data.tableName;
-                if (data.columns!=null) {
+                if (data.columns != null) {
                     //点击表节点
                     this.leftColumns = data.columns
                 } else {
@@ -210,6 +254,69 @@
                         this.leftDb = data.data;
                         //属性左表树
                         this.loadLeftTree();
+                    } else {
+                        this.$message.error(data.message);
+                    }
+                })
+            },
+
+            //右库树点击事件
+            rightTableHandler(data) {
+                console.log(data);
+                if (this.rightTableName === data.tableName) return;
+                this.rightTableName = data.tableName;
+                if (data.columns != null) {
+                    //点击表节点
+                    this.rightColumns = data.columns
+                } else {
+                    //点击字段
+                    axios({
+                        url: "/dbquery/columns",
+                        params: {
+                            url: this.rightDbForm.url,
+                            tableName: data.tableName,
+                            dbName: this.rightDbForm.dbName
+                        }
+                    }).then((res) => {
+                        var data = res.data;
+                        if (data.status) {
+                            this.rightColumns = data.data;
+                        } else {
+                            this.$message.error(data.message);
+                        }
+                    })
+                }
+            },
+            //刷新左表树
+            loadRightTree() {
+                axios({
+                    url: "/dbquery/tables",
+                    method: "GET",
+                    params: {
+                        url: this.rightDbForm.url,
+                        dbName: this.rightDbForm.dbName
+                    }
+                }).then((res) => {
+                    var data = res.data;
+                    if (data.status) {
+                        this.rightTableTree = data.data;
+                    } else {
+                        this.$message.error(data.message);
+                    }
+                })
+            },
+            //加载左库
+            loadRightDb() {
+                axios({
+                    url: "/config/loadConnection",
+                    method: "GET",
+                    params: this.rightDbForm
+                }).then((res) => {
+                    var data = res.data;
+                    if (data.status) {
+                        this.rightDb = data.data;
+                        //属性左表树
+                        this.loadRightTree();
                     } else {
                         this.$message.error(data.message);
                     }
