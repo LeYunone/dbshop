@@ -45,7 +45,7 @@ public class SqlPackService {
      * Alter table 表名 drop primary key;--删除表主键
      * Alter table 表名 add primary key(`字段`);  --修改某列为主键
      * Alter table 表名 column id int auto_increment=1; --设置自增，默认值为1
-     * 
+     *
      * @param sqlProductionDTO
      */
     public List<String> columnContrastPack(SqlProductionDTO sqlProductionDTO) {
@@ -60,7 +60,7 @@ public class SqlPackService {
 
     /**
      * 两个数据库表的对比后结果sql集
-     * 
+     *
      *
      * @param sqlProductionDTO
      * @return
@@ -76,7 +76,7 @@ public class SqlPackService {
                 TableInfo mainTable = sqlProductionDTO.getLeftOrRight().equals(0) ? db.getLeftTableInfo() : db.getRightTableInfo();
                 TableInfo anotherTable =  !sqlProductionDTO.getLeftOrRight().equals(0) ? db.getLeftTableInfo() : db.getRightTableInfo();
                 List<ColumnInfo> columnInfos = sqlProductionDTO.getLeftOrRight().equals(0) ? db.getLeftColumnInfo() : db.getRightColumnInfo();
-                if (ObjectUtil.isNull(mainTable) && 
+                if (ObjectUtil.isNull(mainTable) &&
                         ObjectUtil.isNotNull(sqlProductionDTO.getDeleteTable())
                         && DbShopConstant.Rule_Yes.equals(sqlProductionDTO.getDeleteTable())) {
                     //删除
@@ -103,8 +103,8 @@ public class SqlPackService {
 
     /**
      * 对比思路：
-     * 
-     * 
+     *
+     *
      * @param columns
      * @param sqlProductionDTO
      * @return
@@ -154,9 +154,9 @@ public class SqlPackService {
         resultSql.addAll(0,deleteAutoincrement);
         return resultSql;
     }
-    
+
     private List<String> strategysDoing(List<String> resultSql,List<DataTypeRegularEnum> transformRegs,List<String> strategys){
-        if(CollectionUtil.isEmpty(resultSql)) return resultSql;
+        if(CollectionUtil.isEmpty(resultSql) || CollectionUtil.isEmpty(transformRegs)) return resultSql;
         //sql转化规则
         //TODO 暂时指定策略工厂
         SqlDataTypeTransformRule sqlDataTypeTransformRule = SqlDataTypeTransformRule.builder()

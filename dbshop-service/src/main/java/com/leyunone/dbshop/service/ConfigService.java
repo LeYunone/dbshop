@@ -54,6 +54,7 @@ public class ConfigService {
         AssertUtil.isFalse(ObjectUtil.isNull(metaData));
         //加载数据库信息
         DbInfo dbInfo = packInfoService.getDbInfo(metaData);
+        dbInfo.setDbName(query.getDbName());
         dbDataFactory.regist(DbStrategyUtil.getDbStrategy(query),dbInfo,DbInfo.class);
         //加载表信息
         List<TableInfo> tables = packInfoService.getTables(metaData, query.getDbName());
