@@ -2,6 +2,8 @@ package com.leyunone.dbshop.controller;
 
 import com.leyunone.dbshop.bean.DataResponse;
 import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
+import com.leyunone.dbshop.service.SqlPackService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/sql/production")
 public class SqlProductionController {
+    
+    @Autowired
+    private SqlPackService sqlPackService;
 
     /**
      * 表字段 级别 生成
