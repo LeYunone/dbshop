@@ -142,6 +142,19 @@
         </div>
     </div>
     <div>
+        <!--对比工具栏-->
+        <el-form :model="contrastParams" label-width="100px" class="demo-ruleForm">
+            <el-form-item label="对比类型" prop="type">
+                <el-checkbox label="是否进行深度比对" v-model="contrastParams.goDeep"></el-checkbox>
+                <el-checkbox label="是否进行备注级比对" v-model="contrastParams.goRemark"></el-checkbox>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="startTableContrast">立即创建</el-button>
+            </el-form-item>
+        </el-form>
+        <!--SQL生成工具栏-->
+    </div>
+    <div>
         <div>
             <!--最终结果集-->
         </div>
@@ -190,7 +203,17 @@
                 leftColumns: [],
                 rightColumns: [],
                 leftTableName: "",
-                rightTableName: ""
+                rightTableName: "",
+                contrastParams:{
+                    goDeep:"",
+                    goRemark:"",
+                    leftUrl:"",
+                    rightUrl:"",
+                    leftDbName:"",
+                    rightDbName:"",
+                    leftTablName:"",
+                    rightTableName:""
+                }
             }
         },
         mounted: function () {
@@ -317,6 +340,28 @@
                         this.rightDb = data.data;
                         //属性左表树
                         this.loadRightTree();
+                    } else {
+                        this.$message.error(data.message);
+                    }
+                })
+            },
+            //开始对比
+            startTableContrast(leftTablName,rightTableName){
+                axios({
+                    url:"/contrast/leftRightTableDo",
+                    method:"GET",
+                    params:{
+                        leftUrl:this.leftDb.url,
+                        rightUrl:this.rightDb.url,
+                        leftDbName:this.leftDb.dbName,
+                        rightDbName:this.rightDb.dbName,
+                        leftTablName:leftTablName,
+                        rightTableName:rightTableName
+                    }
+                }).then((res)=>{
+                    var data = res.data;
+                    if (data.status) {
+                        
                     } else {
                         this.$message.error(data.message);
                     }

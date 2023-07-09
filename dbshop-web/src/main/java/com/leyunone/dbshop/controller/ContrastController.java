@@ -6,6 +6,7 @@ import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import com.leyunone.dbshop.service.ContrastService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,13 +28,13 @@ public class ContrastController {
      * 左右表对比
      * @return
      */
-    @RequestMapping("/leftRightTableDo")
+    @GetMapping("/leftRightTableDo")
     public DataResponse<List<TableColumnContrastVO>> leftRightTableContrast(ContrastQuery contrastQuery) {
         List<TableColumnContrastVO> columnContrasts = contrastService.columnContrastToTable(contrastQuery);
         return DataResponse.of(columnContrasts);
     }
     
-    @RequestMapping("/leftRightDbDo")
+    @GetMapping("/leftRightDbDo")
     public DataResponse<List<DbTableContrastVO>> leftRightDbContrast(ContrastQuery query){
         List<DbTableContrastVO> dbTableContrastVOS = contrastService.dbTableContrast(query);
         return DataResponse.of(dbTableContrastVOS);
