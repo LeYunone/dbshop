@@ -150,6 +150,7 @@
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="startTableContrast">立即创建</el-button>
+                <el-button type="primary" @click="startTableContrast">Start</el-button>
             </el-form-item>
         </el-form>
         <!--SQL生成工具栏-->
@@ -346,7 +347,7 @@
                 })
             },
             //开始对比
-            startTableContrast(leftTablName,rightTableName){
+            startTableContrast(){
                 axios({
                     url:"/contrast/leftRightTableDo",
                     method:"GET",
@@ -355,21 +356,45 @@
                         rightUrl:this.rightDb.url,
                         leftDbName:this.leftDb.dbName,
                         rightDbName:this.rightDb.dbName,
-                        leftTablName:leftTablName,
-                        rightTableName:rightTableName
+                        leftTablName:this.leftTablName,
+                        rightTableName:this.rightTableName
                     }
                 }).then((res)=>{
                     var data = res.data;
                     if (data.status) {
-                        
+                        //回填左表
+                        let leftCMap = this.leftColumns.map(item =>({name: item.columnname}));
+                        //回填右表
+                        let rightCMap = this.rightColumns.map(item=>({name:item.columnname}))
+                        let contrastData = {
+                            leftColumn:{
+                                columnName:""
+                            },
+                            rightColumn:{
+                                columnName:""
+                            },
+                        };
+                        for(contrastData in data.data){
+                            if(contrastData.leftColumn!=null && leftCMap.contains(contrastData.leftColumn.columnName)){
+                                //判断差异值
+                            }else{
+                                //新增的字段
+                            }
+                            if(contrastData.rightColumn!=null && leftCMap.contains(contrastData.rightColumn.columnName)){
+                                //判断差异值
+                            }else{
+                                //新增的字段
+                            }
+                        }
+
                     } else {
                         this.$message.error(data.message);
                     }
                 })
             }
-        }
-    })
+        })
 </script>
 <style>
 
 </style>
+
