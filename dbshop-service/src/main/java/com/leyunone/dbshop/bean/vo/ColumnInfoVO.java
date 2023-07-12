@@ -47,4 +47,13 @@ public class ColumnInfoVO {
     
     //树形节点名称
     private String label;
+    
+    //是否为新增
+    private Boolean addColumn;
+    
+    //是否为删除
+    private Boolean deleteColumn;
+    
+    //是否为更新
+    private Boolean updateColumn;
 }

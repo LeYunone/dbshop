@@ -96,9 +96,11 @@
                     :data="leftColumns"
                     style="width: 100%">
                 <el-table-column
-                        prop="columnName"
                         label="字段名"
                         width="180">
+                    <template slot-scope="scope">
+                        <span style="margin-left: 10px">{{ scope.row.columnName }}</span>
+                    </template>
                 </el-table-column>
                 <el-table-column
                         prop="typeName"

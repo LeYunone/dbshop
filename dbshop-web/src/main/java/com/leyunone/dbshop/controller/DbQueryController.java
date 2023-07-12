@@ -35,7 +35,7 @@ public class DbQueryController {
     @GetMapping("/tables")
     public DataResponse<List<TableInfoVO>> dbTables(DBQuery query) {
         List<TableInfoVO> tableInfos = dbQueryService.getTableInfos(query);
-        //后台做tree树结构封装
+        //FIXME 后台做tree树结构封装
         if (CollectionUtil.isNotEmpty(tableInfos)) {
             tableInfos.forEach((table -> {
                 table.setLabel(table.getTableName());

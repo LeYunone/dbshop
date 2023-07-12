@@ -1,7 +1,13 @@
 package com.leyunone.dbshop.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.DataResponse;
+import com.leyunone.dbshop.bean.info.ColumnInfo;
+import com.leyunone.dbshop.bean.info.ColumnInfoVO;
 import com.leyunone.dbshop.bean.query.ContrastQuery;
+import com.leyunone.dbshop.bean.vo.ColumnContrastVO;
 import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import com.leyunone.dbshop.service.ContrastService;
@@ -10,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,9 +36,39 @@ public class ContrastController {
      * @return
      */
     @GetMapping("/leftRightTableDo")
-    public DataResponse<List<TableColumnContrastVO>> leftRightTableContrast(ContrastQuery contrastQuery) {
+    public DataResponse<ColumnContrastVO> leftRightTableContrast(ContrastQuery contrastQuery) {
         List<TableColumnContrastVO> columnContrasts = contrastService.columnContrastToTable(contrastQuery);
-        return DataResponse.of(columnContrasts);
+        //FIXME 后台做页面上的数据分析 因为不会js TAT
+        ColumnContrastVO columnContrastVO = new ColumnContrastVO();
+        if(CollectionUtil.isNotEmpty(columnContrasts)){
+            List<ColumnInfoVO> leftContrast = new ArrayList<>();
+            List<ColumnInfoVO> rightContrast = new ArrayList<>();
+            columnContrastVO.setLeftContrast(leftContrast);
+            columnContrastVO.setRightContrast(rightContrast);
+            for(TableColumnContrastVO tableColumnContrastVO : columnContrasts){
+                ColumnInfoVO columnInfoVO = new ColumnInfoVO();
+                if(tableColumnContrastVO.getNameDifferent()){
+                    //新增或删除
+                    columnInfoVO = JSONObject.parseObject(JSONObject.toJSONString(tableColumnContrastVO.getLeftColumn()),ColumnInfoVO.class);
+                    columnInfoVO.setAddColumn(true);
+                    if(ObjectUtil.isNotNull(tableColumnContrastVO.getLeftColumn())){
+                        //右表新增
+                        rightContrast.add(columnInfoVO);
+                        leftContrast.add(JSONObject.parseObject(JSONObject.toJSONString(tableColumnContrastVO.getLeftColumn()),ColumnInfoVO.class));
+                    }
+                    if(ObjectUtil.isNotNull(tableColumnContrastVO.getRightColumn())){
+                        //左表新增
+                        leftContrast.add(columnInfoVO);
+                        rightContrast.add(JSONObject.parseObject(JSONObject.toJSONString(tableColumnContrastVO.getLeftColumn()),ColumnInfoVO.class));
+                    }
+                }else{
+                    //更新
+                    
+                }
+                
+            }
+        }
+        return DataResponse.of(columnContrastVO);
     }
     
     @GetMapping("/leftRightDbDo")
