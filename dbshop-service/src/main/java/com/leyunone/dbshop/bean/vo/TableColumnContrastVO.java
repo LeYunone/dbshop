@@ -30,5 +30,7 @@ public class TableColumnContrastVO {
     private Boolean primaryKeyDifferent;
     //整形自增 true为差异
     private Boolean autoincrementDifferent;
+    //有无差异
+    private Boolean hasDifferent;
     //TODO 索引
 }

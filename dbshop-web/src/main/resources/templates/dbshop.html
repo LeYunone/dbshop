@@ -99,7 +99,15 @@
                         label="字段名"
                         width="180">
                     <template slot-scope="scope">
-                        <span style="margin-left: 10px">{{ scope.row.columnName }}</span>
+                        <div v-if="scope.row.addColumn==true">
+                            <span style="color: red">{{scope.row.columnName}}</span>
+                        </div>
+                        <div v-else-if="scope.row.updateColumn==true">
+                            <span style="color: deepskyblue">{{scope.row.columnName}}</span>
+                        </div>
+                        <div v-else>
+                            <span>{{ scope.row.columnName}}</span>
+                        </div>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -123,9 +131,19 @@
                     :data="rightColumns"
                     style="width: 100%">
                 <el-table-column
-                        prop="columnName"
                         label="字段名"
                         width="180">
+                    <template slot-scope="scope">
+                        <div v-if="scope.row.addColumn==true">
+                            <span style="color: red">{{scope.row.columnName}}</span>
+                        </div>
+                        <div v-else-if="scope.row.updateColumn==true">
+                            <span style="color: deepskyblue">{{scope.row.columnName}}</span>
+                        </div>
+                        <div v-else>
+                            <span>{{ scope.row.columnName}}</span>
+                        </div>
+                    </template>
                 </el-table-column>
                 <el-table-column
                         prop="typeName"
@@ -151,7 +169,6 @@
                 <el-checkbox label="是否进行备注级比对" v-model="contrastParams.goRemark"></el-checkbox>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="startTableContrast">立即创建</el-button>
                 <el-button type="primary" @click="startTableContrast">Start</el-button>
             </el-form-item>
         </el-form>
@@ -166,8 +183,6 @@
 </body>
 </html>
 <script>
-
-
     var app = new Vue({
         el: '#app',
         data() {
@@ -186,8 +201,8 @@
                     passWord: "root",
                 },
                 rightDbForm: {
-                    url: "jdbc:mysql://localhost:3306/test2023?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&nullCatalogMeansCurrent=true",
-                    dbName: "test2023",
+                    url: "jdbc:mysql://localhost:3306/test2023-1?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&nullCatalogMeansCurrent=true",
+                    dbName: "test2023-1",
                     userName: "root",
                     passWord: "root",
                 },
@@ -207,15 +222,15 @@
                 rightColumns: [],
                 leftTableName: "",
                 rightTableName: "",
-                contrastParams:{
-                    goDeep:"",
-                    goRemark:"",
-                    leftUrl:"",
-                    rightUrl:"",
-                    leftDbName:"",
-                    rightDbName:"",
-                    leftTablName:"",
-                    rightTableName:""
+                contrastParams: {
+                    goDeep: "",
+                    goRemark: "",
+                    leftUrl: "",
+                    rightUrl: "",
+                    leftDbName: "",
+                    rightDbName: "",
+                    leftTableName: "",
+                    rightTableName: ""
                 }
             }
         },
@@ -285,7 +300,6 @@
                     }
                 })
             },
-
             //右库树点击事件
             rightTableHandler(data) {
                 console.log(data);
@@ -349,52 +363,32 @@
                 })
             },
             //开始对比
-            startTableContrast(){
+            startTableContrast() {
                 axios({
-                    url:"/contrast/leftRightTableDo",
-                    method:"GET",
-                    params:{
-                        leftUrl:this.leftDb.url,
-                        rightUrl:this.rightDb.url,
-                        leftDbName:this.leftDb.dbName,
-                        rightDbName:this.rightDb.dbName,
-                        leftTablName:this.leftTablName,
-                        rightTableName:this.rightTableName
+                    url: "/contrast/leftRightTableDo",
+                    method: "GET",
+                    params: {
+                        leftUrl: this.leftDb.url,
+                        rightUrl: this.rightDb.url,
+                        leftDbName: this.leftDb.dbName,
+                        rightDbName: this.rightDb.dbName,
+                        leftTablName: this.leftTableName,
+                        rightTableName: this.rightTableName
                     }
-                }).then((res)=>{
+                }).then((res) => {
                     var data = res.data;
                     if (data.status) {
-                        //回填左表
-                        let leftCMap = this.leftColumns.map(item =>({name: item.columnname}));
-                        //回填右表
-                        let rightCMap = this.rightColumns.map(item=>({name:item.columnname}))
-                        let contrastData = {
-                            leftColumn:{
-                                columnName:""
-                            },
-                            rightColumn:{
-                                columnName:""
-                            },
-                        };
-                        for(contrastData in data.data){
-                            if(contrastData.leftColumn!=null && leftCMap.contains(contrastData.leftColumn.columnName)){
-                                //判断差异值
-                            }else{
-                                //新增的字段
-                            }
-                            if(contrastData.rightColumn!=null && leftCMap.contains(contrastData.rightColumn.columnName)){
-                                //判断差异值
-                            }else{
-                                //新增的字段
-                            }
-                        }
-
+                        let leftColumns = data.data.leftContrast;
+                        let rightColumns = data.data.rightContrast;
+                        this.leftColumns = leftColumns;
+                        this.rightColumns = rightColumns;
                     } else {
                         this.$message.error(data.message);
                     }
                 })
             }
-        })
+        }
+    })
 </script>
 <style>
 

@@ -149,6 +149,7 @@ public class ContrastService {
                     different = true;
                 }
             }
+            contrast.setHasDifferent(different);
         }
         return ResponseCell.build(different, result);
     }
