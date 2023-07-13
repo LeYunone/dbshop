@@ -91,7 +91,7 @@ public class SqlPackingTestService {
         DbInfo rightDbInfo = configService.loadConnectionToData(rightQuery);
 
         ContrastQuery contrastQuery = new ContrastQuery();
-        contrastQuery.setGoRemark(1);
+        contrastQuery.setGoRemark(true);
         contrastQuery.setGoDeep(DbShopConstant.Rule_Yes);
         contrastQuery.setLeftTablName("t_test");
         contrastQuery.setRightTableName("t_test");

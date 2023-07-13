@@ -1,5 +1,6 @@
 package com.leyunone.dbshop.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -47,26 +48,32 @@ public class ContrastController {
             columnContrastVO.setLeftContrast(leftContrast);
             columnContrastVO.setRightContrast(rightContrast);
             for (TableColumnContrastVO tableColumnContrastVO : columnContrasts) {
-                boolean hasLeft = ObjectUtil.isNotNull(tableColumnContrastVO.getLeftColumn());
-                ColumnInfoVO columnInfoVO = JSONObject.parseObject(JSONObject.toJSONString(hasLeft ? tableColumnContrastVO.getLeftColumn() : tableColumnContrastVO.getRightColumn()), ColumnInfoVO.class);
+                ColumnInfoVO leftColumn = JSONObject.parseObject(JSONObject.toJSONString(tableColumnContrastVO.getLeftColumn()), ColumnInfoVO.class);
+                ColumnInfoVO rightColumn = JSONObject.parseObject(JSONObject.toJSONString(tableColumnContrastVO.getRightColumn()), ColumnInfoVO.class);
                 if (tableColumnContrastVO.getNameDifferent()) {
                     //新增或删除
-                    columnInfoVO.setAddColumn(true);
                     if (ObjectUtil.isNotNull(tableColumnContrastVO.getLeftColumn())) {
                         //右表新增
-                        rightContrast.add(columnInfoVO);
-                        leftContrast.add(JSONObject.parseObject(JSONObject.toJSONString(tableColumnContrastVO.getLeftColumn()), ColumnInfoVO.class));
+                        rightColumn = new ColumnInfoVO();
+                        BeanUtil.copyProperties(leftColumn,rightColumn);
+                        leftColumn.setAddColumn(true);
+                        rightContrast.add(leftColumn);
+                        leftContrast.add(rightColumn);
                     }
                     if (ObjectUtil.isNotNull(tableColumnContrastVO.getRightColumn())) {
                         //左表新增
-                        leftContrast.add(columnInfoVO);
-                        rightContrast.add(JSONObject.parseObject(JSONObject.toJSONString(tableColumnContrastVO.getRightColumn()), ColumnInfoVO.class));
+                        leftColumn = new ColumnInfoVO();
+                        BeanUtil.copyProperties(rightColumn,leftColumn);
+                        rightColumn.setAddColumn(true);
+                        leftContrast.add(rightColumn);
+                        rightContrast.add(leftColumn);
                     }
                 } else {
                     //更新
-                    columnInfoVO.setUpdateColumn(tableColumnContrastVO.getHasDifferent());
-                    leftContrast.add(columnInfoVO);
-                    rightContrast.add(columnInfoVO);
+                    leftColumn.setUpdateColumn(tableColumnContrastVO.getHasDifferent());
+                    rightColumn.setUpdateColumn(tableColumnContrastVO.getHasDifferent());
+                    leftContrast.add(leftColumn);
+                    rightContrast.add(rightColumn);
                 }
             }
         }
