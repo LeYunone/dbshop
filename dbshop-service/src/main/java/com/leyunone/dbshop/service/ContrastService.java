@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -92,7 +93,7 @@ public class ContrastService {
      * @param right
      * @return
      */
-    private ResponseCell<Boolean, List<TableColumnContrastVO>> columnContrastdoing(List<ColumnInfo> left, List<ColumnInfo> right, Integer goRemark) {
+    private ResponseCell<Boolean, List<TableColumnContrastVO>> columnContrastdoing(List<ColumnInfo> left, List<ColumnInfo> right, Boolean goRemark) {
         List<TableColumnContrastVO> result = new ArrayList<>();
         if (CollectionUtil.isEmpty(right)) {
             //对比表不存在
@@ -126,6 +127,7 @@ public class ContrastService {
         //比较相同字段名下的字段类型 - size和type和remark
         for (TableColumnContrastVO contrast : result) {
             //名字相同 进行字段属性级比较
+            boolean hasDifferent = false;
             if (!contrast.getNameDifferent()) {
                 ColumnInfo leftColumn = contrast.getLeftColumn();
                 ColumnInfo rightColumn = contrast.getRightColumn();
@@ -143,13 +145,15 @@ public class ContrastService {
                  */
                 if (contrast.getSizeDifferent() || contrast.getTypeDifferent() || contrast.getPrimaryKeyDifferent() || contrast.getAutoincrementDifferent()) {
                     different = true;
+                    hasDifferent = true;
                 }
                 //规则级确认 goRemark = 1 备注
                 if (ObjectUtil.isNotNull(goRemark) && DbShopConstant.Rule_Yes.equals(goRemark) && contrast.getRemarkDifferent()) {
                     different = true;
+                    hasDifferent = true;
                 }
             }
-            contrast.setHasDifferent(different);
+            contrast.setHasDifferent(hasDifferent);
         }
         return ResponseCell.build(different, result);
     }

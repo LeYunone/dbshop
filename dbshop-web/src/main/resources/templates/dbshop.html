@@ -373,7 +373,9 @@
                         leftDbName: this.leftDb.dbName,
                         rightDbName: this.rightDb.dbName,
                         leftTablName: this.leftTableName,
-                        rightTableName: this.rightTableName
+                        rightTableName: this.rightTableName,
+                        goDeep: this.contrastParams.goDeep,
+                        goRemark: this.contrastParams.goRemark
                     }
                 }).then((res) => {
                     var data = res.data;

@@ -22,12 +22,12 @@ public class SqlRuleDTO {
     /**
      * 是否进行深度比对 0否 1是
      */
-    private Integer goDeep;
+    private Boolean goDeep;
 
     /**
      * 是否进行备注级比对 0否 1是
      */
-    private Integer goRemark;
+    private Boolean goRemark;
 
 
     //左右表主副判断  0 左表  1 右表

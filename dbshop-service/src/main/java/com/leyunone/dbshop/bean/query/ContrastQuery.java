@@ -25,12 +25,12 @@ public class ContrastQuery {
     private String rightTableName;
 
     /**
-     * 是否进行深度比对 0否 1是
+     * 是否进行深度比对 true是
      */
-    private Integer goDeep;
+    private Boolean goDeep;
 
     /**
-     * 是否进行备注级比对 0否 1是
+     * 是否进行备注级比对 true是
      */
-    private Integer goRemark;
+    private Boolean goRemark;
 }

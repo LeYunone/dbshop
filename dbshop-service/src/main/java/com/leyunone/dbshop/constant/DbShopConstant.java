@@ -11,9 +11,9 @@ public class DbShopConstant {
     
     public static final Boolean DIFFERENT = true;
     
-    public static final Integer Rule_Yes = 1;
+    public static final Boolean Rule_Yes = true;
     
-    public static final Integer Rule_No = 0;
+    public static final Boolean Rule_No = false;
 
     public static final String DELIM_STR = "{}";
 
