@@ -11,6 +11,7 @@ import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import com.leyunone.dbshop.constant.DbShopConstant;
 import com.leyunone.dbshop.system.factory.DBDataFactory;
+import com.leyunone.dbshop.util.AssertUtil;
 import com.leyunone.dbshop.util.DbStrategyUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -95,9 +96,8 @@ public class ContrastService {
      */
     private ResponseCell<Boolean, List<TableColumnContrastVO>> columnContrastdoing(List<ColumnInfo> left, List<ColumnInfo> right, Boolean goRemark) {
         List<TableColumnContrastVO> result = new ArrayList<>();
-        if (CollectionUtil.isEmpty(right)) {
-            //对比表不存在
-        }
+        //对比表不存在
+        AssertUtil.isFalse(CollectionUtil.isEmpty(right) || CollectionUtil.isEmpty(left),"表不存在");
         Map<String, ColumnInfo> rightMap = right.stream().collect(Collectors.toMap(ColumnInfo::getColumnName, Function.identity()));
         boolean different = false;
         //比较相同字段名 并且填充空白

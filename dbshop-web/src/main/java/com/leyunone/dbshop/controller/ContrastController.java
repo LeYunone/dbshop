@@ -42,6 +42,7 @@ public class ContrastController {
         List<TableColumnContrastVO> columnContrasts = contrastService.columnContrastToTable(contrastQuery);
         //FIXME 后台做页面上的数据分析 因为不会js TAT
         ColumnContrastVO columnContrastVO = new ColumnContrastVO();
+        columnContrastVO.setContrastColumnResults(columnContrasts);
         if (CollectionUtil.isNotEmpty(columnContrasts)) {
             List<ColumnInfoVO> leftContrast = new ArrayList<>();
             List<ColumnInfoVO> rightContrast = new ArrayList<>();

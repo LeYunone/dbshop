@@ -169,10 +169,32 @@
                 <el-checkbox label="是否进行备注级比对" v-model="contrastParams.goRemark"></el-checkbox>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="startTableContrast">Start</el-button>
+                <el-button type="primary" @click="startTableContrast">对比</el-button>
             </el-form-item>
         </el-form>
         <!--SQL生成工具栏-->
+        <el-form :model="productSqlParams" label-width="100px" class="demo-ruleForm">
+            <el-form-item label="选择主表：">
+                <el-radio-group v-model="productSqlParams.leftOrRight">
+                    <el-radio label="0">左表</el-radio>
+                    <el-radio label="1">右表</el-radio>
+                </el-radio-group>
+            </el-form-item>
+            <el-form-item label="解析类型" prop="type">
+                <el-checkbox label="是否进行备注级解析" v-model="productSqlParams.goRemark"></el-checkbox>
+                <el-checkbox label="是否删除表解析" v-model="contrastParams.deleteTable"></el-checkbox>
+            </el-form-item>
+            <el-form-item label="类型转化">
+                <el-checkbox-group v-model="productSqlParams.transformReg">
+                    <el-checkbox label="0" name="type">datetime(?)类型变为datetime(0)</el-checkbox>
+                    <el-checkbox label="1" name="type">bit(1)类型变为tinyint(1)</el-checkbox>
+                    <el-checkbox label="2" name="type">json(?)类型变为json(0)</el-checkbox>
+                </el-checkbox-group>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="startProductSql">生成</el-button>
+            </el-form-item>
+        </el-form>
     </div>
     <div>
         <div>
@@ -231,6 +253,16 @@
                     rightDbName: "",
                     leftTableName: "",
                     rightTableName: ""
+                },
+                //对比结果集
+                contrastResult: {
+                    columns: ""
+                },
+                productSqlParams: {
+                    leftOrRight: "0",
+                    goRemark: "",
+                    deleteTable: "",
+                    transformReg: []
                 }
             }
         },
@@ -384,6 +416,27 @@
                         let rightColumns = data.data.rightContrast;
                         this.leftColumns = leftColumns;
                         this.rightColumns = rightColumns;
+                        this.contrastResult.columns = data.data.contrastColumnResults;
+                    } else {
+                        this.$message.error(data.message);
+                    }
+                })
+            },
+            startProductSql() {
+                axios({
+                    url: "/sql/production/column",
+                    method: "POST",
+                    data: {
+                        contrastQuery: this.contrastParams,
+                        columns: this.contrastResult.columns,
+                        leftOrRight: this.productSqlParams.leftOrRight,
+                        goRemark: this.productSqlParams.goRemark,
+                        deleteTable: this.productSqlParams.deleteTable,
+                        transformReg: this.productSqlParams.transformReg
+                    }
+                }).then((res) => {
+                    var data = res.data;
+                    if (data.status) {
                     } else {
                         this.$message.error(data.message);
                     }
