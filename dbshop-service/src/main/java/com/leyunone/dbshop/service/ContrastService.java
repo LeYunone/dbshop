@@ -59,7 +59,7 @@ public class ContrastService {
         List<TableInfo> rightTables = dataFactory.getTableData(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, false)));
 
         List<DbTableContrastVO> dbTableContrastVOS = this.tableContrastdoing(leftTables, rightTables);
-        if (ObjectUtil.isNotNull(contrastQuery.getGoDeep()) && contrastQuery.getGoDeep().equals(DbShopConstant.Rule_Yes)) {
+//        if (ObjectUtil.isNotNull(contrastQuery.getGoDeep()) && contrastQuery.getGoDeep().equals(DbShopConstant.Rule_Yes)) {
             for (DbTableContrastVO dbTableContrastVO : dbTableContrastVOS) {
                 List<ColumnInfo> leftColumns = null;
                 List<ColumnInfo> rightColumns = null;
@@ -67,7 +67,7 @@ public class ContrastService {
                 TableInfo rightTableInfo = dbTableContrastVO.getRightTableInfo();
                 //字段值
                 if (ObjectUtil.isNotNull(leftTableInfo)) {
-                    contrastQuery.setLeftTablName(leftTableInfo.getTableName());
+                    contrastQuery.setLeftTableName(leftTableInfo.getTableName());
                     leftColumns = dataFactory.getColumnData(DbStrategyUtil.getColumnStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, true)));
                 }
                 if (ObjectUtil.isNotNull(rightTableInfo)) {
@@ -83,7 +83,7 @@ public class ContrastService {
                 dbTableContrastVO.setLeftColumnInfo(leftColumns);
                 dbTableContrastVO.setRightColumnInfo(rightColumns);
             }
-        }
+//        }
         return dbTableContrastVOS;
     }
 

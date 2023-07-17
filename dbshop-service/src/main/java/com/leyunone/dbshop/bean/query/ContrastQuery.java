@@ -20,7 +20,7 @@ public class ContrastQuery {
     
     private String rightDbName;
     
-    private String leftTablName;
+    private String leftTableName;
     
     private String rightTableName;
 

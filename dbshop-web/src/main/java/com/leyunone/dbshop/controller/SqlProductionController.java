@@ -6,11 +6,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.DataResponse;
 import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
 import com.leyunone.dbshop.bean.dto.TableColumnContrastDTO;
+import com.leyunone.dbshop.bean.query.ContrastQuery;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import com.leyunone.dbshop.service.ContrastService;
 import com.leyunone.dbshop.service.SqlPackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,15 +40,21 @@ public class SqlProductionController {
      * @return
      */
     @PostMapping("/column")
-    public DataResponse<?> contrastColumnSql(SqlProductionDTO sqlProductionDTO) {
-        if (ObjectUtil.isNull(sqlProductionDTO.getColumns())) {
+    public DataResponse<?> contrastColumnSql(@RequestBody SqlProductionDTO sqlProductionDTO) {
+        //对比与解析的共通规则赋予
+        ContrastQuery contrastQuery = sqlProductionDTO.getContrastQuery();
+        if (ObjectUtil.isNotNull(contrastQuery)) {
+            contrastQuery.setGoRemark(ObjectUtil.isNotNull(sqlProductionDTO.getGoRemark())?sqlProductionDTO.getGoRemark():contrastQuery.getGoRemark());
+        }
+
+        if (CollectionUtil.isEmpty(sqlProductionDTO.getColumns())) {
             List<TableColumnContrastVO> tableColumnContrastVOS = contrastService.columnContrastToTable(sqlProductionDTO.getContrastQuery());
             if (CollectionUtil.isNotEmpty(tableColumnContrastVOS)) {
                 sqlProductionDTO.setColumns(JSONObject.parseArray(JSONObject.toJSONString(tableColumnContrastVOS), TableColumnContrastDTO.class));
             }
         }
-        sqlPackService.columnContrastPack(sqlProductionDTO);
-        return DataResponse.of();
+        List<String> sqls = sqlPackService.columnContrastPack(sqlProductionDTO);
+        return DataResponse.of(sqls);
     }
 
     /**
