@@ -99,7 +99,15 @@
                         label="字段名"
                         width="180">
                     <template slot-scope="scope">
-                        <span style="margin-left: 10px">{{ scope.row.columnName }}</span>
+                        <div v-if="scope.row.addColumn==true">
+                            <span style="color: red">{{scope.row.columnName}}</span>
+                        </div>
+                        <div v-else-if="scope.row.updateColumn==true">
+                            <span style="color: deepskyblue">{{scope.row.columnName}}</span>
+                        </div>
+                        <div v-else>
+                            <span>{{ scope.row.columnName}}</span>
+                        </div>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -123,9 +131,19 @@
                     :data="rightColumns"
                     style="width: 100%">
                 <el-table-column
-                        prop="columnName"
                         label="字段名"
                         width="180">
+                    <template slot-scope="scope">
+                        <div v-if="scope.row.addColumn==true">
+                            <span style="color: red">{{scope.row.columnName}}</span>
+                        </div>
+                        <div v-else-if="scope.row.updateColumn==true">
+                            <span style="color: deepskyblue">{{scope.row.columnName}}</span>
+                        </div>
+                        <div v-else>
+                            <span>{{ scope.row.columnName}}</span>
+                        </div>
+                    </template>
                 </el-table-column>
                 <el-table-column
                         prop="typeName"
@@ -151,11 +169,32 @@
                 <el-checkbox label="是否进行备注级比对" v-model="contrastParams.goRemark"></el-checkbox>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="startTableContrast">立即创建</el-button>
-                <el-button type="primary" @click="startTableContrast">Start</el-button>
+                <el-button type="primary" @click="startTableContrast">对比</el-button>
             </el-form-item>
         </el-form>
         <!--SQL生成工具栏-->
+        <el-form :model="productSqlParams" label-width="100px" class="demo-ruleForm">
+            <el-form-item label="选择主表：">
+                <el-radio-group v-model="productSqlParams.leftOrRight">
+                    <el-radio label="0">左表</el-radio>
+                    <el-radio label="1">右表</el-radio>
+                </el-radio-group>
+            </el-form-item>
+            <el-form-item label="解析类型" prop="type">
+                <el-checkbox label="是否进行备注级解析" v-model="productSqlParams.goRemark"></el-checkbox>
+                <el-checkbox label="是否删除表解析" v-model="contrastParams.deleteTable"></el-checkbox>
+            </el-form-item>
+            <el-form-item label="类型转化">
+                <el-checkbox-group v-model="productSqlParams.transformReg">
+                    <el-checkbox label="0" name="type">datetime(?)类型变为datetime(0)</el-checkbox>
+                    <el-checkbox label="1" name="type">bit(1)类型变为tinyint(1)</el-checkbox>
+                    <el-checkbox label="2" name="type">json(?)类型变为json(0)</el-checkbox>
+                </el-checkbox-group>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="startProductSql">生成</el-button>
+            </el-form-item>
+        </el-form>
     </div>
     <div>
         <div>
@@ -166,8 +205,6 @@
 </body>
 </html>
 <script>
-
-
     var app = new Vue({
         el: '#app',
         data() {
@@ -186,8 +223,8 @@
                     passWord: "root",
                 },
                 rightDbForm: {
-                    url: "jdbc:mysql://localhost:3306/test2023?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&nullCatalogMeansCurrent=true",
-                    dbName: "test2023",
+                    url: "jdbc:mysql://localhost:3306/test2023-1?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&nullCatalogMeansCurrent=true",
+                    dbName: "test2023-1",
                     userName: "root",
                     passWord: "root",
                 },
@@ -207,15 +244,25 @@
                 rightColumns: [],
                 leftTableName: "",
                 rightTableName: "",
-                contrastParams:{
-                    goDeep:"",
-                    goRemark:"",
-                    leftUrl:"",
-                    rightUrl:"",
-                    leftDbName:"",
-                    rightDbName:"",
-                    leftTablName:"",
-                    rightTableName:""
+                contrastParams: {
+                    goDeep: "",
+                    goRemark: "",
+                    leftUrl: "",
+                    rightUrl: "",
+                    leftDbName: "",
+                    rightDbName: "",
+                    leftTableName: "",
+                    rightTableName: ""
+                },
+                //对比结果集
+                contrastResult: {
+                    columns: ""
+                },
+                productSqlParams: {
+                    leftOrRight: "0",
+                    goRemark: "",
+                    deleteTable: "",
+                    transformReg: []
                 }
             }
         },
@@ -285,7 +332,6 @@
                     }
                 })
             },
-
             //右库树点击事件
             rightTableHandler(data) {
                 console.log(data);
@@ -349,52 +395,55 @@
                 })
             },
             //开始对比
-            startTableContrast(){
+            startTableContrast() {
                 axios({
-                    url:"/contrast/leftRightTableDo",
-                    method:"GET",
-                    params:{
-                        leftUrl:this.leftDb.url,
-                        rightUrl:this.rightDb.url,
-                        leftDbName:this.leftDb.dbName,
-                        rightDbName:this.rightDb.dbName,
-                        leftTablName:this.leftTablName,
-                        rightTableName:this.rightTableName
+                    url: "/contrast/leftRightTableDo",
+                    method: "GET",
+                    params: {
+                        leftUrl: this.leftDb.url,
+                        rightUrl: this.rightDb.url,
+                        leftDbName: this.leftDb.dbName,
+                        rightDbName: this.rightDb.dbName,
+                        leftTablName: this.leftTableName,
+                        rightTableName: this.rightTableName,
+                        goDeep: this.contrastParams.goDeep,
+                        goRemark: this.contrastParams.goRemark
                     }
-                }).then((res)=>{
+                }).then((res) => {
                     var data = res.data;
                     if (data.status) {
-                        //回填左表
-                        let leftCMap = this.leftColumns.map(item =>({name: item.columnname}));
-                        //回填右表
-                        let rightCMap = this.rightColumns.map(item=>({name:item.columnname}))
-                        let contrastData = {
-                            leftColumn:{
-                                columnName:""
-                            },
-                            rightColumn:{
-                                columnName:""
-                            },
-                        };
-                        for(contrastData in data.data){
-                            if(contrastData.leftColumn!=null && leftCMap.contains(contrastData.leftColumn.columnName)){
-                                //判断差异值
-                            }else{
-                                //新增的字段
-                            }
-                            if(contrastData.rightColumn!=null && leftCMap.contains(contrastData.rightColumn.columnName)){
-                                //判断差异值
-                            }else{
-                                //新增的字段
-                            }
-                        }
-
+                        let leftColumns = data.data.leftContrast;
+                        let rightColumns = data.data.rightContrast;
+                        this.leftColumns = leftColumns;
+                        this.rightColumns = rightColumns;
+                        this.contrastResult.columns = data.data.contrastColumnResults;
+                    } else {
+                        this.$message.error(data.message);
+                    }
+                })
+            },
+            startProductSql() {
+                axios({
+                    url: "/sql/production/column",
+                    method: "POST",
+                    data: { 
+                        contrastQuery: this.contrastParams,
+                        columns: this.contrastResult.columns,
+                        leftOrRight: this.productSqlParams.leftOrRight,
+                        goRemark: this.productSqlParams.goRemark,
+                        deleteTable: this.productSqlParams.deleteTable,
+                        transformReg: this.productSqlParams.transformReg
+                    }
+                }).then((res) => {
+                    var data = res.data;
+                    if (data.status) {
                     } else {
                         this.$message.error(data.message);
                     }
                 })
             }
-        })
+        }
+    })
 </script>
 <style>
 

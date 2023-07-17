@@ -1,5 +1,6 @@
 package com.leyunone.dbshop.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -33,6 +34,7 @@ public class ContrastController {
 
     /**
      * 左右表对比
+     *
      * @return
      */
     @GetMapping("/leftRightTableDo")
@@ -40,39 +42,47 @@ public class ContrastController {
         List<TableColumnContrastVO> columnContrasts = contrastService.columnContrastToTable(contrastQuery);
         //FIXME 后台做页面上的数据分析 因为不会js TAT
         ColumnContrastVO columnContrastVO = new ColumnContrastVO();
-        if(CollectionUtil.isNotEmpty(columnContrasts)){
+        columnContrastVO.setContrastColumnResults(columnContrasts);
+        if (CollectionUtil.isNotEmpty(columnContrasts)) {
             List<ColumnInfoVO> leftContrast = new ArrayList<>();
             List<ColumnInfoVO> rightContrast = new ArrayList<>();
             columnContrastVO.setLeftContrast(leftContrast);
             columnContrastVO.setRightContrast(rightContrast);
-            for(TableColumnContrastVO tableColumnContrastVO : columnContrasts){
-                ColumnInfoVO columnInfoVO = new ColumnInfoVO();
-                if(tableColumnContrastVO.getNameDifferent()){
+            for (TableColumnContrastVO tableColumnContrastVO : columnContrasts) {
+                ColumnInfoVO leftColumn = JSONObject.parseObject(JSONObject.toJSONString(tableColumnContrastVO.getLeftColumn()), ColumnInfoVO.class);
+                ColumnInfoVO rightColumn = JSONObject.parseObject(JSONObject.toJSONString(tableColumnContrastVO.getRightColumn()), ColumnInfoVO.class);
+                if (tableColumnContrastVO.getNameDifferent()) {
                     //新增或删除
-                    columnInfoVO = JSONObject.parseObject(JSONObject.toJSONString(tableColumnContrastVO.getLeftColumn()),ColumnInfoVO.class);
-                    columnInfoVO.setAddColumn(true);
-                    if(ObjectUtil.isNotNull(tableColumnContrastVO.getLeftColumn())){
+                    if (ObjectUtil.isNotNull(tableColumnContrastVO.getLeftColumn())) {
                         //右表新增
-                        rightContrast.add(columnInfoVO);
-                        leftContrast.add(JSONObject.parseObject(JSONObject.toJSONString(tableColumnContrastVO.getLeftColumn()),ColumnInfoVO.class));
+                        rightColumn = new ColumnInfoVO();
+                        BeanUtil.copyProperties(leftColumn,rightColumn);
+                        leftColumn.setAddColumn(true);
+                        rightContrast.add(leftColumn);
+                        leftContrast.add(rightColumn);
                     }
-                    if(ObjectUtil.isNotNull(tableColumnContrastVO.getRightColumn())){
+                    if (ObjectUtil.isNotNull(tableColumnContrastVO.getRightColumn())) {
                         //左表新增
-                        leftContrast.add(columnInfoVO);
-                        rightContrast.add(JSONObject.parseObject(JSONObject.toJSONString(tableColumnContrastVO.getLeftColumn()),ColumnInfoVO.class));
+                        leftColumn = new ColumnInfoVO();
+                        BeanUtil.copyProperties(rightColumn,leftColumn);
+                        rightColumn.setAddColumn(true);
+                        leftContrast.add(rightColumn);
+                        rightContrast.add(leftColumn);
                     }
-                }else{
+                } else {
                     //更新
-                    
+                    leftColumn.setUpdateColumn(tableColumnContrastVO.getHasDifferent());
+                    rightColumn.setUpdateColumn(tableColumnContrastVO.getHasDifferent());
+                    leftContrast.add(leftColumn);
+                    rightContrast.add(rightColumn);
                 }
-                
             }
         }
         return DataResponse.of(columnContrastVO);
     }
-    
+
     @GetMapping("/leftRightDbDo")
-    public DataResponse<List<DbTableContrastVO>> leftRightDbContrast(ContrastQuery query){
+    public DataResponse<List<DbTableContrastVO>> leftRightDbContrast(ContrastQuery query) {
         List<DbTableContrastVO> dbTableContrastVOS = contrastService.dbTableContrast(query);
         return DataResponse.of(dbTableContrastVOS);
     }

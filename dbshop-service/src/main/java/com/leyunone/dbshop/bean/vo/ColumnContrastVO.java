@@ -26,4 +26,6 @@ public class ColumnContrastVO {
      * 右表结果集
      */
     private List<ColumnInfoVO> rightContrast;
+    
+    private List<TableColumnContrastVO> contrastColumnResults;
 }

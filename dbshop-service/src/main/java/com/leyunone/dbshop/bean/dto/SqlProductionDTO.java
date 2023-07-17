@@ -1,5 +1,6 @@
 package com.leyunone.dbshop.bean.dto;
 
+import com.leyunone.dbshop.bean.query.ContrastQuery;
 import com.leyunone.dbshop.bean.rule.SqlDataTypeTransformRule;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import com.leyunone.dbshop.enums.DataTypeRegularEnum;
@@ -26,10 +27,10 @@ public class SqlProductionDTO {
     private Integer leftOrRight;
     
     //是否进行备注级解析 0否 1是
-    private Integer goRemark;
+    private Boolean goRemark;
     
     //是否删除表 0否 1是
-    private Integer deleteTable;
+    private Boolean deleteTable;
 
     /**
      * 以下为sql类型转化规则
@@ -42,5 +43,10 @@ public class SqlProductionDTO {
      * [type_transform 类型转换] 
      */
     private List<String> productionStrategys;
+
+    /**
+     * 对比查询值
+     */
+    private ContrastQuery contrastQuery;
 
 }

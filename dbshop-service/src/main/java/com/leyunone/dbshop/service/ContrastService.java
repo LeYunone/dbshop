@@ -11,6 +11,7 @@ import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import com.leyunone.dbshop.constant.DbShopConstant;
 import com.leyunone.dbshop.system.factory.DBDataFactory;
+import com.leyunone.dbshop.util.AssertUtil;
 import com.leyunone.dbshop.util.DbStrategyUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -92,11 +94,10 @@ public class ContrastService {
      * @param right
      * @return
      */
-    private ResponseCell<Boolean, List<TableColumnContrastVO>> columnContrastdoing(List<ColumnInfo> left, List<ColumnInfo> right, Integer goRemark) {
+    private ResponseCell<Boolean, List<TableColumnContrastVO>> columnContrastdoing(List<ColumnInfo> left, List<ColumnInfo> right, Boolean goRemark) {
         List<TableColumnContrastVO> result = new ArrayList<>();
-        if (CollectionUtil.isEmpty(right)) {
-            //对比表不存在
-        }
+        //对比表不存在
+        AssertUtil.isFalse(CollectionUtil.isEmpty(right) || CollectionUtil.isEmpty(left),"表不存在");
         Map<String, ColumnInfo> rightMap = right.stream().collect(Collectors.toMap(ColumnInfo::getColumnName, Function.identity()));
         boolean different = false;
         //比较相同字段名 并且填充空白
@@ -126,6 +127,7 @@ public class ContrastService {
         //比较相同字段名下的字段类型 - size和type和remark
         for (TableColumnContrastVO contrast : result) {
             //名字相同 进行字段属性级比较
+            boolean hasDifferent = false;
             if (!contrast.getNameDifferent()) {
                 ColumnInfo leftColumn = contrast.getLeftColumn();
                 ColumnInfo rightColumn = contrast.getRightColumn();
@@ -143,12 +145,15 @@ public class ContrastService {
                  */
                 if (contrast.getSizeDifferent() || contrast.getTypeDifferent() || contrast.getPrimaryKeyDifferent() || contrast.getAutoincrementDifferent()) {
                     different = true;
+                    hasDifferent = true;
                 }
                 //规则级确认 goRemark = 1 备注
                 if (ObjectUtil.isNotNull(goRemark) && DbShopConstant.Rule_Yes.equals(goRemark) && contrast.getRemarkDifferent()) {
                     different = true;
+                    hasDifferent = true;
                 }
             }
+            contrast.setHasDifferent(hasDifferent);
         }
         return ResponseCell.build(different, result);
     }

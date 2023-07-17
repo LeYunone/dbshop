@@ -20,22 +20,22 @@ public class SqlRuleDTO {
 
 
     /**
-     * 是否进行深度比对 0否 1是
+     * 是否进行深度比对 true是
      */
-    private Integer goDeep;
+    private Boolean goDeep;
 
     /**
-     * 是否进行备注级比对 0否 1是
+     * 是否进行备注级比对 true是
      */
-    private Integer goRemark;
+    private Boolean goRemark;
 
 
     //左右表主副判断  0 左表  1 右表
     @NotNull(message = "must be setting a main dbinfo")
     private Integer leftOrRight;
 
-    //是否删除表 0否 1是
-    private Integer deleteTable;
+    //是否删除表 true是
+    private Boolean deleteTable;
 
     /**
      * 以下为sql类型转化规则

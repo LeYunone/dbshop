@@ -89,7 +89,7 @@ public class ContrastTestService {
         contrastQuery.setLeftUrl(leftQuery.getUrl());
         contrastQuery.setRightUrl(rightQuery.getUrl());
         
-        contrastQuery.setGoDeep(1);
+        contrastQuery.setGoDeep(true);
         List<DbTableContrastVO> dbTableContrastVOS = contrastService.dbTableContrast(contrastQuery);
         System.out.println(dbTableContrastVOS.size());
     }
