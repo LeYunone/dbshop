@@ -54,7 +54,7 @@ public class ContrastTestService {
         DbInfo rightDbInfo = configService.loadConnectionToData(rightQuery);
         
         ContrastQuery contrastQuery = new ContrastQuery();
-        contrastQuery.setLeftTablName("d_fast_command");
+        contrastQuery.setLeftTableName("d_fast_command");
         contrastQuery.setRightTableName("d_fast_command");
         
         contrastQuery.setLeftDbName(leftQuery.getDbName());

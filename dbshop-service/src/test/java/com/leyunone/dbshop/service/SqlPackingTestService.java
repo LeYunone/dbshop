@@ -51,7 +51,7 @@ public class SqlPackingTestService {
         DbInfo rightDbInfo = configService.loadConnectionToData(rightQuery);
 
         ContrastQuery contrastQuery = new ContrastQuery();
-        contrastQuery.setLeftTablName("d_fast_command");
+        contrastQuery.setLeftTableName("d_fast_command");
         contrastQuery.setRightTableName("d_fast_command");
 
         contrastQuery.setLeftDbName(leftQuery.getDbName());
@@ -93,7 +93,7 @@ public class SqlPackingTestService {
         ContrastQuery contrastQuery = new ContrastQuery();
         contrastQuery.setGoRemark(true);
         contrastQuery.setGoDeep(DbShopConstant.Rule_Yes);
-        contrastQuery.setLeftTablName("t_test");
+        contrastQuery.setLeftTableName("t_test");
         contrastQuery.setRightTableName("t_test");
 
         contrastQuery.setLeftDbName(leftQuery.getDbName());

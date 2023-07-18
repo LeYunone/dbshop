@@ -34,10 +34,15 @@ public class DbStrategyUtil {
     }
 
     public static DBQuery loadContrastRule(ContrastQuery contrastQuery, boolean yesLeft) {
-        if (yesLeft) {
-            return DBQuery.builder().tableName(contrastQuery.getLeftTablName()).dbName(contrastQuery.getLeftDbName()).url(contrastQuery.getLeftUrl()).build();
-        }else{
-            return DBQuery.builder().tableName(contrastQuery.getRightTableName()).dbName(contrastQuery.getRightDbName()).url(contrastQuery.getRightUrl()).build();
+        try {
+            if (yesLeft) {
+                return DBQuery.builder().tableName(contrastQuery.getLeftTableName()).dbName(contrastQuery.getLeftDbName()).url(contrastQuery.getLeftUrl()).build();
+            }else{
+                return DBQuery.builder().tableName(contrastQuery.getRightTableName()).dbName(contrastQuery.getRightDbName()).url(contrastQuery.getRightUrl()).build();
+            }
+        }catch (Exception e){
+            AssertUtil.isFalse(true,"参数非法");
         }
+        return null;
     }
 }

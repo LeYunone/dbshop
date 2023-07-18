@@ -1,6 +1,7 @@
 package com.leyunone.dbshop.util;
 
 import com.leyunone.dbshop.bean.ResponseCode;
+import com.leyunone.dbshop.exception.DbShopException;
 
 /**
  * @author leyunone
@@ -15,36 +16,36 @@ public class AssertUtil {
     }
 
     public static void isFalse(boolean condition,String message){
-        isFalse(condition,new RuntimeException(message));
+        isFalse(condition,new DbShopException(message));
     }
 
     public static void isFalse(boolean condition){
-        isFalse(condition,new RuntimeException("system error"));
+        isFalse(condition,new DbShopException("system error"));
     }
 
-    public static void isFalse(boolean condition,RuntimeException ex){
+    public static void isFalse(boolean condition,DbShopException ex){
         isTrue(!condition,ex);
     }
 
-    public static void isTrue(boolean condition,RuntimeException ex){
+    public static void isTrue(boolean condition,DbShopException ex){
         if(!condition){
             throw ex;
         }
     }
 
-    public static void isTrue(boolean condition,String msg){
+    public static void isTrue(boolean condition,String msg) throws DbShopException {
         if(!condition){
-            throw new RuntimeException(msg);
+            throw new DbShopException(msg);
         }
     }
 
     public static void isTrue(boolean condition){
         if(!condition){
-            throw new RuntimeException("系统异常");
+            throw new DbShopException("系统异常");
         }
     }
 
     public static void isTrue(String msg){
-        throw new RuntimeException(msg);
+        throw new DbShopException(msg);
     }
 }

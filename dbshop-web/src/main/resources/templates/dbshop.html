@@ -165,7 +165,7 @@
         <!--对比工具栏-->
         <el-form :model="contrastParams" label-width="100px" class="demo-ruleForm">
             <el-form-item label="对比类型" prop="type">
-                <el-checkbox label="是否进行深度比对" v-model="contrastParams.goDeep"></el-checkbox>
+<!--                <el-checkbox label="是否进行深度比对" v-model="contrastParams.goDeep"></el-checkbox>-->
                 <el-checkbox label="是否进行备注级比对" v-model="contrastParams.goRemark"></el-checkbox>
             </el-form-item>
             <el-form-item>
@@ -182,7 +182,7 @@
             </el-form-item>
             <el-form-item label="解析类型" prop="type">
                 <el-checkbox label="是否进行备注级解析" v-model="productSqlParams.goRemark"></el-checkbox>
-                <el-checkbox label="是否删除表解析" v-model="contrastParams.deleteTable"></el-checkbox>
+                <el-checkbox label="是否删除表解析" v-model="productSqlParams.deleteTable"></el-checkbox>
             </el-form-item>
             <el-form-item label="类型转化">
                 <el-checkbox-group v-model="productSqlParams.transformReg">
@@ -199,6 +199,7 @@
     <div>
         <div>
             <!--最终结果集-->
+            <span>{{sqls}}</span>
         </div>
     </div>
 </div>
@@ -242,8 +243,6 @@
                 },
                 leftColumns: [],
                 rightColumns: [],
-                leftTableName: "",
-                rightTableName: "",
                 contrastParams: {
                     goDeep: "",
                     goRemark: "",
@@ -256,14 +255,15 @@
                 },
                 //对比结果集
                 contrastResult: {
-                    columns: ""
+                    columns: []
                 },
                 productSqlParams: {
                     leftOrRight: "0",
                     goRemark: "",
                     deleteTable: "",
                     transformReg: []
-                }
+                },
+                sqls:[]
             }
         },
         mounted: function () {
@@ -273,8 +273,10 @@
             //左库树点击事件
             leftTableHandler(data) {
                 console.log(data);
-                if (this.leftTableName === data.tableName) return;
-                this.leftTableName = data.tableName;
+                if (this.contrastParams.leftTableName === data.tableName) return;
+                this.contrastParams.leftTableName = data.tableName;
+                this.contrastParams.leftDbName = this.leftDb.dbName;
+                this.contrastParams.leftUrl = this.leftDb.url;
                 if (data.columns != null) {
                     //点击表节点
                     this.leftColumns = data.columns
@@ -335,8 +337,10 @@
             //右库树点击事件
             rightTableHandler(data) {
                 console.log(data);
-                if (this.rightTableName === data.tableName) return;
-                this.rightTableName = data.tableName;
+                if (this.contrastParams.rightTableName === data.tableName) return;
+                this.contrastParams.rightTableName = data.tableName;
+                this.contrastParams.rightDbName = this.rightDb.dbName;
+                this.contrastParams.rightUrl = this.rightDb.url;
                 if (data.columns != null) {
                     //点击表节点
                     this.rightColumns = data.columns
@@ -399,16 +403,7 @@
                 axios({
                     url: "/contrast/leftRightTableDo",
                     method: "GET",
-                    params: {
-                        leftUrl: this.leftDb.url,
-                        rightUrl: this.rightDb.url,
-                        leftDbName: this.leftDb.dbName,
-                        rightDbName: this.rightDb.dbName,
-                        leftTablName: this.leftTableName,
-                        rightTableName: this.rightTableName,
-                        goDeep: this.contrastParams.goDeep,
-                        goRemark: this.contrastParams.goRemark
-                    }
+                    params: this.contrastParams
                 }).then((res) => {
                     var data = res.data;
                     if (data.status) {
@@ -437,6 +432,7 @@
                 }).then((res) => {
                     var data = res.data;
                     if (data.status) {
+                        this.sqls = data.data;
                     } else {
                         this.$message.error(data.message);
                     }
