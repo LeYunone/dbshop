@@ -24,64 +24,66 @@
         <!--抬头布局-->
         <div>
             <!--左表-->
-            <el-form :inline="true" :model="leftDbForm" class="demo-form-inline">
-                <el-form-item label="URL">
-                    <el-input v-model="leftDbForm.url" placeholder="URL"></el-input>
-                </el-form-item>
-                <el-form-item label="账号">
-                    <el-input v-model="leftDbForm.userName" placeholder="账号"></el-input>
-                </el-form-item>
-                <el-form-item label="密码">
-                    <el-input v-model="leftDbForm.passWord" placeholder="密码"></el-input>
-                </el-form-item>
-                <el-form-item label="数据库">
-                    <el-input v-model="leftDbForm.dbName" placeholder="数据库"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="loadLeftDb">加载</el-button>
-                </el-form-item>
-            </el-form>
-            <el-descriptions title="数据库信息" :column="3" border>
-                <el-descriptions-item label="数据库url">{{leftDb.url}}</el-descriptions-item>
-                <el-descriptions-item label="账户名">{{leftDb.userName}}</el-descriptions-item>
-                <el-descriptions-item label="是否只读">{{leftDb.readOnly}}</el-descriptions-item>
-            </el-descriptions>
-        </div>
-        <div>
-            <!--右表-->
-            <el-form :inline="true" :model="rightDbForm" class="demo-form-inline">
-                <el-form-item label="URL">
-                    <el-input v-model="rightDbForm.url" placeholder="URL"></el-input>
-                </el-form-item>
-                <el-form-item label="账号">
-                    <el-input v-model="rightDbForm.userName" placeholder="账号"></el-input>
-                </el-form-item>
-                <el-form-item label="密码">
-                    <el-input v-model="rightDbForm.passWord" placeholder="密码"></el-input>
-                </el-form-item>
-                <el-form-item label="数据库">
-                    <el-input v-model="rightDbForm.dbName" placeholder="数据库"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="loadRightDb">加载</el-button>
-                </el-form-item>
-            </el-form>
-            <el-descriptions title="数据库信息" :column="3" border>
-                <el-descriptions-item label="数据库url">{{rightDb.url}}</el-descriptions-item>
-                <el-descriptions-item label="账户名">{{rightDb.userName}}</el-descriptions-item>
-                <el-descriptions-item label="是否只读">{{rightDb.readOnly}}</el-descriptions-item>
-            </el-descriptions>
+            <div>
+                <el-form :inline="true" :model="leftDbForm" class="demo-form-inline">
+                    <el-form-item label="URL">
+                        <el-input v-model="leftDbForm.url" placeholder="URL"></el-input>
+                    </el-form-item>
+                    <el-form-item label="账号">
+                        <el-input v-model="leftDbForm.userName" placeholder="账号"></el-input>
+                    </el-form-item>
+                    <el-form-item label="密码">
+                        <el-input v-model="leftDbForm.passWord" placeholder="密码"></el-input>
+                    </el-form-item>
+                    <el-form-item label="数据库">
+                        <el-input v-model="leftDbForm.dbName" placeholder="数据库"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="loadLeftDb">加载</el-button>
+                    </el-form-item>
+                </el-form>
+                <el-descriptions title="数据库信息" :column="3" border>
+                    <el-descriptions-item label="数据库url">{{leftDb.url}}</el-descriptions-item>
+                    <el-descriptions-item label="账户名">{{leftDb.userName}}</el-descriptions-item>
+                    <el-descriptions-item label="是否只读">{{leftDb.readOnly}}</el-descriptions-item>
+                </el-descriptions> 
+            </div>
+            <div>
+                <!--右表-->
+                <el-form :inline="true" :model="rightDbForm" class="demo-form-inline">
+                    <el-form-item label="URL">
+                        <el-input v-model="rightDbForm.url" placeholder="URL"></el-input>
+                    </el-form-item>
+                    <el-form-item label="账号">
+                        <el-input v-model="rightDbForm.userName" placeholder="账号"></el-input>
+                    </el-form-item>
+                    <el-form-item label="密码">
+                        <el-input v-model="rightDbForm.passWord" placeholder="密码"></el-input>
+                    </el-form-item>
+                    <el-form-item label="数据库">
+                        <el-input v-model="rightDbForm.dbName" placeholder="数据库"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="loadRightDb">加载</el-button>
+                    </el-form-item>
+                </el-form>
+                <el-descriptions title="数据库信息" :column="3" border>
+                    <el-descriptions-item label="数据库url">{{rightDb.url}}</el-descriptions-item>
+                    <el-descriptions-item label="账户名">{{rightDb.userName}}</el-descriptions-item>
+                    <el-descriptions-item label="是否只读">{{rightDb.readOnly}}</el-descriptions-item>
+                </el-descriptions>
+            </div>
         </div>
     </div>
-    <div>
-        <div>
+    <div style="width: 30%">
+        <div class="table-tree">
             <!--左表树-->
             <el-tree :data="leftTableTree" highlight-current ref="tree"
                      node-key="id"
                      :props="defaultProps" @node-click="leftTableHandler"></el-tree>
 
         </div>
-        <div>
+        <div class="table-tree">
             <!--右表树-->
             <!--左表树-->
             <el-tree :data="rightTableTree" highlight-current ref="tree"
@@ -89,7 +91,7 @@
                      :props="defaultProps" @node-click="rightTableHandler"></el-tree>
         </div>
     </div>
-    <div>
+    <div style="float: right">
         <div>
             <!--左表结果集-->
             <el-table
@@ -199,7 +201,9 @@
     <div>
         <div>
             <!--最终结果集-->
-            <span>{{sqls}}</span>
+            <div v-for="sql in sqls">
+                {{sql}}
+            </div>
         </div>
     </div>
 </div>
@@ -442,6 +446,11 @@
     })
 </script>
 <style>
-
+    .table-tree{
+        margin-top: 50px;
+        width: 300px;
+        height: 70%;
+        overflow: scroll;
+    }
 </style>
 
