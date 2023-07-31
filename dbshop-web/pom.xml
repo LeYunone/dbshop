@@ -5,7 +5,7 @@
 
     <artifactId>dbshop-web</artifactId>
     <name>dbshop-web</name>
-
+    
     <parent>
         <groupId>com.leyunone</groupId>
         <artifactId>dbshop</artifactId>

@@ -46,7 +46,7 @@
                     <el-descriptions-item label="数据库url">{{leftDb.url}}</el-descriptions-item>
                     <el-descriptions-item label="账户名">{{leftDb.userName}}</el-descriptions-item>
                     <el-descriptions-item label="是否只读">{{leftDb.readOnly}}</el-descriptions-item>
-                </el-descriptions> 
+                </el-descriptions>
             </div>
             <div>
                 <!--右表-->
@@ -75,7 +75,7 @@
             </div>
         </div>
     </div>
-    <div style="width: 100%;margin-top: 100px">
+    <div style="width: 100%;padding-top: 100px">
         <div>
             <!--左表树-->
             <div class="table-tree">
@@ -119,6 +119,11 @@
                     </el-table-column>
                 </el-table>
             </div>
+        </div>
+        <div>
+            <!--工具栏-->
+            <el-button type="primary" @click="contrastDialog = true">对比</el-button>
+            <el-button type="primary" @click="sqlDialog = true">SQL生成</el-button>
         </div>
         <div>
             <!--右表树-->
@@ -167,17 +172,36 @@
         </div>
     </div>
     <div>
-        <!--对比工具栏-->
-        <el-form :model="contrastParams" label-width="100px" class="demo-ruleForm">
+        <div>
+            <!--最终结果集-->
+            <div v-for="sql in sqls">
+                {{sql}}
+            </div>
+        </div>
+    </div>
+
+    <el-dialog
+            title="对比"
+            :visible.sync="contrastDialog"
+            width="30%"
+            center>
+        <el-form :model="contrastParams" label-width="100px">
             <el-form-item label="对比类型" prop="type">
-<!--                <el-checkbox label="是否进行深度比对" v-model="contrastParams.goDeep"></el-checkbox>-->
+                <!--                <el-checkbox label="是否进行深度比对" v-model="contrastParams.goDeep"></el-checkbox>-->
                 <el-checkbox label="是否进行备注级比对" v-model="contrastParams.goRemark"></el-checkbox>
             </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="startTableContrast">对比</el-button>
-            </el-form-item>
         </el-form>
-        <!--SQL生成工具栏-->
+        <span slot="footer" class="dialog-footer">
+        <el-button @click="contrastDialog = false">取 消</el-button>
+        <el-button type="primary" @click="startTableContrast">对 比</el-button>
+        </span>
+    </el-dialog>
+
+    <el-dialog
+            title="生成SQL"
+            :visible.sync="sqlDialog"
+            width="30%"
+            center>
         <el-form :model="productSqlParams" label-width="100px" class="demo-ruleForm">
             <el-form-item label="选择主表：">
                 <el-radio-group v-model="productSqlParams.leftOrRight">
@@ -196,19 +220,12 @@
                     <el-checkbox label="2" name="type">json(?)类型变为json(0)</el-checkbox>
                 </el-checkbox-group>
             </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="startProductSql">生成</el-button>
-            </el-form-item>
         </el-form>
-    </div>
-    <div>
-        <div>
-            <!--最终结果集-->
-            <div v-for="sql in sqls">
-                {{sql}}
-            </div>
-        </div>
-    </div>
+        <span slot="footer" class="dialog-footer">
+        <el-button @click="sqlDialog = false">取 消</el-button>
+        <el-button type="primary" @click="startProductSql">生 成</el-button>
+        </span>
+    </el-dialog>
 </div>
 </body>
 </html>
@@ -217,6 +234,8 @@
         el: '#app',
         data() {
             return {
+                sqlDialog:false,
+                contrastDialog: false,
                 leftTableTree: [],
                 rightTableTree: [],
                 defaultProps: {
@@ -270,7 +289,7 @@
                     deleteTable: "",
                     transformReg: []
                 },
-                sqls:[]
+                sqls: []
             }
         },
         mounted: function () {
@@ -428,7 +447,7 @@
                 axios({
                     url: "/sql/production/column",
                     method: "POST",
-                    data: { 
+                    data: {
                         contrastQuery: this.contrastParams,
                         columns: this.contrastResult.columns,
                         leftOrRight: this.productSqlParams.leftOrRight,
@@ -449,17 +468,27 @@
     })
 </script>
 <style>
-    .table-tree{
+    .contrast-tool {
+        margin-top: 10px;
+    }
+
+    .sql-tool {
+        margin-top: 10px;
+    }
+
+    .table-tree {
         width: 20%;
         float: left;
         height: 500px;
         border-right: 1px black;
     }
-    .table-columns{
+
+    .table-columns {
         width: 70%;
         float: left;
     }
-    .tree-assembly{
+
+    .tree-assembly {
         margin-top: 50px;
     }
 </style>
