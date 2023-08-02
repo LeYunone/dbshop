@@ -130,48 +130,52 @@
         <div>
             <el-container style="height: 600px; border: 1px solid #eee">
                 <!--右表树-->
-                <div class="table-tree">
-                    <!--右表树-->
-                    <el-tree :data="rightTableTree" highlight-current ref="tree"
-                             class="tree-assembly"
-                             node-key="id"
-                             :props="defaultProps" @node-click="rightTableHandler"></el-tree>
-                </div>
-                <div class="table-columns">
-                    <!--右表结果集-->
-                    <el-table
-                            height="500"
-                            :data="rightColumns">
-                        <el-table-column
-                                label="字段名"
-                                width="180">
-                            <template slot-scope="scope">
-                                <div v-if="scope.row.addColumn==true">
-                                    <span style="color: red">{{scope.row.columnName}}</span>
-                                </div>
-                                <div v-else-if="scope.row.updateColumn==true">
-                                    <span style="color: deepskyblue">{{scope.row.columnName}}</span>
-                                </div>
-                                <div v-else>
-                                    <span>{{ scope.row.columnName}}</span>
-                                </div>
-                            </template>
-                        </el-table-column>
-                        <el-table-column
-                                prop="typeName"
-                                label="类型"
-                                width="180">
-                        </el-table-column>
-                        <el-table-column
-                                prop="columnSize"
-                                label="字段长度">
-                        </el-table-column>
-                        <el-table-column
-                                prop="remarks"
-                                label="备注">
-                        </el-table-column>
-                    </el-table>
-                </div>
+                <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+                    <div class="table-tree">
+                        <!--右表树-->
+                        <el-tree :data="rightTableTree" highlight-current ref="tree"
+                                 class="tree-assembly"
+                                 node-key="id"
+                                 :props="defaultProps" @node-click="rightTableHandler"></el-tree>
+                    </div>
+                </el-aside>
+                <el-container>
+                    <div class="table-columns">
+                        <!--右表结果集-->
+                        <el-table
+                                height="500"
+                                :data="rightColumns">
+                            <el-table-column
+                                    label="字段名"
+                                    width="180">
+                                <template slot-scope="scope">
+                                    <div v-if="scope.row.addColumn==true">
+                                        <span style="color: red">{{scope.row.columnName}}</span>
+                                    </div>
+                                    <div v-else-if="scope.row.updateColumn==true">
+                                        <span style="color: deepskyblue">{{scope.row.columnName}}</span>
+                                    </div>
+                                    <div v-else>
+                                        <span>{{ scope.row.columnName}}</span>
+                                    </div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    prop="typeName"
+                                    label="类型"
+                                    width="180">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="columnSize"
+                                    label="字段长度">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="remarks"
+                                    label="备注">
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                </el-container>
             </el-container>
         </div>
     </div>
@@ -238,7 +242,7 @@
         el: '#app',
         data() {
             return {
-                sqlDialog:false,
+                sqlDialog: false,
                 contrastDialog: false,
                 leftTableTree: [],
                 rightTableTree: [],
