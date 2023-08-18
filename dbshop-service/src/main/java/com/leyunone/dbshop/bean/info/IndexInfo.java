@@ -55,5 +55,26 @@ public class IndexInfo {
          * 列名
          */
         private String columnName;
+
+        @Override
+        public int hashCode() {
+            int result = index != null ? index.hashCode() : 0;
+            result = 31 * result + (columnName != null ? columnName.hashCode() : 0);
+            return result;
+        }
+    }
+
+    /**
+     * 只重写hashcode方法用来比较
+     * @return
+     */
+    @Override
+    public int hashCode() {
+        int result = columns != null ? columns.hashCode() : 0;
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (ascOrDesc != null ? ascOrDesc.hashCode() : 0);
+        result = 31 * result + cardinality;
+        result = 31 * result + (indexName != null ? indexName.hashCode() : 0);
+        return result;
     }
 }

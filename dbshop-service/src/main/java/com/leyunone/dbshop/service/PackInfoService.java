@@ -139,7 +139,7 @@ public class PackInfoService {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         DatabaseMetaData databaseMetaData = ConnectService.toTest();
         PackInfoService packInfoService = new PackInfoService();
-        packInfoService.getTables(databaseMetaData,"test2023");
+        List<TableInfo> test20231 = packInfoService.getTables(databaseMetaData, "test2023");
         List<ColumnInfo> columns = packInfoService.getColumns(databaseMetaData, "test2023", null);
         List<TableInfo> test2023 = packInfoService.getTables(databaseMetaData, "test2023");
         
