@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.bo.AnalysisSqlBO;
 import com.leyunone.dbshop.bean.dto.DbTableContrastDTO;
+import com.leyunone.dbshop.bean.dto.IndexDTO;
 import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
 import com.leyunone.dbshop.bean.dto.TableColumnContrastDTO;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
@@ -155,6 +156,19 @@ public class SqlPackService {
         resultSql.addAll(0, deletePrimaryKey);
         resultSql.addAll(0, deleteAutoincrement);
         return resultSql;
+    }
+    
+    private List<String> getIndexCompareSqls(SqlProductionDTO sqlProductionDTO) {
+        List<IndexDTO> leftIndex = sqlProductionDTO.getLeftIndex();
+        List<IndexDTO> rightIndex = sqlProductionDTO.getRightIndex();
+        //0 左表主 1 右表主
+        List<IndexDTO> mainIndex = sqlProductionDTO.getLeftOrRight().equals(0) ? leftIndex : rightIndex;
+        List<IndexDTO> anotherIndex= !sqlProductionDTO.getLeftOrRight().equals(0) ? leftIndex : rightIndex;
+        
+        //以主表遍历解析sql语句
+        for(IndexDTO main:mainIndex){
+            
+        }
     }
 
     private List<String> strategysDoing(List<String> resultSql, List<DataTypeRegularEnum> transformRegs, List<String> strategys) {
