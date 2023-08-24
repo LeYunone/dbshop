@@ -3,6 +3,7 @@ package com.leyunone.dbshop.bean.info;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -24,4 +25,6 @@ public class TableInfo {
     private String remarks;
 
     private Set<String> primarys = new HashSet<>();
+    
+    private List<IndexInfo> indexInfos;
 }

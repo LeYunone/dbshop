@@ -30,4 +30,6 @@ public class DbTableContrastVO {
     private Boolean hasDifference;
 
     private Boolean nameDifference;
+    
+    private Boolean indexDifference;
 }

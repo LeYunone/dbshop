@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.bo.AnalysisSqlBO;
 import com.leyunone.dbshop.bean.dto.DbTableContrastDTO;
+import com.leyunone.dbshop.bean.dto.IndexDTO;
 import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
 import com.leyunone.dbshop.bean.dto.TableColumnContrastDTO;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
@@ -52,15 +53,18 @@ public class SqlPackService {
         List<TableColumnContrastDTO> columns = sqlProductionDTO.getColumns();
         if (CollectionUtil.isEmpty(columns) || ObjectUtil.isNull(sqlProductionDTO.getLeftOrRight()))
             return new ArrayList<>();
+        if (ObjectUtil.isNotNull(sqlProductionDTO.getIndexDifference()) && DbShopConstant.Rule_Yes.equals(sqlProductionDTO.getIndexDifference())) {
+            //索引差异
+            
+        }
 
         List<String> resultSql = this.getColumnCompareSqls(columns, sqlProductionDTO);
         //策略处理流
-        return this.strategysDoing(resultSql,sqlProductionDTO.getTransformReg(),sqlProductionDTO.getProductionStrategys());
+        return this.strategysDoing(resultSql, sqlProductionDTO.getTransformReg(), sqlProductionDTO.getProductionStrategys());
     }
 
     /**
      * 两个数据库表的对比后结果sql集
-     *
      *
      * @param sqlProductionDTO
      * @return
@@ -74,18 +78,18 @@ public class SqlPackService {
             if (db.getNameDifference()) {
                 //表名字不同 猜疑是新增表或删除表
                 TableInfo mainTable = sqlProductionDTO.getLeftOrRight().equals(0) ? db.getLeftTableInfo() : db.getRightTableInfo();
-                TableInfo anotherTable =  !sqlProductionDTO.getLeftOrRight().equals(0) ? db.getLeftTableInfo() : db.getRightTableInfo();
+                TableInfo anotherTable = !sqlProductionDTO.getLeftOrRight().equals(0) ? db.getLeftTableInfo() : db.getRightTableInfo();
                 List<ColumnInfo> columnInfos = sqlProductionDTO.getLeftOrRight().equals(0) ? db.getLeftColumnInfo() : db.getRightColumnInfo();
                 if (ObjectUtil.isNull(mainTable) &&
                         ObjectUtil.isNotNull(sqlProductionDTO.getDeleteTable())
                         && DbShopConstant.Rule_Yes.equals(sqlProductionDTO.getDeleteTable())) {
                     //删除
-                    if(ObjectUtil.isNotNull(anotherTable)){
-                        result.add(SqlPackUtil.packing(SqlModelEnum.DROP_TABLE,anotherTable,null));
+                    if (ObjectUtil.isNotNull(anotherTable)) {
+                        result.add(SqlPackUtil.packing(SqlModelEnum.DROP_TABLE, anotherTable, null));
                     }
                 } else {
                     //新增，封装语句
-                    if(ObjectUtil.isNotNull(mainTable)){
+                    if (ObjectUtil.isNotNull(mainTable)) {
                         result.add(SqlPackUtil.packing(SqlModelEnum.CREATE_TABLE, mainTable, columnInfos));
                     }
                 }
@@ -104,7 +108,6 @@ public class SqlPackService {
     /**
      * 对比思路：
      *
-     *
      * @param columns
      * @param sqlProductionDTO
      * @return
@@ -121,13 +124,13 @@ public class SqlPackService {
             if (!columnContrastDTO.getNameDifferent()) {
                 //修改字段sql集
                 List<AnalysisSqlBO> modifySqls = analysisSqlService.modifyColumnSql(columnContrastDTO, sqlProductionDTO);
-                if(CollectionUtil.isNotEmpty(modifySqls)){
+                if (CollectionUtil.isNotEmpty(modifySqls)) {
                     /**
                      * 单表规则
                      * 删除自增sql和删除主键在最前面 ，  删除自增sql在删除主键前面
                      */
-                    modifySqls.forEach((t)->{
-                        switch (t.getSqlModel()){
+                    modifySqls.forEach((t) -> {
+                        switch (t.getSqlModel()) {
                             case DELETE_AUTOINCREMENT:
                                 deleteAutoincrement.add(t.getSql());
                                 break;
@@ -150,13 +153,26 @@ public class SqlPackService {
                 }
             }
         }
-        resultSql.addAll(0,deletePrimaryKey);
-        resultSql.addAll(0,deleteAutoincrement);
+        resultSql.addAll(0, deletePrimaryKey);
+        resultSql.addAll(0, deleteAutoincrement);
         return resultSql;
     }
+    
+    private List<String> getIndexCompareSqls(SqlProductionDTO sqlProductionDTO) {
+        List<IndexDTO> leftIndex = sqlProductionDTO.getLeftIndex();
+        List<IndexDTO> rightIndex = sqlProductionDTO.getRightIndex();
+        //0 左表主 1 右表主
+        List<IndexDTO> mainIndex = sqlProductionDTO.getLeftOrRight().equals(0) ? leftIndex : rightIndex;
+        List<IndexDTO> anotherIndex= !sqlProductionDTO.getLeftOrRight().equals(0) ? leftIndex : rightIndex;
+        
+        //以主表遍历解析sql语句
+        for(IndexDTO main:mainIndex){
+            
+        }
+    }
 
-    private List<String> strategysDoing(List<String> resultSql,List<DataTypeRegularEnum> transformRegs,List<String> strategys){
-        if(CollectionUtil.isEmpty(resultSql) || CollectionUtil.isEmpty(transformRegs)) return resultSql;
+    private List<String> strategysDoing(List<String> resultSql, List<DataTypeRegularEnum> transformRegs, List<String> strategys) {
+        if (CollectionUtil.isEmpty(resultSql) || CollectionUtil.isEmpty(transformRegs)) return resultSql;
         //sql转化规则
         //TODO 暂时指定策略工厂
         SqlDataTypeTransformRule sqlDataTypeTransformRule = SqlDataTypeTransformRule.builder()

@@ -1,8 +1,11 @@
 package com.leyunone.dbshop.service;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.DbInfo;
+import com.leyunone.dbshop.bean.info.IndexInfo;
 import com.leyunone.dbshop.bean.info.TableInfo;
 import com.leyunone.dbshop.enums.ColumnResultEnum;
 import com.leyunone.dbshop.enums.TableResultEnum;
@@ -13,10 +16,7 @@ import org.springframework.stereotype.Service;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 组装信息服务
@@ -71,10 +71,28 @@ public class PackInfoService {
                         .tableType(rs.getString(TableResultEnum.TABLE_TYPE.getType())).primarys(CollectionUtil.newHashSet())
                         .remarks(rs.getString(TableResultEnum.REMARKS.getType())).build();
                 ResultSet primaryKeys = meta.getPrimaryKeys(dbName, null, tableInfo.getTableName());
+                ResultSet indexInfo = meta.getIndexInfo(dbName, null, tableInfo.getTableName(), false, true);
                 while (primaryKeys.next()){
                     //表主键
                     tableInfo.getPrimarys().add(primaryKeys.getString(TableResultEnum.PK_COLUMN_NAME.getType()));
                 }
+                Map<String, IndexInfo> indexMap = new HashMap<>();
+                while (indexInfo.next()) {
+                    String indexName = indexInfo.getString("INDEX_NAME");
+                    IndexInfo info = indexMap.get(indexName);
+                    if(ObjectUtil.isNull(info)){
+                        info = new IndexInfo();
+                        indexMap.put(indexName,info);
+                    }
+//                    boolean nonUnique = indexInfo.getBoolean("NON_UNIQUE");        // 非唯一索引(Can index values be non-unique. false when TYPE is  tableIndexStatistic   )
+//                    String indexQualifier = indexInfo.getString("INDEX_QUALIFIER");// 索引目录（可能为空）
+                    info.setAscOrDesc(indexInfo.getString("ASC_OR_DESC"));
+                    info.setCardinality(indexInfo.getInt("CARDINALITY"));
+                    info.setIndexName(indexInfo.getString("INDEX_NAME"));
+                    info.setType(indexInfo.getInt("TYPE"));
+                    info.getColumns().add(IndexInfo.IndexColumn.builder().index(indexInfo.getInt("ORDINAL_POSITION")).columnName(indexInfo.getString("COLUMN_NAME")).build());
+                }
+                tableInfo.setIndexInfos(CollectionUtil.newArrayList(indexMap.values()));
                 tableInfos.add(tableInfo);
             }
         }catch (Exception e){
@@ -121,7 +139,7 @@ public class PackInfoService {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         DatabaseMetaData databaseMetaData = ConnectService.toTest();
         PackInfoService packInfoService = new PackInfoService();
-        packInfoService.getTables(databaseMetaData,"test2023");
+        List<TableInfo> test20231 = packInfoService.getTables(databaseMetaData, "test2023");
         List<ColumnInfo> columns = packInfoService.getColumns(databaseMetaData, "test2023", null);
         List<TableInfo> test2023 = packInfoService.getTables(databaseMetaData, "test2023");
         

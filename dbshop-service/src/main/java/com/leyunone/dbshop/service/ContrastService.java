@@ -173,15 +173,21 @@ public class ContrastService {
         for (TableInfo lt : left) {
             DbTableContrastVO dbTableContrastVO = new DbTableContrastVO();
             dbTableContrastVO.setLeftTableInfo(lt);
+            boolean hasDifference = DbShopConstant.DIFFERENT;
             if (rightMap.containsKey(lt.getTableName())) {
+                TableInfo rightTable = rightMap.get(lt.getTableName());
+                dbTableContrastVO.setRightTableInfo(rightTable);
                 dbTableContrastVO.setNameDifference(DbShopConstant.SAME);
-                dbTableContrastVO.setRightTableInfo(rightMap.get(lt.getTableName()));
-                dbTableContrastVO.setHasDifference(DbShopConstant.SAME);
+                dbTableContrastVO.setIndexDifference(rightTable.getIndexInfos().hashCode()==lt.getIndexInfos().hashCode());
+                //索引对比
+                if(rightTable.getIndexInfos().hashCode()==lt.getIndexInfos().hashCode()) {
+                    hasDifference = DbShopConstant.SAME;
+                }
                 rightMap.remove(lt.getTableName());
             } else {
                 dbTableContrastVO.setNameDifference(DbShopConstant.DIFFERENT);
-                dbTableContrastVO.setHasDifference(DbShopConstant.DIFFERENT);
             }
+            dbTableContrastVO.setHasDifference(hasDifference);
             result.add(dbTableContrastVO);
         }
         if (CollectionUtil.isNotEmpty(rightMap)) {
