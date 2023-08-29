@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -55,7 +57,7 @@ public class SqlPackService {
             return new ArrayList<>();
         if (ObjectUtil.isNotNull(sqlProductionDTO.getIndexDifference()) && DbShopConstant.Rule_Yes.equals(sqlProductionDTO.getIndexDifference())) {
             //索引差异
-            
+
         }
 
         List<String> resultSql = this.getColumnCompareSqls(columns, sqlProductionDTO);
@@ -157,17 +159,19 @@ public class SqlPackService {
         resultSql.addAll(0, deleteAutoincrement);
         return resultSql;
     }
-    
+
     private List<String> getIndexCompareSqls(SqlProductionDTO sqlProductionDTO) {
         List<IndexDTO> leftIndex = sqlProductionDTO.getLeftIndex();
         List<IndexDTO> rightIndex = sqlProductionDTO.getRightIndex();
         //0 左表主 1 右表主
         List<IndexDTO> mainIndex = sqlProductionDTO.getLeftOrRight().equals(0) ? leftIndex : rightIndex;
         List<IndexDTO> anotherIndex= !sqlProductionDTO.getLeftOrRight().equals(0) ? leftIndex : rightIndex;
-        
+        Map<String, IndexDTO> anotherIndexMap = anotherIndex.stream().collect(Collectors.toMap(IndexDTO::getIndexName, Function.identity()));
+
         //以主表遍历解析sql语句
         for(IndexDTO main:mainIndex){
-            
+            IndexDTO indexDTO = anotherIndexMap.get(main.getIndexName());
+
         }
     }
 
