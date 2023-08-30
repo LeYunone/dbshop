@@ -2,21 +2,17 @@ package com.leyunone.dbshop.system.factory;
 
 
 import cn.hutool.core.util.ObjectUtil;
-import com.leyunone.dbshop.bean.info.ColumnInfo;
-import com.leyunone.dbshop.bean.info.DbInfo;
-import com.leyunone.dbshop.bean.info.TableInfo;
-import com.leyunone.dbshop.util.DbStrategyUtil;
+import com.leyunone.dbshop.bean.info.*;
 import com.mysql.cj.xdevapi.DbDocFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.sql.DatabaseMetaData;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * 数据库信息仓库工厂
@@ -34,8 +30,8 @@ public class DBDataFactory {
      * 存储策略 数据库 URL + db名
      */
     private Map<String, DbInfo> dbMap = new HashMap<>();
-    private Map<String, List<TableInfo>> tableMap = new HashMap<>();
-    private Map<String, List<ColumnInfo>> columnMap = new HashMap<>();
+    private Map<String, List<TableDetailInfo>> tableDetailMap = new HashMap<>();
+    private Map<String, TableInfo> tableMap = new HashMap<>();
 
     public final static Logger logger = LoggerFactory.getLogger(DbDocFactory.class);
 
@@ -47,11 +43,11 @@ public class DBDataFactory {
         if (clazz.isAssignableFrom(DbInfo.class)) {
             dbMap.put(strategy, (DbInfo) o);
         }
-        if (clazz.isAssignableFrom(TableInfo.class)) {
-            tableMap.put(strategy, (List<TableInfo>) o);
+        if (clazz.isAssignableFrom(TableDetailInfo.class)) {
+            tableDetailMap.put(strategy, (List<TableDetailInfo>) o);
         }
-        if (clazz.isAssignableFrom(ColumnInfo.class)) {
-            columnMap.put(strategy, (List<ColumnInfo>) o);
+        if (clazz.isAssignableFrom(TableInfo.class)) {
+            tableMap.put(strategy, (TableInfo) o);
         }
     }
 
@@ -62,12 +58,26 @@ public class DBDataFactory {
         return dbMap.get(strategy);
     }
     
-    public List<TableInfo> getTableData(String strategy) {
-        return tableMap.get(strategy);
+    public List<TableDetailInfo> getTableData(String strategy) {
+        return tableDetailMap.get(strategy);
     }
     
     public List<ColumnInfo> getColumnData(String strategy){
-        return columnMap.get(strategy);
+        List<ColumnInfo> columnInfos = new ArrayList<>();
+        TableInfo tableInfo = tableMap.get(strategy);
+        if(ObjectUtil.isNotNull(tableInfo)){
+            columnInfos = tableInfo.getColumnInfos();
+        }
+        return columnInfos;
+    }
+
+    public List<IndexInfo> getIndexData(String strategy){
+        List<IndexInfo> indexInfos = new ArrayList<>();
+        TableInfo tableInfo = tableMap.get(strategy);
+        if(ObjectUtil.isNotNull(tableInfo)){
+            indexInfos = tableInfo.getIndexInfos();
+        }
+        return indexInfos;
     }
 //
 //    /**

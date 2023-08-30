@@ -1,8 +1,7 @@
 package com.leyunone.dbshop.bean.dto;
 
 import com.leyunone.dbshop.bean.info.ColumnInfo;
-import com.leyunone.dbshop.bean.info.TableInfo;
-import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
+import com.leyunone.dbshop.bean.info.TableDetailInfo;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,9 +17,9 @@ import java.util.List;
 @Setter
 public class DbTableContrastDTO {
 
-    private TableInfo leftTableInfo;
+    private TableDetailInfo leftTableDetailInfo;
     
-    private TableInfo rightTableInfo;
+    private TableDetailInfo rightTableDetailInfo;
     
     private List<ColumnInfo> leftColumnInfo;
     

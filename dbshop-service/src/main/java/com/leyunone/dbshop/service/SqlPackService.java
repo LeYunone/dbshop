@@ -9,7 +9,7 @@ import com.leyunone.dbshop.bean.dto.IndexDTO;
 import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
 import com.leyunone.dbshop.bean.dto.TableColumnContrastDTO;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
-import com.leyunone.dbshop.bean.info.TableInfo;
+import com.leyunone.dbshop.bean.info.TableDetailInfo;
 import com.leyunone.dbshop.bean.rule.SqlDataTypeTransformRule;
 import com.leyunone.dbshop.constant.DbShopConstant;
 import com.leyunone.dbshop.enums.DataTypeRegularEnum;
@@ -79,8 +79,8 @@ public class SqlPackService {
         for (DbTableContrastDTO db : dbs) {
             if (db.getNameDifference()) {
                 //表名字不同 猜疑是新增表或删除表
-                TableInfo mainTable = sqlProductionDTO.getLeftOrRight().equals(0) ? db.getLeftTableInfo() : db.getRightTableInfo();
-                TableInfo anotherTable = !sqlProductionDTO.getLeftOrRight().equals(0) ? db.getLeftTableInfo() : db.getRightTableInfo();
+                TableDetailInfo mainTable = sqlProductionDTO.getLeftOrRight().equals(0) ? db.getLeftTableDetailInfo() : db.getRightTableDetailInfo();
+                TableDetailInfo anotherTable = !sqlProductionDTO.getLeftOrRight().equals(0) ? db.getLeftTableDetailInfo() : db.getRightTableDetailInfo();
                 List<ColumnInfo> columnInfos = sqlProductionDTO.getLeftOrRight().equals(0) ? db.getLeftColumnInfo() : db.getRightColumnInfo();
                 if (ObjectUtil.isNull(mainTable) &&
                         ObjectUtil.isNotNull(sqlProductionDTO.getDeleteTable())
@@ -167,11 +167,13 @@ public class SqlPackService {
         List<IndexDTO> mainIndex = sqlProductionDTO.getLeftOrRight().equals(0) ? leftIndex : rightIndex;
         List<IndexDTO> anotherIndex= !sqlProductionDTO.getLeftOrRight().equals(0) ? leftIndex : rightIndex;
         Map<String, IndexDTO> anotherIndexMap = anotherIndex.stream().collect(Collectors.toMap(IndexDTO::getIndexName, Function.identity()));
-
+        
         //以主表遍历解析sql语句
         for(IndexDTO main:mainIndex){
             IndexDTO indexDTO = anotherIndexMap.get(main.getIndexName());
-
+            if(ObjectUtil.isNull(indexDTO)){
+                //新增索引
+            }
         }
     }
 

@@ -2,11 +2,10 @@ package com.leyunone.dbshop.service;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.DbInfo;
 import com.leyunone.dbshop.bean.info.IndexInfo;
-import com.leyunone.dbshop.bean.info.TableInfo;
+import com.leyunone.dbshop.bean.info.TableDetailInfo;
 import com.leyunone.dbshop.enums.ColumnResultEnum;
 import com.leyunone.dbshop.enums.TableResultEnum;
 import org.slf4j.Logger;
@@ -61,45 +60,55 @@ public class PackInfoService {
      * @param meta
      * @param dbName
      */
-    public List<TableInfo> getTables(DatabaseMetaData meta, String dbName) {
-        List<TableInfo> tableInfos = new ArrayList<>();
+    public List<TableDetailInfo> getTables(DatabaseMetaData meta, String dbName) {
+        List<TableDetailInfo> tableDetailInfos = new ArrayList<>();
         try {
             ResultSet rs = meta.getTables(dbName, "%", "%",
                     new String[] { "TABLE" });
             while (rs.next()) {
-                TableInfo tableInfo = TableInfo.builder().tableName(rs.getString(TableResultEnum.TABLE_NAME.getType()))
+                TableDetailInfo tableDetailInfo = TableDetailInfo.builder().tableName(rs.getString(TableResultEnum.TABLE_NAME.getType()))
                         .tableType(rs.getString(TableResultEnum.TABLE_TYPE.getType())).primarys(CollectionUtil.newHashSet())
                         .remarks(rs.getString(TableResultEnum.REMARKS.getType())).build();
-                ResultSet primaryKeys = meta.getPrimaryKeys(dbName, null, tableInfo.getTableName());
-                ResultSet indexInfo = meta.getIndexInfo(dbName, null, tableInfo.getTableName(), false, true);
+                ResultSet primaryKeys = meta.getPrimaryKeys(dbName, null, tableDetailInfo.getTableName());
                 while (primaryKeys.next()){
                     //表主键
-                    tableInfo.getPrimarys().add(primaryKeys.getString(TableResultEnum.PK_COLUMN_NAME.getType()));
+                    tableDetailInfo.getPrimarys().add(primaryKeys.getString(TableResultEnum.PK_COLUMN_NAME.getType()));
                 }
-                Map<String, IndexInfo> indexMap = new HashMap<>();
-                while (indexInfo.next()) {
-                    String indexName = indexInfo.getString("INDEX_NAME");
-                    IndexInfo info = indexMap.get(indexName);
-                    if(ObjectUtil.isNull(info)){
-                        info = new IndexInfo();
-                        indexMap.put(indexName,info);
-                    }
-//                    boolean nonUnique = indexInfo.getBoolean("NON_UNIQUE");        // 非唯一索引(Can index values be non-unique. false when TYPE is  tableIndexStatistic   )
-//                    String indexQualifier = indexInfo.getString("INDEX_QUALIFIER");// 索引目录（可能为空）
-                    info.setAscOrDesc(indexInfo.getString("ASC_OR_DESC"));
-                    info.setCardinality(indexInfo.getInt("CARDINALITY"));
-                    info.setIndexName(indexInfo.getString("INDEX_NAME"));
-                    info.setType(indexInfo.getInt("TYPE"));
-                    info.getColumns().add(IndexInfo.IndexColumn.builder().index(indexInfo.getInt("ORDINAL_POSITION")).columnName(indexInfo.getString("COLUMN_NAME")).build());
-                }
-                tableInfo.setIndexInfos(CollectionUtil.newArrayList(indexMap.values()));
-                tableInfos.add(tableInfo);
+                tableDetailInfos.add(tableDetailInfo);
             }
         }catch (Exception e){
             e.printStackTrace();
             logger.error("db表解析失败+：Exception：{}",e.getMessage());
         }
-        return tableInfos;
+        return tableDetailInfos;
+    }
+
+    /**
+     * 索引信息
+     * @return
+     */
+    public List<IndexInfo> getIndexs(DatabaseMetaData meta,String dbName,String tableName) {
+        Map<String, IndexInfo> indexMap = new HashMap<>();
+        try {
+            ResultSet indexInfo = meta.getIndexInfo(dbName, null, tableName, false, true);
+            while (indexInfo.next()) {
+                String indexName = indexInfo.getString("INDEX_NAME");
+                IndexInfo info = indexMap.get(indexName);
+                if(ObjectUtil.isNull(info)){
+                    info = new IndexInfo();
+                    indexMap.put(indexName,info);
+                }
+//                    boolean nonUnique = indexInfo.getBoolean("NON_UNIQUE");        // 非唯一索引(Can index values be non-unique. false when TYPE is  tableIndexStatistic   )
+//                    String indexQualifier = indexInfo.getString("INDEX_QUALIFIER");// 索引目录（可能为空）
+                info.setAscOrDesc(indexInfo.getString("ASC_OR_DESC"));
+                info.setCardinality(indexInfo.getInt("CARDINALITY"));
+                info.setIndexName(indexInfo.getString("INDEX_NAME"));
+                info.setType(indexInfo.getInt("TYPE"));
+                info.getColumns().add(IndexInfo.IndexColumn.builder().index(indexInfo.getInt("ORDINAL_POSITION")).columnName(indexInfo.getString("COLUMN_NAME")).build());
+            }
+        }catch (Exception e){
+        }
+        return CollectionUtil.newArrayList(indexMap.values());
     }
     
     public List<ColumnInfo> getColumns(DatabaseMetaData meta,String dbName,String tableName) {
@@ -139,9 +148,9 @@ public class PackInfoService {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         DatabaseMetaData databaseMetaData = ConnectService.toTest();
         PackInfoService packInfoService = new PackInfoService();
-        List<TableInfo> test20231 = packInfoService.getTables(databaseMetaData, "test2023");
+        List<TableDetailInfo> test20231 = packInfoService.getTables(databaseMetaData, "test2023");
         List<ColumnInfo> columns = packInfoService.getColumns(databaseMetaData, "test2023", null);
-        List<TableInfo> test2023 = packInfoService.getTables(databaseMetaData, "test2023");
+        List<TableDetailInfo> test2023 = packInfoService.getTables(databaseMetaData, "test2023");
         
         System.out.println(test2023.size());
         System.out.println(columns.size());

@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.ResponseCode;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.ColumnInfoVO;
-import com.leyunone.dbshop.bean.info.TableInfo;
+import com.leyunone.dbshop.bean.info.TableDetailInfo;
 import com.leyunone.dbshop.bean.query.DBQuery;
 import com.leyunone.dbshop.bean.vo.TableInfoVO;
 import com.leyunone.dbshop.system.factory.DBDataFactory;
@@ -34,7 +34,7 @@ public class DBQueryService {
      * @param query
      */
     public List<TableInfoVO> getTableInfos(DBQuery query) {
-        List<TableInfo> tableData = dbDataFactory.getTableData(DbStrategyUtil.getTableStrategy(query));
+        List<TableDetailInfo> tableData = dbDataFactory.getTableData(DbStrategyUtil.getDetailStrategy(query));
         AssertUtil.isFalse(CollectionUtil.isEmpty(tableData), ResponseCode.INFO_NOT_FOUND);
         List<TableInfoVO> result = new ArrayList<>();
         if(CollectionUtil.isNotEmpty(tableData)){
@@ -42,7 +42,7 @@ public class DBQueryService {
                 TableInfoVO tableInfoVO = new TableInfoVO();
                 BeanUtil.copyProperties(tableInfo,tableInfoVO);
                 query.setTableName(tableInfo.getTableName());
-                List<ColumnInfo> columnData = dbDataFactory.getColumnData(DbStrategyUtil.getColumnStrategy(query));
+                List<ColumnInfo> columnData = dbDataFactory.getColumnData(DbStrategyUtil.getTableStrategy(query));
                 if(CollectionUtil.isNotEmpty(columnData)){
                     List<ColumnInfoVO> columns = JSONObject.parseArray(JSONObject.toJSONString(columnData), ColumnInfoVO.class);
                     tableInfoVO.setColumns(columns);
@@ -54,7 +54,7 @@ public class DBQueryService {
     }
     
     public List<ColumnInfoVO> getColumnInfos(DBQuery query){
-        List<ColumnInfo> columnData = dbDataFactory.getColumnData(DbStrategyUtil.getColumnStrategy(query));
+        List<ColumnInfo> columnData = dbDataFactory.getColumnData(DbStrategyUtil.getTableStrategy(query));
         List<ColumnInfoVO> result = new ArrayList<>();
         if(CollectionUtil.isNotEmpty(columnData)){
             result.addAll(JSONObject.parseArray(JSONObject.toJSONString(columnData),ColumnInfoVO.class));

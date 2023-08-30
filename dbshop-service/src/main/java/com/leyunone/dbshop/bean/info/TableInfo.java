@@ -2,29 +2,30 @@ package com.leyunone.dbshop.bean.info;
 
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
+ * :)
+ *
  * @author LeYunone
  * @email 365627310@qq.com
- * @date 2023-05-16
+ * @date 2023-08-30
  */
 @Getter
 @Setter
+@ToString
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class TableInfo {
-    
-    private String tableName;
-    
-    private String tableType;
-    
-    private String remarks;
 
-    private Set<String> primarys = new HashSet<>();
-    
+    /**
+     * 表中字段信息
+     */
+    private List<ColumnInfo> columnInfos;
+
+    /**
+     * 表索引信息
+     */
     private List<IndexInfo> indexInfos;
 }

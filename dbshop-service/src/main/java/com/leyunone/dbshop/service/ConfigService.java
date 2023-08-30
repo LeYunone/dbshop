@@ -1,10 +1,7 @@
 package com.leyunone.dbshop.service;
 
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.db.DbUtil;
-import com.leyunone.dbshop.bean.info.ColumnInfo;
-import com.leyunone.dbshop.bean.info.DbInfo;
-import com.leyunone.dbshop.bean.info.TableInfo;
+import com.leyunone.dbshop.bean.info.*;
 import com.leyunone.dbshop.bean.query.DBQuery;
 import com.leyunone.dbshop.system.factory.DBDataFactory;
 import com.leyunone.dbshop.util.AssertUtil;
@@ -16,9 +13,6 @@ import org.springframework.stereotype.Service;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 /**
  * @author LeYunone
@@ -57,17 +51,17 @@ public class ConfigService {
         dbInfo.setDbName(query.getDbName());
         dbDataFactory.regist(DbStrategyUtil.getDbStrategy(query),dbInfo,DbInfo.class);
         //加载表信息
-        List<TableInfo> tables = packInfoService.getTables(metaData, query.getDbName());
-        dbDataFactory.regist(DbStrategyUtil.getTableStrategy(query),tables,TableInfo.class);
+        List<TableDetailInfo> tables = packInfoService.getTables(metaData, query.getDbName());
+        dbDataFactory.regist(DbStrategyUtil.getDetailStrategy(query),tables, TableDetailInfo.class);
 
         //加载字段信息
-        for(TableInfo tableInfo:tables){
-            List<ColumnInfo> columns = packInfoService.getColumns(metaData, query.getDbName(), tableInfo.getTableName());
-            Map<String, List<ColumnInfo>> columnMap = columns.stream().collect(Collectors.groupingBy(ColumnInfo::getTableName));
-            for(String tableNam: columnMap.keySet()){
-                query.setTableName(tableNam);
-                dbDataFactory.regist(DbStrategyUtil.getColumnStrategy(query),columnMap.get(tableNam),ColumnInfo.class);
-            }
+        for(TableDetailInfo tableDetailInfo :tables){
+            List<ColumnInfo> columns = packInfoService.getColumns(metaData, query.getDbName(), tableDetailInfo.getTableName());
+            List<IndexInfo> indexs = packInfoService.getIndexs(metaData, query.getDbName(), tableDetailInfo.getTableName());
+            
+            query.setTableName(tableDetailInfo.getTableName());
+            TableInfo info = TableInfo.builder().columnInfos(columns).indexInfos(indexs).build();
+            dbDataFactory.regist(DbStrategyUtil.getTableStrategy(query),info,TableInfo.class);
         }
 
         DbClose.close(connection);
