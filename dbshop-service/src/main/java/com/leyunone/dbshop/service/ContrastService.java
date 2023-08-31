@@ -6,9 +6,12 @@ import com.leyunone.dbshop.bean.ResponseCell;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.IndexInfo;
 import com.leyunone.dbshop.bean.info.TableDetailInfo;
+import com.leyunone.dbshop.bean.info.TableInfo;
 import com.leyunone.dbshop.bean.query.ContrastQuery;
 import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
+import com.leyunone.dbshop.bean.vo.IndexContrastVO;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
+import com.leyunone.dbshop.bean.vo.TableContrastVO;
 import com.leyunone.dbshop.constant.DbShopConstant;
 import com.leyunone.dbshop.system.factory.DBDataFactory;
 import com.leyunone.dbshop.util.AssertUtil;
@@ -36,19 +39,19 @@ public class ContrastService {
     private final DBDataFactory dataFactory;
     private final PackInfoService packInfoService;
 
-    public List<TableColumnContrastVO> columnContrastToTable(ContrastQuery contrastQuery) {
-        //左表数据
+    public TableContrastVO tableContrastToTable(ContrastQuery contrastQuery) {
+        //左表字段数据
         List<ColumnInfo> leftColumn = dataFactory.getColumnData(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, true)));
-
-        //右表数据
+        //右表字段数据
         List<ColumnInfo> rightColumn = dataFactory.getColumnData(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, false)));
-
+        //左表索引
         List<IndexInfo> leftIndex = dataFactory.getIndexData(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, true)));
-
+        //右表索引
         List<IndexInfo> rightIndex = dataFactory.getIndexData(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, false)));
 
-
-        return this.columnContrastdoing(leftColumn, rightColumn, contrastQuery.getGoRemark()).getMateDate();
+        List<TableColumnContrastVO> columnData = this.columnContrastdoing(leftColumn, rightColumn, contrastQuery.getGoRemark()).getMateData();
+        List<IndexContrastVO> indexData = this.indexContrastdoing(leftIndex, rightIndex).getMateData();
+        return TableContrastVO.builder().columnContrasts(columnData).indexContrasts(indexData).build();
     }
 
     /**
@@ -65,27 +68,40 @@ public class ContrastService {
         List<DbTableContrastVO> dbTableContrastVOS = this.tableContrastdoing(leftTables, rightTables);
 //        if (ObjectUtil.isNotNull(contrastQuery.getGoDeep()) && contrastQuery.getGoDeep().equals(DbShopConstant.Rule_Yes)) {
             for (DbTableContrastVO dbTableContrastVO : dbTableContrastVOS) {
-                List<ColumnInfo> leftColumns = null;
-                List<ColumnInfo> rightColumns = null;
+                TableInfo leftInfo = null;
+                TableInfo rightInfo = null;
+                
                 TableDetailInfo leftTableDetailInfo = dbTableContrastVO.getLeftTableDetailInfo();
                 TableDetailInfo rightTableDetailInfo = dbTableContrastVO.getRightTableDetailInfo();
                 //字段值
                 if (ObjectUtil.isNotNull(leftTableDetailInfo)) {
                     contrastQuery.setLeftTableName(leftTableDetailInfo.getTableName());
-                    leftColumns = dataFactory.getColumnData(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, true)));
+                    leftInfo = dataFactory.getTableInfo(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, true)));
+                    //设置左表字段信息
+                    dbTableContrastVO.setLeftColumnInfo(leftInfo.getColumnInfos());
                 }
                 if (ObjectUtil.isNotNull(rightTableDetailInfo)) {
                     contrastQuery.setRightTableName(rightTableDetailInfo.getTableName());
-                    rightColumns = dataFactory.getColumnData(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, false)));
+                    rightInfo = dataFactory.getTableInfo(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, false)));
+                    //设置右表字段信息
+                    dbTableContrastVO.setRightColumnInfo(rightInfo.getColumnInfos());
                 }
                 //当两表存在 且名字相同时，进行表字段间的结果对比
                 if (ObjectUtil.isNotNull(leftTableDetailInfo) && ObjectUtil.isNotNull(rightTableDetailInfo) && !dbTableContrastVO.getNameDifference()) {
-                    ResponseCell<Boolean, List<TableColumnContrastVO>> booleanListResponseCell = this.columnContrastdoing(leftColumns, rightColumns, contrastQuery.getGoRemark());
-                    dbTableContrastVO.setHasDifference(booleanListResponseCell.getCellData());
-                    dbTableContrastVO.setColumnContrasts(booleanListResponseCell.getMateDate());
+                    /**
+                     * 字段间对比
+                     */
+                    ResponseCell<Boolean, List<TableColumnContrastVO>> columnDoing = this.columnContrastdoing(leftInfo.getColumnInfos(), rightInfo.getColumnInfos(), contrastQuery.getGoRemark());
+                    dbTableContrastVO.setColumnContrasts(columnDoing.getMateData());
+                    //索引间对比
+                    ResponseCell<Boolean, List<IndexContrastVO>> indexDoing = this.indexContrastdoing(leftInfo.getIndexInfos(), rightInfo.getIndexInfos());
+                    dbTableContrastVO.setIndexContrasts(indexDoing.getMateData());
+                    
+                    dbTableContrastVO.setIndexDifference(indexDoing.getCellData());
+                    dbTableContrastVO.setHasDifference(columnDoing.getCellData() && indexDoing.getCellData());
+
                 }
-                dbTableContrastVO.setLeftColumnInfo(leftColumns);
-                dbTableContrastVO.setRightColumnInfo(rightColumns);
+                
             }
 //        }
         return dbTableContrastVOS;
@@ -182,11 +198,6 @@ public class ContrastService {
                 TableDetailInfo rightTable = rightMap.get(lt.getTableName());
                 dbTableContrastVO.setRightTableDetailInfo(rightTable);
                 dbTableContrastVO.setNameDifference(DbShopConstant.SAME);
-                dbTableContrastVO.setIndexDifference(rightTable.getIndexInfos().hashCode()==lt.getIndexInfos().hashCode());
-                //索引对比
-                if(rightTable.getIndexInfos().hashCode()==lt.getIndexInfos().hashCode()) {
-                    hasDifference = DbShopConstant.SAME;
-                }
                 rightMap.remove(lt.getTableName());
             } else {
                 dbTableContrastVO.setNameDifference(DbShopConstant.DIFFERENT);
@@ -205,5 +216,9 @@ public class ContrastService {
             });
         }
         return result;
+    }
+    
+    private ResponseCell<Boolean, List<IndexContrastVO>> indexContrastdoing(List<IndexInfo> left,List<IndexInfo> right){
+        
     }
 }

@@ -27,6 +27,8 @@ public class DbTableContrastVO {
     
     private List<TableColumnContrastVO> columnContrasts;
     
+    private List<IndexContrastVO> indexContrasts;
+    
     private Boolean hasDifference;
 
     private Boolean nameDifference;

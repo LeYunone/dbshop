@@ -79,6 +79,10 @@ public class DBDataFactory {
         }
         return indexInfos;
     }
+    
+    public TableInfo getTableInfo(String strategy){
+        return tableMap.get(strategy);
+    }
 //
 //    /**
 //     * 正则匹配

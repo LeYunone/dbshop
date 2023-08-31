@@ -1,6 +1,5 @@
 package com.leyunone.dbshop.service;
 
-import cn.hutool.db.Db;
 import com.leyunone.dbshop.bean.info.DbInfo;
 import com.leyunone.dbshop.bean.query.ContrastQuery;
 import com.leyunone.dbshop.bean.query.DBQuery;
@@ -62,7 +61,7 @@ public class ContrastTestService {
         
         contrastQuery.setLeftUrl(leftQuery.getUrl());
         contrastQuery.setRightUrl(rightQuery.getUrl());
-        List<TableColumnContrastVO> tableColumnContrastVOS = contrastService.columnContrastToTable(contrastQuery);
+        List<TableColumnContrastVO> tableColumnContrastVOS = contrastService.tableContrastToTable(contrastQuery);
     }
     
     @Test

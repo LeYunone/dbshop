@@ -5,7 +5,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.DataResponse;
-import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.ColumnInfoVO;
 import com.leyunone.dbshop.bean.query.ContrastQuery;
 import com.leyunone.dbshop.bean.vo.ColumnContrastVO;
@@ -39,7 +38,7 @@ public class ContrastController {
      */
     @GetMapping("/leftRightTableDo")
     public DataResponse<ColumnContrastVO> leftRightTableContrast(ContrastQuery contrastQuery) {
-        List<TableColumnContrastVO> columnContrasts = contrastService.columnContrastToTable(contrastQuery);
+        List<TableColumnContrastVO> columnContrasts = contrastService.tableContrastToTable(contrastQuery);
         //FIXME 后台做页面上的数据分析 因为不会js TAT
         ColumnContrastVO columnContrastVO = new ColumnContrastVO();
         columnContrastVO.setContrastColumnResults(columnContrasts);
