@@ -3,6 +3,7 @@ package com.leyunone.dbshop.service;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.leyunone.dbshop.bean.ResponseCell;
+import com.leyunone.dbshop.bean.dto.IndexContrastDTO;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.IndexInfo;
 import com.leyunone.dbshop.bean.info.TableDetailInfo;
@@ -15,6 +16,7 @@ import com.leyunone.dbshop.bean.vo.TableContrastVO;
 import com.leyunone.dbshop.constant.DbShopConstant;
 import com.leyunone.dbshop.system.factory.DBDataFactory;
 import com.leyunone.dbshop.util.AssertUtil;
+import com.leyunone.dbshop.util.CollectionFunctionUtils;
 import com.leyunone.dbshop.util.DbStrategyUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -67,42 +69,42 @@ public class ContrastService {
 
         List<DbTableContrastVO> dbTableContrastVOS = this.tableContrastdoing(leftTables, rightTables);
 //        if (ObjectUtil.isNotNull(contrastQuery.getGoDeep()) && contrastQuery.getGoDeep().equals(DbShopConstant.Rule_Yes)) {
-            for (DbTableContrastVO dbTableContrastVO : dbTableContrastVOS) {
-                TableInfo leftInfo = null;
-                TableInfo rightInfo = null;
-                
-                TableDetailInfo leftTableDetailInfo = dbTableContrastVO.getLeftTableDetailInfo();
-                TableDetailInfo rightTableDetailInfo = dbTableContrastVO.getRightTableDetailInfo();
-                //字段值
-                if (ObjectUtil.isNotNull(leftTableDetailInfo)) {
-                    contrastQuery.setLeftTableName(leftTableDetailInfo.getTableName());
-                    leftInfo = dataFactory.getTableInfo(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, true)));
-                    //设置左表字段信息
-                    dbTableContrastVO.setLeftColumnInfo(leftInfo.getColumnInfos());
-                }
-                if (ObjectUtil.isNotNull(rightTableDetailInfo)) {
-                    contrastQuery.setRightTableName(rightTableDetailInfo.getTableName());
-                    rightInfo = dataFactory.getTableInfo(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, false)));
-                    //设置右表字段信息
-                    dbTableContrastVO.setRightColumnInfo(rightInfo.getColumnInfos());
-                }
-                //当两表存在 且名字相同时，进行表字段间的结果对比
-                if (ObjectUtil.isNotNull(leftTableDetailInfo) && ObjectUtil.isNotNull(rightTableDetailInfo) && !dbTableContrastVO.getNameDifference()) {
-                    /**
-                     * 字段间对比
-                     */
-                    ResponseCell<Boolean, List<TableColumnContrastVO>> columnDoing = this.columnContrastdoing(leftInfo.getColumnInfos(), rightInfo.getColumnInfos(), contrastQuery.getGoRemark());
-                    dbTableContrastVO.setColumnContrasts(columnDoing.getMateData());
-                    //索引间对比
-                    ResponseCell<Boolean, List<IndexContrastVO>> indexDoing = this.indexContrastdoing(leftInfo.getIndexInfos(), rightInfo.getIndexInfos());
-                    dbTableContrastVO.setIndexContrasts(indexDoing.getMateData());
-                    
-                    dbTableContrastVO.setIndexDifference(indexDoing.getCellData());
-                    dbTableContrastVO.setHasDifference(columnDoing.getCellData() && indexDoing.getCellData());
+        for (DbTableContrastVO dbTableContrastVO : dbTableContrastVOS) {
+            TableInfo leftInfo = null;
+            TableInfo rightInfo = null;
 
-                }
-                
+            TableDetailInfo leftTableDetailInfo = dbTableContrastVO.getLeftTableDetailInfo();
+            TableDetailInfo rightTableDetailInfo = dbTableContrastVO.getRightTableDetailInfo();
+            //字段值
+            if (ObjectUtil.isNotNull(leftTableDetailInfo)) {
+                contrastQuery.setLeftTableName(leftTableDetailInfo.getTableName());
+                leftInfo = dataFactory.getTableInfo(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, true)));
+                //设置左表字段信息
+                dbTableContrastVO.setLeftColumnInfo(leftInfo.getColumnInfos());
             }
+            if (ObjectUtil.isNotNull(rightTableDetailInfo)) {
+                contrastQuery.setRightTableName(rightTableDetailInfo.getTableName());
+                rightInfo = dataFactory.getTableInfo(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, false)));
+                //设置右表字段信息
+                dbTableContrastVO.setRightColumnInfo(rightInfo.getColumnInfos());
+            }
+            //当两表存在 且名字相同时，进行表字段间的结果对比
+            if (ObjectUtil.isNotNull(leftTableDetailInfo) && ObjectUtil.isNotNull(rightTableDetailInfo) && !dbTableContrastVO.getNameDifference()) {
+                /**
+                 * 字段间对比
+                 */
+                ResponseCell<Boolean, List<TableColumnContrastVO>> columnDoing = this.columnContrastdoing(leftInfo.getColumnInfos(), rightInfo.getColumnInfos(), contrastQuery.getGoRemark());
+                dbTableContrastVO.setColumnContrasts(columnDoing.getMateData());
+                //索引间对比
+                ResponseCell<Boolean, List<IndexContrastVO>> indexDoing = this.indexContrastdoing(leftInfo.getIndexInfos(), rightInfo.getIndexInfos());
+                dbTableContrastVO.setIndexContrasts(indexDoing.getMateData());
+
+                dbTableContrastVO.setIndexDifference(indexDoing.getCellData());
+                dbTableContrastVO.setHasDifference(columnDoing.getCellData() && indexDoing.getCellData());
+
+            }
+
+        }
 //        }
         return dbTableContrastVOS;
     }
@@ -117,7 +119,7 @@ public class ContrastService {
     private ResponseCell<Boolean, List<TableColumnContrastVO>> columnContrastdoing(List<ColumnInfo> left, List<ColumnInfo> right, Boolean goRemark) {
         List<TableColumnContrastVO> result = new ArrayList<>();
         //对比表不存在
-        AssertUtil.isFalse(CollectionUtil.isEmpty(right) || CollectionUtil.isEmpty(left),"表不存在");
+        AssertUtil.isFalse(CollectionUtil.isEmpty(right) || CollectionUtil.isEmpty(left), "表不存在");
         Map<String, ColumnInfo> rightMap = right.stream().collect(Collectors.toMap(ColumnInfo::getColumnName, Function.identity()));
         boolean different = false;
         //比较相同字段名 并且填充空白
@@ -217,8 +219,46 @@ public class ContrastService {
         }
         return result;
     }
-    
-    private ResponseCell<Boolean, List<IndexContrastVO>> indexContrastdoing(List<IndexInfo> left,List<IndexInfo> right){
-        
+
+    private ResponseCell<Boolean, List<IndexContrastVO>> indexContrastdoing(List<IndexInfo> left, List<IndexInfo> right) {
+        List<IndexContrastVO> result = new ArrayList<>();
+        Map<String, IndexInfo> rightMap = CollectionFunctionUtils.mapTo(right, IndexInfo::getIndexName);
+        boolean different = false;
+        //左右表 标示相同索引名
+        for (IndexInfo leftIndex : left) {
+            IndexContrastVO indexContrastVO = new IndexContrastVO();
+            indexContrastVO.setLeftIndex(leftIndex);
+            if (rightMap.containsKey(leftIndex.getIndexName())) {
+                indexContrastVO.setRightIndex(rightMap.get(leftIndex.getIndexName()));
+                indexContrastVO.setNameDifferent(DbShopConstant.SAME);
+                rightMap.remove(leftIndex.getIndexName());
+            } else {
+                indexContrastVO.setNameDifferent(DbShopConstant.DIFFERENT);
+                different = true;
+            }
+            result.add(indexContrastVO);
+        }
+        //剩余未匹配集合
+        if (CollectionUtil.isNotEmpty(rightMap)) {
+            different = true;
+            rightMap.values().forEach((t) -> {
+                IndexContrastVO indexContrastVO = new IndexContrastVO();
+                indexContrastVO.setRightIndex(t);
+                indexContrastVO.setNameDifferent(DbShopConstant.DIFFERENT);
+                result.add(indexContrastVO);
+            });
+        }
+
+        //相同的
+        for (IndexContrastVO indexContrastVO : result) {
+            boolean hasDifferent = false;
+            if(!indexContrastVO.getNameDifferent()){
+                //名称相同 比较索引内容
+                IndexInfo leftIndex = indexContrastVO.getLeftIndex();
+                IndexInfo rightIndex = indexContrastVO.getRightIndex();
+            }
+        }
+
+        return ResponseCell.build(different, result);
     }
 }

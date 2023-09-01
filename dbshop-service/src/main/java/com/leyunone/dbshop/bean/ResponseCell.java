@@ -4,7 +4,7 @@ import lombok.*;
 
 /**
  * LeYunone 
- * 
+ *
  * 牢房单元格数据 封装两侧
  * @param <Cell>
  * @param <Mate>
@@ -12,8 +12,6 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class ResponseCell<Cell,Mate> {
 
@@ -21,7 +19,14 @@ public class ResponseCell<Cell,Mate> {
 
     private Mate mateData;
 
-    public static <Cell,Mate> ResponseCell build(Cell cellData, Mate mateDate) {
-        return ResponseCell.builder().cellData(cellData).mateData(mateDate).build();
+    private ResponseCell(){}
+
+    public ResponseCell(Cell cellData,Mate mateData) {
+        this.cellData = cellData;
+        this.mateData = mateData;
+    }
+
+    public static <Cell,Mate> ResponseCell<Cell,Mate> build(Cell cellData, Mate mateDate) {
+        return new ResponseCell<>(cellData,mateDate);
     }
 }
