@@ -2,7 +2,7 @@ package com.leyunone.dbshop.util;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
-import com.leyunone.dbshop.bean.info.TableInfo;
+import com.leyunone.dbshop.bean.info.TableDetailInfo;
 import com.leyunone.dbshop.enums.SqlAssembleEnum;
 import com.leyunone.dbshop.enums.SqlModelEnum;
 import org.apache.commons.lang3.StringUtils;
@@ -31,11 +31,11 @@ public class SqlPackUtil {
      *
      *  CREATE_TABLE_COLUMN = ↑
      * @param modelEnum 模板枚举
-     * @param tableInfo 表信息
+     * @param tableDetailInfo 表信息
      * @param info 字段信息 可能是集合
      * @return
      */
-    public static String packing(SqlModelEnum modelEnum, TableInfo tableInfo, Object info) {
+    public static String packing(SqlModelEnum modelEnum, TableDetailInfo tableDetailInfo, Object info) {
         String sql = "";
         switch (modelEnum) {
             case MODIFY_COLUMN:
@@ -48,10 +48,10 @@ public class SqlPackUtil {
                 sql = deleteColumnPacking(modelEnum, (ColumnInfo) info);
                 break;
             case CREATE_TABLE:
-                sql = createTableInfo(modelEnum, tableInfo, (List<ColumnInfo>) info);
+                sql = createTableInfo(modelEnum, tableDetailInfo, (List<ColumnInfo>) info);
                 break;
             case DROP_TABLE:
-                sql = dropTablePacking(modelEnum,tableInfo);
+                sql = dropTablePacking(modelEnum, tableDetailInfo);
                 break;
             case ADD_AUTOINCREMENT:
                 sql = addAutoincrementPacking(modelEnum, (ColumnInfo) info);
@@ -108,12 +108,12 @@ public class SqlPackUtil {
     }
 
     //新增表语句包装
-    private static String createTableInfo(SqlModelEnum modelEnum, TableInfo tableInfo, List<ColumnInfo> columnInfos) {
+    private static String createTableInfo(SqlModelEnum modelEnum, TableDetailInfo tableDetailInfo, List<ColumnInfo> columnInfos) {
         List<String> sqls = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(columnInfos)) {
             columnInfos.forEach((t) -> sqls.add(createTableInColumnPacking(SqlModelEnum.CREATE_TABLE_COLUMN, t)));
         }
-        String primarykeys = createTableprimaryKeyPacking(tableInfo, columnInfos);
+        String primarykeys = createTableprimaryKeyPacking(tableDetailInfo, columnInfos);
         String columnSqls = CollectionUtil.join(sqls, "\n");
         if (StringUtils.isBlank(primarykeys)) {
             //TODO 22.6.17版本 建表语句中字段后只涉及主键
@@ -122,7 +122,7 @@ public class SqlPackUtil {
                 columnSqls = columnSqls.substring(0, columnSqls.length() - 1);
             }
         }
-        return TextFillUtil.fillStr(modelEnum.getSqlModel(), tableInfo.getTableName(), columnSqls, primarykeys);
+        return TextFillUtil.fillStr(modelEnum.getSqlModel(), tableDetailInfo.getTableName(), columnSqls, primarykeys);
     }
 
     //新增表中 字段语句的包装
@@ -143,9 +143,9 @@ public class SqlPackUtil {
     }
 
     //新增表中 主键语句的包装
-    private static String createTableprimaryKeyPacking(TableInfo tableInfo, List<ColumnInfo> columnInfos) {
+    private static String createTableprimaryKeyPacking(TableDetailInfo tableDetailInfo, List<ColumnInfo> columnInfos) {
         //TODO 主键sql
-        Set<String> primarys = tableInfo.getPrimarys();
+        Set<String> primarys = tableDetailInfo.getPrimarys();
         if (CollectionUtil.isEmpty(primarys) || CollectionUtil.isEmpty(columnInfos)) return "";
         List<String> primaryNames = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(primarys)) {
@@ -162,8 +162,8 @@ public class SqlPackUtil {
     }
 
     //删除表语句包装
-    private static String dropTablePacking(SqlModelEnum modelEnum,TableInfo tableInfo){
-        return TextFillUtil.fillStr(modelEnum.getSqlModel(),tableInfo.getTableName());
+    private static String dropTablePacking(SqlModelEnum modelEnum, TableDetailInfo tableDetailInfo){
+        return TextFillUtil.fillStr(modelEnum.getSqlModel(), tableDetailInfo.getTableName());
     }
 
     private static String addAutoincrementPacking(SqlModelEnum modelEnum,ColumnInfo columnInfo){

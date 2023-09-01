@@ -8,7 +8,7 @@ import com.leyunone.dbshop.bean.dto.DbTableContrastDTO;
 import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
 import com.leyunone.dbshop.bean.dto.SqlRuleDTO;
 import com.leyunone.dbshop.bean.info.DbInfo;
-import com.leyunone.dbshop.bean.info.TableInfo;
+import com.leyunone.dbshop.bean.info.TableDetailInfo;
 import com.leyunone.dbshop.bean.query.ContrastQuery;
 import com.leyunone.dbshop.bean.query.DBQuery;
 import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
@@ -83,8 +83,8 @@ public class DbShopStartAPIServiceImpl implements DbShopStartAPIService{
         System.out.println();
         List<String> newTable = new ArrayList<>();
         for(DbTableContrastVO dbTableContrastVO:dbTableContrast){
-            TableInfo mainTable = sqlRuleDTO.getLeftOrRight().equals(0) ? dbTableContrastVO.getLeftTableInfo() : dbTableContrastVO.getRightTableInfo();
-            TableInfo anotherTable =  !sqlRuleDTO.getLeftOrRight().equals(0) ? dbTableContrastVO.getLeftTableInfo() : dbTableContrastVO.getRightTableInfo();
+            TableDetailInfo mainTable = sqlRuleDTO.getLeftOrRight().equals(0) ? dbTableContrastVO.getLeftTableDetailInfo() : dbTableContrastVO.getRightTableDetailInfo();
+            TableDetailInfo anotherTable =  !sqlRuleDTO.getLeftOrRight().equals(0) ? dbTableContrastVO.getLeftTableDetailInfo() : dbTableContrastVO.getRightTableDetailInfo();
             if(dbTableContrastVO.getNameDifference()){
                 if(ObjectUtil.isNull(mainTable)){
                     newTable.add("删除表： "+anotherTable.getTableName());

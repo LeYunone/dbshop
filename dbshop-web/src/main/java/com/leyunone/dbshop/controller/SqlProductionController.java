@@ -48,7 +48,7 @@ public class SqlProductionController {
         }
 
         if (CollectionUtil.isEmpty(sqlProductionDTO.getColumns())) {
-            List<TableColumnContrastVO> tableColumnContrastVOS = contrastService.columnContrastToTable(sqlProductionDTO.getContrastQuery());
+            List<TableColumnContrastVO> tableColumnContrastVOS = contrastService.tableContrastToTable(sqlProductionDTO.getContrastQuery());
             if (CollectionUtil.isNotEmpty(tableColumnContrastVOS)) {
                 sqlProductionDTO.setColumns(JSONObject.parseArray(JSONObject.toJSONString(tableColumnContrastVOS), TableColumnContrastDTO.class));
             }

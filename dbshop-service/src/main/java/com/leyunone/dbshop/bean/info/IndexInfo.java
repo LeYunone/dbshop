@@ -41,6 +41,8 @@ public class IndexInfo {
      */
     private String indexName;
     
+    private String tableName;
+    
     @Getter
     @Setter
     @Builder

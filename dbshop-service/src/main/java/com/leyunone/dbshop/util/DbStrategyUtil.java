@@ -16,21 +16,21 @@ public class DbStrategyUtil {
 
     public static final String DB_STRATEGY = ":db";
 
-    public static final String COLUMN_STRATEGY = ":column";
-
     public static final String TABLE_STRATEGY = ":table";
+
+    public static final String TABLE_INFO_STRATEGY = ":detail";
 
 
     public static String getDbStrategy(DBQuery query) {
         return query.getUrl() + ":" + query.getDbName() + DB_STRATEGY;
     }
 
-    public static String getTableStrategy(DBQuery query) {
+    public static String getDetailStrategy(DBQuery query) {
         return query.getUrl() + ":" + query.getDbName() + TABLE_STRATEGY;
     }
 
-    public static String getColumnStrategy(DBQuery query) {
-        return query.getUrl() + ":" + query.getDbName() + ":" + query.getTableName() + COLUMN_STRATEGY;
+    public static String getTableStrategy(DBQuery query) {
+        return query.getUrl() + ":" + query.getDbName() + ":" + query.getTableName() + TABLE_INFO_STRATEGY;
     }
 
     public static DBQuery loadContrastRule(ContrastQuery contrastQuery, boolean yesLeft) {

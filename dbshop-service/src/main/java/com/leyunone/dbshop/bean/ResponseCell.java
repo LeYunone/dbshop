@@ -19,9 +19,9 @@ public class ResponseCell<Cell,Mate> {
 
     private Cell cellData;
 
-    private Mate mateDate;
+    private Mate mateData;
 
     public static <Cell,Mate> ResponseCell build(Cell cellData, Mate mateDate) {
-        return ResponseCell.builder().cellData(cellData).mateDate(mateDate).build();
+        return ResponseCell.builder().cellData(cellData).mateData(mateDate).build();
     }
 }

@@ -2,9 +2,7 @@ package com.leyunone.dbshop.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.leyunone.dbshop.bean.DataResponse;
-import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.ColumnInfoVO;
-import com.leyunone.dbshop.bean.info.TableInfo;
 import com.leyunone.dbshop.bean.query.DBQuery;
 import com.leyunone.dbshop.bean.vo.TableInfoVO;
 import com.leyunone.dbshop.service.DBQueryService;

@@ -62,7 +62,7 @@ public class SqlPackingTestService {
 
         contrastQuery.setLeftUrl(leftQuery.getUrl());
         contrastQuery.setRightUrl(rightQuery.getUrl());
-        List<TableColumnContrastVO> tableColumnContrastVOS = contrastService.columnContrastToTable(contrastQuery);
+        List<TableColumnContrastVO> tableColumnContrastVOS = contrastService.tableContrastToTable(contrastQuery);
 
         SqlProductionDTO sqlProductionDTO = new SqlProductionDTO();
         sqlProductionDTO.setLeftOrRight(0);
