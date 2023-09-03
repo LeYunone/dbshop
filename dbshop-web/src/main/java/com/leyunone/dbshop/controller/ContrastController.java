@@ -38,7 +38,7 @@ public class ContrastController {
      */
     @GetMapping("/leftRightTableDo")
     public DataResponse<ColumnContrastVO> leftRightTableContrast(ContrastQuery contrastQuery) {
-        List<TableColumnContrastVO> columnContrasts = contrastService.tableContrastToTable(contrastQuery);
+        List<TableColumnContrastVO> columnContrasts = contrastService.tableContrastToTable(contrastQuery).getColumnContrasts();
         //FIXME 后台做页面上的数据分析 因为不会js TAT
         ColumnContrastVO columnContrastVO = new ColumnContrastVO();
         columnContrastVO.setContrastColumnResults(columnContrasts);

@@ -47,10 +47,10 @@ public class SqlProductionController {
             contrastQuery.setGoRemark(ObjectUtil.isNotNull(sqlProductionDTO.getGoRemark())?sqlProductionDTO.getGoRemark():contrastQuery.getGoRemark());
         }
 
-        if (CollectionUtil.isEmpty(sqlProductionDTO.getColumns())) {
-            List<TableColumnContrastVO> tableColumnContrastVOS = contrastService.tableContrastToTable(sqlProductionDTO.getContrastQuery());
+        if (CollectionUtil.isEmpty(sqlProductionDTO.getTables())) {
+            List<TableColumnContrastVO> tableColumnContrastVOS = contrastService.tableContrastToTable(sqlProductionDTO.getContrastQuery()).getColumnContrasts();
             if (CollectionUtil.isNotEmpty(tableColumnContrastVOS)) {
-                sqlProductionDTO.setColumns(JSONObject.parseArray(JSONObject.toJSONString(tableColumnContrastVOS), TableColumnContrastDTO.class));
+                sqlProductionDTO.setTables(JSONObject.parseArray(JSONObject.toJSONString(tableColumnContrastVOS), TableColumnContrastDTO.class));
             }
         }
         List<String> sqls = sqlPackService.columnContrastPack(sqlProductionDTO);

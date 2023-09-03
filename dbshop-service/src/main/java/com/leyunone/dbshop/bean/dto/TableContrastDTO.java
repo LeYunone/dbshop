@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class DbTableContrastDTO {
+public class TableContrastDTO {
 
     private TableDetailInfo leftTableDetailInfo;
     

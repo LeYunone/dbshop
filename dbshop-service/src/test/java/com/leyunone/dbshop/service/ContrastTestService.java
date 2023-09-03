@@ -5,6 +5,7 @@ import com.leyunone.dbshop.bean.query.ContrastQuery;
 import com.leyunone.dbshop.bean.query.DBQuery;
 import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
+import com.leyunone.dbshop.bean.vo.TableContrastVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -51,19 +52,19 @@ public class ContrastTestService {
 
         DbInfo leftDbInfo = configService.loadConnectionToData(leftQuery);
         DbInfo rightDbInfo = configService.loadConnectionToData(rightQuery);
-        
+
         ContrastQuery contrastQuery = new ContrastQuery();
         contrastQuery.setLeftTableName("d_fast_command");
         contrastQuery.setRightTableName("d_fast_command");
-        
+
         contrastQuery.setLeftDbName(leftQuery.getDbName());
         contrastQuery.setRightDbName("smarthome");
-        
+
         contrastQuery.setLeftUrl(leftQuery.getUrl());
         contrastQuery.setRightUrl(rightQuery.getUrl());
-        List<TableColumnContrastVO> tableColumnContrastVOS = contrastService.tableContrastToTable(contrastQuery);
+        TableContrastVO tableContrastVO = contrastService.tableContrastToTable(contrastQuery);
     }
-    
+
     @Test
     public void tableContrast(){
         DBQuery leftQuery = new DBQuery();
@@ -87,7 +88,7 @@ public class ContrastTestService {
 
         contrastQuery.setLeftUrl(leftQuery.getUrl());
         contrastQuery.setRightUrl(rightQuery.getUrl());
-        
+
         contrastQuery.setGoDeep(true);
         List<DbTableContrastVO> dbTableContrastVOS = contrastService.dbTableContrast(contrastQuery);
         System.out.println(dbTableContrastVOS.size());

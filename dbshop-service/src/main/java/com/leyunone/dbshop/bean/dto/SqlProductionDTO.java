@@ -1,8 +1,6 @@
 package com.leyunone.dbshop.bean.dto;
 
 import com.leyunone.dbshop.bean.query.ContrastQuery;
-import com.leyunone.dbshop.bean.rule.SqlDataTypeTransformRule;
-import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import com.leyunone.dbshop.enums.DataTypeRegularEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,23 +17,16 @@ import java.util.List;
 @Setter
 public class SqlProductionDTO {
 
-    private List<TableColumnContrastDTO> columns;
-    
-    private List<IndexDTO> leftIndex;
-    
-    private List<IndexDTO> rightIndex;
-    
+    private TableContrastDTO tables;
+
     private List<DbTableContrastDTO> dbs;
-    
+
     //左右表主副判断  0 左表  1 右表
     private Integer leftOrRight;
 
-    //索引存在差异 0 不存在 true 存在
-    private Boolean indexDifference;
-    
     //是否进行备注级解析 0否 1是
     private Boolean goRemark;
-    
+
     //是否删除表 0否 1是
     private Boolean deleteTable;
 
