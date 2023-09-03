@@ -21,4 +21,7 @@ public class IndexContrastVO {
 
     //名 true为有差异
     private Boolean nameDifferent;
+    
+    //有差异
+    private Boolean hasDifferent;
 }

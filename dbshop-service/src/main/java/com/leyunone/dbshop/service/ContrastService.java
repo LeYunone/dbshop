@@ -256,7 +256,9 @@ public class ContrastService {
                 //名称相同 比较索引内容
                 IndexInfo leftIndex = indexContrastVO.getLeftIndex();
                 IndexInfo rightIndex = indexContrastVO.getRightIndex();
+                hasDifferent = leftIndex.hashCode() == rightIndex.hashCode();
             }
+            indexContrastVO.setHasDifferent(hasDifferent);
         }
 
         return ResponseCell.build(different, result);
