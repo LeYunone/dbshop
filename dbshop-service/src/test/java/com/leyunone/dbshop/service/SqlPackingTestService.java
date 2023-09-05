@@ -9,7 +9,7 @@ import com.leyunone.dbshop.bean.info.DbInfo;
 import com.leyunone.dbshop.bean.query.ContrastQuery;
 import com.leyunone.dbshop.bean.query.DBQuery;
 import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
-import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
+import com.leyunone.dbshop.bean.vo.TableContrastVO;
 import com.leyunone.dbshop.constant.DbShopConstant;
 import com.leyunone.dbshop.enums.DataTypeRegularEnum;
 import org.junit.jupiter.api.Test;
@@ -62,13 +62,13 @@ public class SqlPackingTestService {
 
         contrastQuery.setLeftUrl(leftQuery.getUrl());
         contrastQuery.setRightUrl(rightQuery.getUrl());
-        List<TableColumnContrastVO> tableColumnContrastVOS = contrastService.tableContrastToTable(contrastQuery);
+        TableContrastVO tableContrastVO = contrastService.tableContrastToTable(contrastQuery);
 
         SqlProductionDTO sqlProductionDTO = new SqlProductionDTO();
         sqlProductionDTO.setLeftOrRight(0);
         sqlProductionDTO.setGoRemark(contrastQuery.getGoRemark());
         sqlProductionDTO.setTransformReg(CollectionUtil.newArrayList(DataTypeRegularEnum.values()));
-        sqlProductionDTO.setColumns(BeanUtil.copyToList(tableColumnContrastVOS, TableColumnContrastDTO.class));
+        sqlProductionDTO.setTables(BeanUtil.copyToList(tableContrastVO.getColumnContrasts(), TableColumnContrastDTO.class));
         sqlPackService.columnContrastPack(sqlProductionDTO);
         List<String> strings = sqlPackService.columnContrastPack(sqlProductionDTO);
         System.out.println();

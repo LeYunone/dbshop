@@ -52,7 +52,7 @@ public class SqlPackService {
      * @param sqlProductionDTO
      */
     public List<String> columnContrastPack(SqlProductionDTO sqlProductionDTO) {
-        List<TableColumnContrastDTO> columns = sqlProductionDTO.getColumns();
+        List<TableColumnContrastDTO> columns = sqlProductionDTO.getTables();
         if (CollectionUtil.isEmpty(columns) || ObjectUtil.isNull(sqlProductionDTO.getLeftOrRight()))
             return new ArrayList<>();
         if (ObjectUtil.isNotNull(sqlProductionDTO.getIndexDifference()) && DbShopConstant.Rule_Yes.equals(sqlProductionDTO.getIndexDifference())) {
@@ -161,13 +161,12 @@ public class SqlPackService {
     }
 
     private List<String> getIndexCompareSqls(SqlProductionDTO sqlProductionDTO) {
-        List<IndexDTO> leftIndex = sqlProductionDTO.getLeftIndex();
-        List<IndexDTO> rightIndex = sqlProductionDTO.getRightIndex();
+        sqlProductionDTO.getTables();
         //0 左表主 1 右表主
         List<IndexDTO> mainIndex = sqlProductionDTO.getLeftOrRight().equals(0) ? leftIndex : rightIndex;
         List<IndexDTO> anotherIndex= !sqlProductionDTO.getLeftOrRight().equals(0) ? leftIndex : rightIndex;
         Map<String, IndexDTO> anotherIndexMap = anotherIndex.stream().collect(Collectors.toMap(IndexDTO::getIndexName, Function.identity()));
-        
+
         //以主表遍历解析sql语句
         for(IndexDTO main:mainIndex){
             IndexDTO indexDTO = anotherIndexMap.get(main.getIndexName());
