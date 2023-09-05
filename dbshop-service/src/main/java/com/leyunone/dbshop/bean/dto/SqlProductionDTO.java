@@ -17,9 +17,7 @@ import java.util.List;
 @Setter
 public class SqlProductionDTO {
 
-    private TableContrastDTO tables;
-
-    private List<DbTableContrastDTO> dbs;
+    private List<TableContrastDTO> tables;
 
     //左右表主副判断  0 左表  1 右表
     private Integer leftOrRight;

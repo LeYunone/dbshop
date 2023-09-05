@@ -4,9 +4,10 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.file.FileAppender;
 import cn.hutool.core.util.ObjectUtil;
 import com.leyunone.dbshop.bean.dto.DbShopDbDTO;
-import com.leyunone.dbshop.bean.dto.DbTableContrastDTO;
+
 import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
 import com.leyunone.dbshop.bean.dto.SqlRuleDTO;
+import com.leyunone.dbshop.bean.dto.TableContrastDTO;
 import com.leyunone.dbshop.bean.info.DbInfo;
 import com.leyunone.dbshop.bean.info.TableDetailInfo;
 import com.leyunone.dbshop.bean.query.ContrastQuery;
@@ -119,7 +120,7 @@ public class DbShopStartAPIServiceImpl implements DbShopStartAPIService{
         sqlProductionDTO.setTransformReg(sqlRuleDTO.getTransformReg());
         sqlProductionDTO.setDeleteTable(sqlRuleDTO.getDeleteTable());
         //TODO HUTOOL 版本问题 谨慎使用BeanUtil.copyToList
-        sqlProductionDTO.setDbs(BeanUtil.copyToList(dbTableContrast, DbTableContrastDTO.class));
+        sqlProductionDTO.setTables(BeanUtil.copyToList(dbTableContrast, TableContrastDTO.class));
         List<String> resultSql = sqlPackService.tableContrastPack(sqlProductionDTO);
         
         //写文件

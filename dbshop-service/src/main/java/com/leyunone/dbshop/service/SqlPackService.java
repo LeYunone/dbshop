@@ -4,11 +4,12 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.bo.AnalysisSqlBO;
-import com.leyunone.dbshop.bean.dto.DbTableContrastDTO;
-import com.leyunone.dbshop.bean.dto.IndexDTO;
+import com.leyunone.dbshop.bean.dto.IndexContrastDTO;
 import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
 import com.leyunone.dbshop.bean.dto.TableColumnContrastDTO;
+import com.leyunone.dbshop.bean.dto.TableContrastDTO;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
+import com.leyunone.dbshop.bean.info.IndexInfo;
 import com.leyunone.dbshop.bean.info.TableDetailInfo;
 import com.leyunone.dbshop.bean.rule.SqlDataTypeTransformRule;
 import com.leyunone.dbshop.constant.DbShopConstant;
@@ -22,9 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * :)
@@ -52,15 +50,11 @@ public class SqlPackService {
      * @param sqlProductionDTO
      */
     public List<String> columnContrastPack(SqlProductionDTO sqlProductionDTO) {
-        List<TableColumnContrastDTO> columns = sqlProductionDTO.getTables();
+        List<TableContrastDTO> columns = sqlProductionDTO.getTables();
         if (CollectionUtil.isEmpty(columns) || ObjectUtil.isNull(sqlProductionDTO.getLeftOrRight()))
             return new ArrayList<>();
-        if (ObjectUtil.isNotNull(sqlProductionDTO.getIndexDifference()) && DbShopConstant.Rule_Yes.equals(sqlProductionDTO.getIndexDifference())) {
-            //索引差异
 
-        }
-
-        List<String> resultSql = this.getColumnCompareSqls(columns, sqlProductionDTO);
+        List<String> resultSql = this.getColumnCompareSqls(columns.get(0).getColumnContrasts(), sqlProductionDTO);
         //策略处理流
         return this.strategysDoing(resultSql, sqlProductionDTO.getTransformReg(), sqlProductionDTO.getProductionStrategys());
     }
@@ -72,16 +66,16 @@ public class SqlPackService {
      * @return
      */
     public List<String> tableContrastPack(SqlProductionDTO sqlProductionDTO) {
-        List<DbTableContrastDTO> dbs = sqlProductionDTO.getDbs();
+        List<TableContrastDTO> dbs = sqlProductionDTO.getTables();
         if (CollectionUtil.isEmpty(dbs) || ObjectUtil.isNull(sqlProductionDTO.getLeftOrRight()))
             return new ArrayList<>();
         List<String> result = new ArrayList<>();
-        for (DbTableContrastDTO db : dbs) {
-            if (db.getNameDifference()) {
+        for (TableContrastDTO table : dbs) {
+            if (table.getNameDifference()) {
                 //表名字不同 猜疑是新增表或删除表
-                TableDetailInfo mainTable = sqlProductionDTO.getLeftOrRight().equals(0) ? db.getLeftTableDetailInfo() : db.getRightTableDetailInfo();
-                TableDetailInfo anotherTable = !sqlProductionDTO.getLeftOrRight().equals(0) ? db.getLeftTableDetailInfo() : db.getRightTableDetailInfo();
-                List<ColumnInfo> columnInfos = sqlProductionDTO.getLeftOrRight().equals(0) ? db.getLeftColumnInfo() : db.getRightColumnInfo();
+                TableDetailInfo mainTable = sqlProductionDTO.getLeftOrRight().equals(0) ? table.getLeftTableDetailInfo() : table.getRightTableDetailInfo();
+                TableDetailInfo anotherTable = !sqlProductionDTO.getLeftOrRight().equals(0) ? table.getLeftTableDetailInfo() : table.getRightTableDetailInfo();
+                List<ColumnInfo> columnInfos = sqlProductionDTO.getLeftOrRight().equals(0) ? table.getLeftColumnInfo() : table.getRightColumnInfo();
                 if (ObjectUtil.isNull(mainTable) &&
                         ObjectUtil.isNotNull(sqlProductionDTO.getDeleteTable())
                         && DbShopConstant.Rule_Yes.equals(sqlProductionDTO.getDeleteTable())) {
@@ -97,9 +91,10 @@ public class SqlPackService {
                 }
                 continue;
             }
-            if (db.getHasDifference()) {
+            if (table.getHasDifference()) {
                 //表名相同，但是有差异，则关注里面的字段
-                result.addAll(this.getColumnCompareSqls(db.getColumnContrasts(), sqlProductionDTO));
+                result.addAll(this.getColumnCompareSqls(table.getColumnContrasts(), sqlProductionDTO));
+                result.addAll(this.getIndexCompareSqls(table.getIndexContrasts(), sqlProductionDTO))
             }
         }
         //进入类型转化策略流中
@@ -160,20 +155,36 @@ public class SqlPackService {
         return resultSql;
     }
 
-    private List<String> getIndexCompareSqls(SqlProductionDTO sqlProductionDTO) {
-        sqlProductionDTO.getTables();
-        //0 左表主 1 右表主
-        List<IndexDTO> mainIndex = sqlProductionDTO.getLeftOrRight().equals(0) ? leftIndex : rightIndex;
-        List<IndexDTO> anotherIndex= !sqlProductionDTO.getLeftOrRight().equals(0) ? leftIndex : rightIndex;
-        Map<String, IndexDTO> anotherIndexMap = anotherIndex.stream().collect(Collectors.toMap(IndexDTO::getIndexName, Function.identity()));
 
-        //以主表遍历解析sql语句
-        for(IndexDTO main:mainIndex){
-            IndexDTO indexDTO = anotherIndexMap.get(main.getIndexName());
-            if(ObjectUtil.isNull(indexDTO)){
-                //新增索引
+    /**
+     * 对比思路：
+     *
+     * @param indexs
+     * @param sqlProductionDTO
+     * @return
+     */
+    private List<String> getIndexCompareSqls(List<IndexContrastDTO> indexs, SqlProductionDTO sqlProductionDTO) {
+        List<String> resultSql = new ArrayList<>();
+        for (IndexContrastDTO indexContrastDTO : indexs) {
+            //0 左表主 1 右表主
+            IndexInfo mainIndex = sqlProductionDTO.getLeftOrRight().equals(0) ? indexContrastDTO.getLeftIndex() : indexContrastDTO.getRightIndex();
+            IndexInfo anotherIndex = !sqlProductionDTO.getLeftOrRight().equals(0) ? indexContrastDTO.getLeftIndex() : indexContrastDTO.getRightIndex();
+            if(!indexContrastDTO.getNameDifferent()){
+                if(indexContrastDTO.getHasDifferent()){
+                    //索引存在差异
+                }
+            }else{
+                //新增或修改
+                if (ObjectUtil.isNull(mainIndex)) {
+                    //主表不存在字段则删除
+                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.DELETE_COLUMN, anotherColumn));
+                } else {
+                    //主表存在字段新增
+                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.ADD_COLUMN, mainColumn));
+                }
             }
         }
+
     }
 
     private List<String> strategysDoing(List<String> resultSql, List<DataTypeRegularEnum> transformRegs, List<String> strategys) {

@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.DataResponse;
 import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
 import com.leyunone.dbshop.bean.dto.TableColumnContrastDTO;
+import com.leyunone.dbshop.bean.dto.TableContrastDTO;
 import com.leyunone.dbshop.bean.query.ContrastQuery;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import com.leyunone.dbshop.service.ContrastService;
@@ -50,7 +51,7 @@ public class SqlProductionController {
         if (CollectionUtil.isEmpty(sqlProductionDTO.getTables())) {
             List<TableColumnContrastVO> tableColumnContrastVOS = contrastService.tableContrastToTable(sqlProductionDTO.getContrastQuery()).getColumnContrasts();
             if (CollectionUtil.isNotEmpty(tableColumnContrastVOS)) {
-                sqlProductionDTO.setTables(JSONObject.parseArray(JSONObject.toJSONString(tableColumnContrastVOS), TableColumnContrastDTO.class));
+                sqlProductionDTO.setTables(JSONObject.parseArray(JSONObject.toJSONString(tableColumnContrastVOS), TableContrastDTO.class));
             }
         }
         List<String> sqls = sqlPackService.columnContrastPack(sqlProductionDTO);

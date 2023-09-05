@@ -27,6 +27,8 @@ public class TableContrastDTO {
     
     private List<TableColumnContrastDTO> columnContrasts;
     
+    private List<IndexContrastDTO> indexContrasts;
+    
     private Boolean hasDifference;
 
     private Boolean nameDifference;

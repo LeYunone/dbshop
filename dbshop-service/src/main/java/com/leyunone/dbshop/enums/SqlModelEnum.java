@@ -33,7 +33,11 @@ public enum SqlModelEnum {
     
     ADD_PRIMARY_KEY("ALTER TABLE {} ADD PRIMARY KEY({});","新增主键"),
     
-    ADD_AUTOINCREMENT("ALTER TABLE {} CHANGE {} {} {}({}) NOT NULL AUTO_INCREMENT ;","新增自增")
+    ADD_AUTOINCREMENT("ALTER TABLE {} CHANGE {} {} {}({}) NOT NULL AUTO_INCREMENT ;","新增自增"),
+    
+    DELETE_INDEX("ALTER TABLE {} DROP INDEX {} ;\n","删除索引"),
+    
+    ADD_INDEX("ALTER TABLE {} ADD {}","新增索引")
     
     
     ;
