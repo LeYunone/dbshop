@@ -94,7 +94,6 @@ public class SqlPackService {
             if (table.getHasDifference()) {
                 //表名相同，但是有差异，则关注里面的字段
                 result.addAll(this.getColumnCompareSqls(table.getColumnContrasts(), sqlProductionDTO));
-                result.addAll(this.getIndexCompareSqls(table.getIndexContrasts(), sqlProductionDTO))
                 result.addAll(this.getIndexCompareSqls(table.getIndexContrasts(), sqlProductionDTO));
             }
         }
@@ -178,11 +177,9 @@ public class SqlPackService {
                 //新增或修改
                 if (ObjectUtil.isNull(mainIndex)) {
                     //主表不存在字段则删除
-                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.DELETE_COLUMN, anotherColumn));
                     resultSql.add(SqlPackUtil.packing(SqlModelEnum.DELETE_INDEX, anotherIndex));
                 } else {
                     //主表存在字段新增
-                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.ADD_COLUMN, mainColumn));
                     resultSql.add(SqlPackUtil.packing(SqlModelEnum.ADD_INDEX, mainIndex));
                 }
             }
