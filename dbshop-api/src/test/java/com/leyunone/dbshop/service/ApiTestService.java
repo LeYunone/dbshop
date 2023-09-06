@@ -37,10 +37,10 @@ public class ApiTestService {
         rightQuery.setUserName("root");
         rightQuery.setPassWord("root");
         SqlRuleDTO sqlRuleDTO = new SqlRuleDTO();
-        sqlRuleDTO.setGoRemark(1);
-        sqlRuleDTO.setGoDeep(1);
+        sqlRuleDTO.setGoRemark(true);
+        sqlRuleDTO.setGoDeep(true);
         sqlRuleDTO.setLeftOrRight(0);
-        sqlRuleDTO.setDeleteTable(1);
+        sqlRuleDTO.setDeleteTable(true);
         sqlRuleDTO.setTransformReg(CollectionUtil.newArrayList(DataTypeRegularEnum.BIT1_TO_TINYINT1,DataTypeRegularEnum.DATETIME_TO_0));
         dbShopStartAPIService.leftRightDb(leftQuery,rightQuery,sqlRuleDTO);
     }
