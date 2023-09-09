@@ -184,8 +184,7 @@ public class SqlPackService {
                 }
             }
         }
-
-        return null;
+        return resultSql;
     }
 
     private List<String> strategysDoing(List<String> resultSql, List<DataTypeRegularEnum> transformRegs, List<String> strategys) {
