@@ -94,7 +94,7 @@ public class SqlPackService {
             if (table.getHasDifference()) {
                 //表名相同，但是有差异，则关注里面的字段
                 result.addAll(this.getColumnCompareSqls(table.getColumnContrasts(), sqlProductionDTO));
-                result.addAll(this.getIndexCompareSqls(table.getIndexContrasts(), sqlProductionDTO))
+                result.addAll(this.getIndexCompareSqls(table.getIndexContrasts(), sqlProductionDTO));
             }
         }
         //进入类型转化策略流中
@@ -177,14 +177,14 @@ public class SqlPackService {
                 //新增或修改
                 if (ObjectUtil.isNull(mainIndex)) {
                     //主表不存在字段则删除
-                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.DELETE_COLUMN, anotherColumn));
+                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.DELETE_INDEX, anotherIndex));
                 } else {
                     //主表存在字段新增
-                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.ADD_COLUMN, mainColumn));
+                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.ADD_INDEX, mainIndex));
                 }
             }
         }
-
+        return resultSql;
     }
 
     private List<String> strategysDoing(List<String> resultSql, List<DataTypeRegularEnum> transformRegs, List<String> strategys) {
@@ -204,3 +204,4 @@ public class SqlPackService {
         return JSONObject.parseArray(resultJson, String.class);
     }
 }
+

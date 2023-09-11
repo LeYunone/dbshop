@@ -37,7 +37,9 @@ public enum SqlModelEnum {
     
     DELETE_INDEX("ALTER TABLE {} DROP INDEX {} ;\n","删除索引"),
     
-    ADD_INDEX("ALTER TABLE {} ADD {}","新增索引")
+    ADD_INDEX("ALTER TABLE {} ADD {}","新增索引"),
+    
+    UPDATE_INDEX("ALTER TABLE {} ADD     INDEX {} ({})","更新索引")
     
     
     ;
