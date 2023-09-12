@@ -6,8 +6,10 @@ import com.leyunone.dbshop.bean.dto.TableColumnContrastDTO;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.constant.DbShopConstant;
 import com.leyunone.dbshop.enums.SqlModelEnum;
+import com.leyunone.dbshop.excutor.SqlProductionExcutor;
 import com.leyunone.dbshop.util.SqlPackUtil;
 import com.leyunone.dbshop.util.TextFillUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,6 +27,8 @@ import java.util.Set;
 @Service
 public class AnalysisSqlService {
 
+    @Autowired
+    private SqlProductionExcutor sqlProductionExcutor;
 
     /**
      * 表字段修改分析
@@ -45,7 +49,7 @@ public class AnalysisSqlService {
                 || columnContrastDTO.getTypeDifferent()
                 || (DbShopConstant.Rule_Yes.equals(sqlProductionDTO.getGoRemark()) && columnContrastDTO.getRemarkDifferent())) {
             resultSql.add(AnalysisSqlBO.builder().
-                    sql(SqlPackUtil.packing(SqlModelEnum.MODIFY_COLUMN, mainColumn)).sqlModel(SqlModelEnum.MODIFY_COLUMN).build());
+                    sql(sqlProductionExcutor.execute(SqlModelEnum.MODIFY_COLUMN, mainColumn)).sqlModel(SqlModelEnum.MODIFY_COLUMN).build());
         }
         //先删除自增 再删除主键
         if(columnContrastDTO.getAutoincrementDifferent()){
@@ -53,11 +57,11 @@ public class AnalysisSqlService {
             if(mainColumn.getAutoincrement()){
                 //主表为自增 新增自增 
                 resultSql.add(AnalysisSqlBO.builder().
-                        sql(SqlPackUtil.packing(SqlModelEnum.ADD_AUTOINCREMENT,mainColumn)).sqlModel(SqlModelEnum.ADD_AUTOINCREMENT).build());
+                        sql(sqlProductionExcutor.execute(SqlModelEnum.ADD_AUTOINCREMENT,mainColumn)).sqlModel(SqlModelEnum.ADD_AUTOINCREMENT).build());
             }else{
                 //主表无自增 删除自增
                 resultSql.add(AnalysisSqlBO.builder().
-                        sql(SqlPackUtil.packing(SqlModelEnum.DELETE_AUTOINCREMENT,mainColumn)).sqlModel(SqlModelEnum.DELETE_AUTOINCREMENT).build());
+                        sql(sqlProductionExcutor.execute(SqlModelEnum.DELETE_AUTOINCREMENT,mainColumn)).sqlModel(SqlModelEnum.DELETE_AUTOINCREMENT).build());
             }
         }
         if(columnContrastDTO.getPrimaryKeyDifferent()){
@@ -65,11 +69,11 @@ public class AnalysisSqlService {
             if(mainColumn.getPrimaryKey()){
                 //主表为主键 设置主键
                 resultSql.add(AnalysisSqlBO.builder().
-                        sql(SqlPackUtil.packing(SqlModelEnum.ADD_PRIMARY_KEY,mainColumn)).sqlModel(SqlModelEnum.ADD_PRIMARY_KEY).build());
+                        sql(sqlProductionExcutor.execute(SqlModelEnum.ADD_PRIMARY_KEY,mainColumn)).sqlModel(SqlModelEnum.ADD_PRIMARY_KEY).build());
             }else {
                 //主表无主键 删除
                 resultSql.add(AnalysisSqlBO.builder().
-                        sql(SqlPackUtil.packing(SqlModelEnum.DELETE_PRIMARY_KEY,mainColumn)).sqlModel(SqlModelEnum.DELETE_PRIMARY_KEY).build());
+                        sql(sqlProductionExcutor.execute(SqlModelEnum.DELETE_PRIMARY_KEY,mainColumn)).sqlModel(SqlModelEnum.DELETE_PRIMARY_KEY).build());
             }
         }
         return resultSql;

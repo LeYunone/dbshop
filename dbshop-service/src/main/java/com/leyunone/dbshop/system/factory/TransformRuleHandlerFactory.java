@@ -1,6 +1,6 @@
 package com.leyunone.dbshop.system.factory;
 
-import com.leyunone.dbshop.rule.AbstractRule;
+import com.leyunone.dbshop.handler.rule.AbstractRule;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,15 +16,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class TransformRuleHandlerFactory extends AbstractRuleFactory{
 
-    private final ConcurrentHashMap<String, AbstractRule> handlers = new ConcurrentHashMap<>(16);
+    private final ConcurrentHashMap<Object, AbstractRule<?>> handlers = new ConcurrentHashMap<>(16);
 
     @Override
-    public void register(String identif, AbstractRule handler) {
+    public void register(Object identif, AbstractRule<?> handler) {
         handlers.put(identif, handler);
     }
 
     @Override
-    public AbstractRule getHandler(String identif) {
+    public AbstractRule<?> getHandler(Object identif) {
         return handlers.get(identif);
     }
 }

@@ -16,6 +16,7 @@ import com.leyunone.dbshop.constant.DbShopConstant;
 import com.leyunone.dbshop.enums.DataTypeRegularEnum;
 import com.leyunone.dbshop.enums.SqlModelEnum;
 import com.leyunone.dbshop.excutor.RulePointExcutor;
+import com.leyunone.dbshop.excutor.SqlProductionExcutor;
 import com.leyunone.dbshop.system.factory.TransformRuleHandlerFactory;
 import com.leyunone.dbshop.util.SqlPackUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,8 @@ public class SqlPackService {
     private TransformRuleHandlerFactory factory;
     @Autowired
     private AnalysisSqlService analysisSqlService;
+    @Autowired
+    private SqlProductionExcutor sqlProductionExcutor;
 
     /**
      * 列字段比对结果 组装sql
@@ -81,12 +84,12 @@ public class SqlPackService {
                         && DbShopConstant.Rule_Yes.equals(sqlProductionDTO.getDeleteTable())) {
                     //删除
                     if (ObjectUtil.isNotNull(anotherTable)) {
-                        result.add(SqlPackUtil.packing(SqlModelEnum.DROP_TABLE, anotherTable, null));
+                        result.add(sqlProductionExcutor.execute(SqlModelEnum.DROP_TABLE, anotherTable, null));
                     }
                 } else {
                     //新增，封装语句
                     if (ObjectUtil.isNotNull(mainTable)) {
-                        result.add(SqlPackUtil.packing(SqlModelEnum.CREATE_TABLE, mainTable, columnInfos));
+                        result.add(sqlProductionExcutor.execute(SqlModelEnum.CREATE_TABLE, mainTable, columnInfos));
                     }
                 }
                 continue;
@@ -143,10 +146,10 @@ public class SqlPackService {
                 //字段名不同 新增或删除
                 if (ObjectUtil.isNull(mainColumn)) {
                     //主表不存在字段则删除
-                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.DELETE_COLUMN, anotherColumn));
+                    resultSql.add(sqlProductionExcutor.execute(SqlModelEnum.DELETE_COLUMN, anotherColumn));
                 } else {
                     //主表存在字段新增
-                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.ADD_COLUMN, mainColumn));
+                    resultSql.add(sqlProductionExcutor.execute(SqlModelEnum.ADD_COLUMN, mainColumn));
                 }
             }
         }
@@ -157,7 +160,9 @@ public class SqlPackService {
 
 
     /**
-     * 对比思路：
+     * 索引  只存在相同和不同，即：
+     * 相同略过
+     * 不同 ：如果有索引则删除后新增，否则直接新增
      *
      * @param indexs
      * @param sqlProductionDTO
@@ -177,10 +182,10 @@ public class SqlPackService {
                 //新增或修改
                 if (ObjectUtil.isNull(mainIndex)) {
                     //主表不存在字段则删除
-                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.DELETE_INDEX, anotherIndex));
+                    resultSql.add(sqlProductionExcutor.execute(SqlModelEnum.DELETE_INDEX, anotherIndex));
                 } else {
                     //主表存在字段新增
-                    resultSql.add(SqlPackUtil.packing(SqlModelEnum.ADD_INDEX, mainIndex));
+                    resultSql.add(sqlProductionExcutor.execute(SqlModelEnum.ADD_INDEX, mainIndex));
                 }
             }
         }

@@ -35,11 +35,11 @@ public enum SqlModelEnum {
     
     ADD_AUTOINCREMENT("ALTER TABLE {} CHANGE {} {} {}({}) NOT NULL AUTO_INCREMENT ;","新增自增"),
     
-    DELETE_INDEX("ALTER TABLE {} DROP INDEX {} ;\n","删除索引"),
+    DELETE_INDEX("ALTER TABLE {} DROP INDEX {} ;","删除索引"),
     
-    ADD_INDEX("ALTER TABLE {} ADD {}","新增索引"),
+    ADD_INDEX("ALTER TABLE {} ADD {} ;","新增索引"),
     
-    UPDATE_INDEX("ALTER TABLE {} ADD     INDEX {} ({})","更新索引")
+    UPDATE_INDEX(SqlModelEnum.DELETE_INDEX.getSqlModel() + "\n" + SqlModelEnum.ADD_INDEX.getSqlModel(),"更新索引")
     
     
     ;

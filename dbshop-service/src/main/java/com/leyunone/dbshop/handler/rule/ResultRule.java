@@ -1,4 +1,4 @@
-package com.leyunone.dbshop.rule;
+package com.leyunone.dbshop.handler.rule;
 
 import com.leyunone.dbshop.bean.rule.TargetRule;
 

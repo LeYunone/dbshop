@@ -1,4 +1,4 @@
-package com.leyunone.dbshop.rule;
+package com.leyunone.dbshop.handler.rule;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.leyunone.dbshop.annotate.RuleHandler;
