@@ -1,6 +1,7 @@
 package com.leyunone.dbshop.bean.vo;
 
 import com.leyunone.dbshop.bean.info.ColumnInfo;
+import com.leyunone.dbshop.bean.info.IndexInfo;
 import com.leyunone.dbshop.bean.info.TableDetailInfo;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,6 +25,10 @@ public class DbTableContrastVO {
     private List<ColumnInfo> leftColumnInfo;
     
     private List<ColumnInfo> rightColumnInfo;
+    
+    private List<IndexInfo> leftIndexInfo;
+    
+    private List<IndexInfo> rightIndexInfo;
     
     private List<TableColumnContrastVO> columnContrasts;
     

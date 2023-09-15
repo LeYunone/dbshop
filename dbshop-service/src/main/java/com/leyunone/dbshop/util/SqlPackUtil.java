@@ -30,12 +30,14 @@ public class SqlPackUtil {
 
     public static final String COLUMNS = ColumnInfo.class.getSimpleName()+"s";
     
+    public static final String INDEXS = IndexInfo.class.getSimpleName()+"s";
+    
     public static <T>T resoleJsonData (JSONObject json,Class<T> tClass) {
-        return JSONObject.parseObject(json.get(tClass.getSimpleName()).toString(),tClass);
+        return JSONObject.parseObject(json.getString(tClass.getSimpleName()),tClass);
     }
 
     public static <T>List<T> resoleJsonDatas (JSONObject json,Class<T> tClass) {
-        return JSONObject.parseArray(json.get(tClass.getSimpleName()+"s").toString(),tClass);
+        return JSONObject.parseArray(json.getString(tClass.getSimpleName()+"s"),tClass);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.leyunone.dbshop.excutor;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
@@ -44,14 +45,22 @@ public class SqlProductionExcutor {
     public String execute(SqlModelEnum sqlModelEnum, Object... objects) {
         JSONObject json = new JSONObject();
         for (Object o : objects) {
+            if (ObjectUtil.isNull(o)) continue;
+            String data = JSONObject.toJSONString(o);
             if (o.getClass().isAssignableFrom(ColumnInfo.class)) {
-                json.put(SqlPackUtil.COLUMN, o);
+                json.put(SqlPackUtil.COLUMN, data);
             } else if (o.getClass().isAssignableFrom(TableDetailInfo.class)) {
-                json.put(SqlPackUtil.TABLE, o);
+                json.put(SqlPackUtil.TABLE, data);
             } else if (o.getClass().isAssignableFrom(IndexInfo.class)) {
-                json.put(SqlPackUtil.INDEX, o);
-            } else {
-                json.put(SqlPackUtil.COLUMNS, o);
+                json.put(SqlPackUtil.INDEX, data);
+            } else if (List.class.isAssignableFrom(o.getClass())) {
+                if (CollectionUtil.isNotEmpty(((List) o))) {
+                    if (((List) o).get(0).getClass().isAssignableFrom(ColumnInfo.class)) {
+                        json.put(SqlPackUtil.COLUMNS, data);
+                    } else if (((List) o).get(0).getClass().isAssignableFrom(IndexInfo.class)) {
+                        json.put(SqlPackUtil.INDEXS, data);
+                    }
+                }
             }
         }
         SqlProductionAbstractHandler handler = sqlProductionHandlerFactory.getHandler(sqlModelEnum);

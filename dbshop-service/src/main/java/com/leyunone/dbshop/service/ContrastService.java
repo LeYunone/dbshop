@@ -19,6 +19,7 @@ import com.leyunone.dbshop.util.AssertUtil;
 import com.leyunone.dbshop.util.CollectionFunctionUtils;
 import com.leyunone.dbshop.util.DbStrategyUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -81,12 +82,14 @@ public class ContrastService {
                 leftInfo = dataFactory.getTableInfo(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, true)));
                 //设置左表字段信息
                 dbTableContrastVO.setLeftColumnInfo(leftInfo.getColumnInfos());
+                dbTableContrastVO.setLeftIndexInfo(leftInfo.getIndexInfos());
             }
             if (ObjectUtil.isNotNull(rightTableDetailInfo)) {
                 contrastQuery.setRightTableName(rightTableDetailInfo.getTableName());
                 rightInfo = dataFactory.getTableInfo(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, false)));
                 //设置右表字段信息
                 dbTableContrastVO.setRightColumnInfo(rightInfo.getColumnInfos());
+                dbTableContrastVO.setRightIndexInfo(rightInfo.getIndexInfos());
             }
             //当两表存在 且名字相同时，进行表字段间的结果对比
             if (ObjectUtil.isNotNull(leftTableDetailInfo) && ObjectUtil.isNotNull(rightTableDetailInfo) && !dbTableContrastVO.getNameDifference()) {
@@ -100,8 +103,7 @@ public class ContrastService {
                 dbTableContrastVO.setIndexContrasts(indexDoing.getMateData());
 
                 dbTableContrastVO.setIndexDifference(indexDoing.getCellData());
-                dbTableContrastVO.setHasDifference(columnDoing.getCellData() && indexDoing.getCellData());
-
+                dbTableContrastVO.setHasDifference(columnDoing.getCellData() || indexDoing.getCellData());
             }
 
         }
@@ -228,7 +230,7 @@ public class ContrastService {
         for (IndexInfo leftIndex : left) {
             IndexContrastVO indexContrastVO = new IndexContrastVO();
             indexContrastVO.setLeftIndex(leftIndex);
-            if (rightMap.containsKey(leftIndex.getIndexName())) {
+            if (CollectionUtil.isNotEmpty(rightMap) && rightMap.containsKey(leftIndex.getIndexName())) {
                 indexContrastVO.setRightIndex(rightMap.get(leftIndex.getIndexName()));
                 indexContrastVO.setNameDifferent(DbShopConstant.SAME);
                 rightMap.remove(leftIndex.getIndexName());
@@ -252,17 +254,30 @@ public class ContrastService {
         //相同的
         for (IndexContrastVO indexContrastVO : result) {
             boolean hasDifferent = false;
-            if(!indexContrastVO.getNameDifferent()){
+            if (!indexContrastVO.getNameDifferent()) {
                 //名称相同 比较索引内容
                 IndexInfo leftIndex = indexContrastVO.getLeftIndex();
                 IndexInfo rightIndex = indexContrastVO.getRightIndex();
                 //如果两边的hashcode值不相同 则说明索引不相同
-                hasDifferent = leftIndex.hashCode() != rightIndex.hashCode();
+                hasDifferent = this.indexCompare(leftIndex, rightIndex);
             }
             indexContrastVO.setHasDifferent(hasDifferent);
             different = hasDifferent;
         }
 
         return ResponseCell.build(different, result);
+    }
+
+    private boolean indexCompare(IndexInfo leftIndex, IndexInfo rightIndex) {
+        boolean c = leftIndex.getColumns().hashCode() == rightIndex.getColumns().hashCode();
+        boolean type = leftIndex.getType().equals(rightIndex.getType());
+        boolean un = leftIndex.isUniqueIndex() == rightIndex.isUniqueIndex();
+        boolean o = true;
+        if(StringUtils.isNotBlank(leftIndex.getAscOrDesc())){
+            o = leftIndex.getAscOrDesc().equals(rightIndex.getAscOrDesc());
+        }else if(StringUtils.isNotBlank(rightIndex.getAscOrDesc())){
+            o = rightIndex.getAscOrDesc().equals(leftIndex.getAscOrDesc());
+        }
+        return !(c && type && un && o);
     }
 }

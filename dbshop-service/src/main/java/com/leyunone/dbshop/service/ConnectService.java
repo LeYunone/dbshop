@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.enums.ColumnResultEnum;
 import com.leyunone.dbshop.util.DbClose;
+import com.mysql.cj.jdbc.DatabaseMetaDataUsingInfoSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -26,9 +27,9 @@ public class ConnectService {
 
     public static DatabaseMetaData toTest() throws SQLException, ClassNotFoundException {
         ConnectService connectService = new ConnectService();
-        String url = "jdbc:mysql://localhost:3306/test2023?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true";
+        String url = "jdbc:mysql://192.168.151.233:3306/smarthome?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true";
         String userName = "root";
-        String passWord = "root";
+        String passWord = "gvs@2022";
         return connectService.getConnectionToData(url, userName, passWord);
     }
 
@@ -36,7 +37,7 @@ public class ConnectService {
         DatabaseMetaData meta = toTest();
         ResultSet rs = null;
         try {
-            rs = meta.getIndexInfo("test2023", "test2023", "test", false, true);
+            rs = meta.getIndexInfo("smarthome", "smarthome", "test", false, true);
             while (rs.next()) {
                 String ascOrDesc = rs.getString("ASC_OR_DESC");         // 列排序顺序: 升序还是降序
                 int cardinality = rs.getInt("CARDINALITY");             // 基数
@@ -46,7 +47,16 @@ public class ConnectService {
                 String indexName = rs.getString("INDEX_NAME");          // 索引的名称
                 short indexType = rs.getShort("TYPE");          // 索引类型
                 String columnName = rs.getString("COLUMN_NAME");
+                String filter_condition = rs.getString("FILTER_CONDITION");
+                String pages = rs.getString("PAGES");
+                String table_cat = rs.getString("TABLE_CAT");
+                String tableName = rs.getString("TABLE_NAME");
+
                 JSONObject jsonObject = new JSONObject();
+                jsonObject.put("filter_condition",filter_condition);
+                jsonObject.put("表名",tableName);
+                jsonObject.put("pages",pages);
+                jsonObject.put("table_cat",table_cat);
                 jsonObject.put("字段名",columnName);
                 jsonObject.put("排序顺序: 升序还是降序",ascOrDesc);
                 jsonObject.put("基数",cardinality);

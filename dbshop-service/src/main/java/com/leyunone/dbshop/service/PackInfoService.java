@@ -103,6 +103,8 @@ public class PackInfoService {
                 info.setAscOrDesc(indexInfo.getString("ASC_OR_DESC"));
                 info.setCardinality(indexInfo.getInt("CARDINALITY"));
                 info.setIndexName(indexInfo.getString("INDEX_NAME"));
+                info.setTableName(indexInfo.getString("TABLE_NAME"));
+                info.setUniqueIndex(!indexInfo.getBoolean("NON_UNIQUE"));
                 info.setType(indexInfo.getInt("TYPE"));
                 info.getColumns().add(IndexInfo.IndexColumn.builder().index(indexInfo.getInt("ORDINAL_POSITION")).columnName(indexInfo.getString("COLUMN_NAME")).build());
             }

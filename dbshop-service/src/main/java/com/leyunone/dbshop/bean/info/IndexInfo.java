@@ -17,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class IndexInfo {
     
     private List<IndexColumn> columns = new ArrayList<>();
@@ -28,6 +29,10 @@ public class IndexInfo {
 
     /**
      * 列排序顺序: 升序还是降序
+     * A（升序）
+     *
+     * D（降序）
+     * MYSQL 5.7版本 ：为空为 FULLTEXT
      */
     private String ascOrDesc;
 
@@ -42,6 +47,11 @@ public class IndexInfo {
     private String indexName;
     
     private String tableName;
+
+    /**
+     * 是否是唯一索引
+     */
+    private boolean uniqueIndex;
     
     @Getter
     @Setter
@@ -57,6 +67,13 @@ public class IndexInfo {
          * 列名
          */
         private String columnName;
+        
+        public IndexColumn(){}
+
+        public IndexColumn(Integer index, String columnName) {
+            this.index = index;
+            this.columnName = columnName;
+        }
 
         @Override
         public int hashCode() {
@@ -64,19 +81,5 @@ public class IndexInfo {
             result = 31 * result + (columnName != null ? columnName.hashCode() : 0);
             return result;
         }
-    }
-
-    /**
-     * 只重写hashcode方法用来比较
-     * @return
-     */
-    @Override
-    public int hashCode() {
-        int result = columns != null ? columns.hashCode() : 0;
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        result = 31 * result + (ascOrDesc != null ? ascOrDesc.hashCode() : 0);
-        result = 31 * result + cardinality;
-        result = 31 * result + (indexName != null ? indexName.hashCode() : 0);
-        return result;
     }
 }

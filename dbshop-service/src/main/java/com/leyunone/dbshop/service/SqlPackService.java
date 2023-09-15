@@ -79,6 +79,8 @@ public class SqlPackService {
                 TableDetailInfo mainTable = sqlProductionDTO.getLeftOrRight().equals(0) ? table.getLeftTableDetailInfo() : table.getRightTableDetailInfo();
                 TableDetailInfo anotherTable = !sqlProductionDTO.getLeftOrRight().equals(0) ? table.getLeftTableDetailInfo() : table.getRightTableDetailInfo();
                 List<ColumnInfo> columnInfos = sqlProductionDTO.getLeftOrRight().equals(0) ? table.getLeftColumnInfo() : table.getRightColumnInfo();
+                List<IndexInfo> indexs = sqlProductionDTO.getLeftOrRight().equals(0) ? table.getLeftIndexInfo() : table.getRightIndexInfo();
+
                 if (ObjectUtil.isNull(mainTable) &&
                         ObjectUtil.isNotNull(sqlProductionDTO.getDeleteTable())
                         && DbShopConstant.Rule_Yes.equals(sqlProductionDTO.getDeleteTable())) {
@@ -89,7 +91,7 @@ public class SqlPackService {
                 } else {
                     //新增，封装语句
                     if (ObjectUtil.isNotNull(mainTable)) {
-                        result.add(sqlProductionExcutor.execute(SqlModelEnum.CREATE_TABLE, mainTable, columnInfos));
+                        result.add(sqlProductionExcutor.execute(SqlModelEnum.CREATE_TABLE, mainTable, columnInfos,indexs));
                     }
                 }
                 continue;
@@ -177,6 +179,7 @@ public class SqlPackService {
             if(!indexContrastDTO.getNameDifferent()){
                 if(indexContrastDTO.getHasDifferent()){
                     //索引存在差异
+                    resultSql.add(sqlProductionExcutor.execute(SqlModelEnum.UPDATE_INDEX,mainIndex));
                 }
             }else{
                 //新增或修改
