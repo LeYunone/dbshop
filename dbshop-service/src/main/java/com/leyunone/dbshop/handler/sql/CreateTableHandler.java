@@ -40,10 +40,10 @@ public class CreateTableHandler extends SqlProductionAbstractHandler {
         String primarykeys = this.createTableprimaryKeyPacking(tableDetailInfo, columnInfos);
         String indexSqls = this.createTableIndexKeyPacking(indexInfos);
         if (StringUtils.isNotBlank(primarykeys) || StringUtils.isNotBlank(indexSqls)) {
-            columnSqls = columnSqls + ",";
+            columnSqls = columnSqls + ",\n";
         }
         if (StringUtils.isNotBlank(indexSqls)) {
-            primarykeys = primarykeys + ",";
+            primarykeys = primarykeys + ",\n";
         }
         return TextFillUtil.fillStr(SqlModelEnum.CREATE_TABLE.getSqlModel(), tableDetailInfo.getTableName(), columnSqls, primarykeys, indexSqls);
     }
