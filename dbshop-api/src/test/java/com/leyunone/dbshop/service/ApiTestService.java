@@ -27,19 +27,15 @@ public class ApiTestService {
     @Test
     public void startTest(){
         DbShopDbDTO leftQuery = new DbShopDbDTO();
-//        leftQuery.setUrl("jdbc:mysql://192.168.151.233:3306/smarthome?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&nullCatalogMeansCurrent=true");
-//        leftQuery.setDbName("smarthome");
-//        leftQuery.setUserName("root");
-//        leftQuery.setPassWord("gvs@2022");
-        leftQuery.setUrl("jdbc:mysql://rm-wz9e0gb1cx2986u05bo.mysql.rds.aliyuncs.com:3306/smarthome?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&nullCatalogMeansCurrent=true");
-        leftQuery.setDbName("smarthome");
-        leftQuery.setUserName("smarthome_select");
-        leftQuery.setPassWord("smarthome_select@2Ozl.Com");
+        leftQuery.setUrl("jdbc:mysql://localhost:3306/test2023?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&nullCatalogMeansCurrent=true");
+        leftQuery.setDbName("test2023");
+        leftQuery.setUserName("root");
+        leftQuery.setPassWord("root");
         DbShopDbDTO rightQuery = new DbShopDbDTO();
-        rightQuery.setUrl("jdbc:mysql://192.168.151.201:3306/smarthome?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&nullCatalogMeansCurrent=true");
-        rightQuery.setDbName("smarthome");
+        rightQuery.setUrl("jdbc:mysql://localhost:3306/test2023-1?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&nullCatalogMeansCurrent=true");
+        rightQuery.setDbName("test2023-1");
         rightQuery.setUserName("root");
-        rightQuery.setPassWord("gvs@2021");
+        rightQuery.setPassWord("root");
         SqlRuleDTO sqlRuleDTO = new SqlRuleDTO();
         //备注级对比 0关闭 1开启
         sqlRuleDTO.setGoRemark(true);
