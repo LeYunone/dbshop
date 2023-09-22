@@ -44,6 +44,7 @@ public class ApiTestService {
         //那张为主表 0 左表  1 右表
         sqlRuleDTO.setLeftOrRight(1);
 
+
         //是否封装删除表sql
         sqlRuleDTO.setDeleteTable(true);
         //类型转化规则        	       
