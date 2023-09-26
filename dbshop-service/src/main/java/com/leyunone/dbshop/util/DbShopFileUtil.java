@@ -1,8 +1,11 @@
 package com.leyunone.dbshop.util;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.ObjectUtil;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
@@ -18,20 +21,32 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class DbShopFileUtil {
 
     /**
-     * 迭代找到.java或.class 文件
+     * 迭代找到.java 文件
      *
      * @param file
      */
-    public static void iterationForJavaOrClass(File file, List<File> files) {
+    public static List<Class<?>> iterationForJavaClass(File file) {
         Stack<File> dirFiles = new Stack<>();
         dirFiles.add(file);
-        while(!dirFiles.empty()){
+        List<Class<?>> result = new ArrayList<>();
+        while (!dirFiles.empty()) {
             File pop = dirFiles.pop();
-            if(pop.isDirectory()){
-
-            }else{
-                if()
+            if (pop.isDirectory()) {
+                dirFiles.addAll(CollectionUtil.newArrayList(pop.listFiles()));
+            } else {
+                try {
+                    Class<?> aClass = Class.forName(file.getCanonicalPath());
+                    if(ObjectUtil.isNotNull(aClass)){
+                        result.add(aClass);
+                    }
+                }catch (Exception e){
+                }
             }
         }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        iterationForJavaClass(new File("E:\\TheCore\\gvs-customization-test"));
     }
 }
