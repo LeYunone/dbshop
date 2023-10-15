@@ -1,5 +1,7 @@
 package com.leyunone.dbshop.api;
 
+import ch.qos.logback.classic.db.names.TableName;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.file.FileAppender;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -8,7 +10,9 @@ import com.leyunone.dbshop.bean.dto.DbShopDbDTO;
 import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
 import com.leyunone.dbshop.bean.dto.SqlRuleDTO;
 import com.leyunone.dbshop.bean.dto.TableContrastDTO;
+import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.TableDetailInfo;
+import com.leyunone.dbshop.bean.info.TableInfo;
 import com.leyunone.dbshop.bean.query.ContrastQuery;
 import com.leyunone.dbshop.bean.query.DBQuery;
 import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
@@ -17,14 +21,19 @@ import com.leyunone.dbshop.constant.DbShopConstant;
 import com.leyunone.dbshop.service.ConfigService;
 import com.leyunone.dbshop.service.ContrastService;
 import com.leyunone.dbshop.service.SqlPackService;
+import com.leyunone.dbshop.system.factory.DBDataFactory;
+import com.leyunone.dbshop.util.CollectionFunctionUtils;
+import com.leyunone.dbshop.util.DbStrategyUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * :)
@@ -43,6 +52,7 @@ public class DbShopStartAPIServiceImpl implements DbShopStartAPIService {
     private final ConfigService configService;
     private final ContrastService contrastService;
     private final SqlPackService sqlPackService;
+    private final DBDataFactory dataFactory;
 
     @Override
     public void leftRightTable() {
@@ -164,7 +174,48 @@ public class DbShopStartAPIServiceImpl implements DbShopStartAPIService {
     /**
      * 根据指定注解 检查表与代码字段是否一致
      */
-    public void checkTableToCode() {
+    public void checkTableToCode(DbShopDbDTO dbDTO,Class<? extends Annotation> annotationClass,File file) {
+        List<Class> clazzs = new ArrayList<>();
+        List<Class> tableEntry = new ArrayList<>();
+        clazzs.forEach(clazz->{
+            if(ObjectUtil.isNotNull(clazz.getAnnotation(annotationClass))){
+                tableEntry.add(clazz);
+            }
+        });
+        DBQuery dbQuery = new DBQuery();
+        dbQuery.setUrl(dbDTO.getUrl());
+        dbQuery.setDbName(dbDTO.getDbName());
+        dbQuery.setUserName(dbDTO.getUserName());
+        dbQuery.setPassWord(dbDTO.getPassWord());
+        configService.loadConnectionToData(dbQuery);
 
+        for (Class aClass : tableEntry) {
+            Field[] fields = aClass.getFields();
+            Field[] declaredFields = aClass.getDeclaredFields();
+            ArrayList<Field> allField = CollectionUtil.newArrayList(fields);
+            allField.addAll(CollectionUtil.newArrayList(declaredFields));
+            Annotation annotation = aClass.getAnnotation(annotationClass);
+//            dbQuery.setTableName();
+            TableInfo tableInfo = dataFactory.getTableInfo(DbStrategyUtil.getTableStrategy(dbQuery));
+            List<ColumnInfo> columnInfos = tableInfo.getColumnInfos();
+            if(CollectionUtil.isNotEmpty(columnInfos)){
+                Map<String, ColumnInfo> tableColumns = CollectionFunctionUtils.mapTo(columnInfos, ColumnInfo::getColumnName);
+                boolean hasDifferent = false;
+
+                //属性比表多的
+                List<String> fieldDiffs = new ArrayList<>();
+                //属性比表少的 fieldDiff
+                for (Field field : allField) {
+                    if(!tableColumns.containsKey(field.getName())){
+                        hasDifferent = true;
+                        fieldDiffs.add(file.getName());
+                    }
+                }
+
+                if(hasDifferent){
+
+                }
+            }
+        }
     }
 }
