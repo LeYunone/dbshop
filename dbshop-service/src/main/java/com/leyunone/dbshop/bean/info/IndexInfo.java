@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * :)
- * 
+ *
  * @author LeYunone
  * @email 365627310@qq.com
  * @date 2023-08-15
@@ -19,7 +19,7 @@ import java.util.List;
 @Builder
 @ToString
 public class IndexInfo {
-    
+
     private List<IndexColumn> columns = new ArrayList<>();
 
     /**
@@ -45,14 +45,19 @@ public class IndexInfo {
      * 索引名
      */
     private String indexName;
-    
+
     private String tableName;
 
     /**
      * 是否是唯一索引
      */
     private boolean uniqueIndex;
-    
+
+    /**
+     * 是否是主键索引 [默认获取]
+     */
+    private boolean primaryIndex;
+
     @Getter
     @Setter
     @Builder
@@ -67,7 +72,7 @@ public class IndexInfo {
          * 列名
          */
         private String columnName;
-        
+
         public IndexColumn(){}
 
         public IndexColumn(Integer index, String columnName) {

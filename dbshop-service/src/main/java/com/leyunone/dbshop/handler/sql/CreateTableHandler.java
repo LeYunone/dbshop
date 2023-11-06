@@ -38,7 +38,7 @@ public class CreateTableHandler extends SqlProductionAbstractHandler {
         List<IndexInfo> indexInfos = SqlPackUtil.resoleJsonDatas(json, IndexInfo.class);
         String columnSqls = this.createTableInColumnPacking(columnInfos);
         String primarykeys = this.createTableprimaryKeyPacking(tableDetailInfo, columnInfos);
-        String indexSqls = this.createTableIndexKeyPacking(indexInfos);
+        String indexSqls = this.createTableIndexKeyPacking(tableDetailInfo, indexInfos);
         if (StringUtils.isNotBlank(primarykeys) || StringUtils.isNotBlank(indexSqls)) {
             columnSqls = columnSqls + ",\n";
         }
@@ -55,7 +55,7 @@ public class CreateTableHandler extends SqlProductionAbstractHandler {
 
     //新增表中 字段语句的包装
     private String createTableInColumnPacking(List<ColumnInfo> columnInfos) {
-        if(CollectionUtil.isEmpty(columnInfos)) return null;
+        if (CollectionUtil.isEmpty(columnInfos)) return null;
         List<String> sql = new ArrayList<>();
         for (ColumnInfo columnInfo : columnInfos) {
             StringBuilder attr = new StringBuilder("");
@@ -77,7 +77,7 @@ public class CreateTableHandler extends SqlProductionAbstractHandler {
 
     //新增表中 主键语句的包装
     private String createTableprimaryKeyPacking(TableDetailInfo tableDetailInfo, List<ColumnInfo> columnInfos) {
-        if(CollectionUtil.isEmpty(columnInfos)) return null;
+        if (CollectionUtil.isEmpty(columnInfos)) return null;
 
         //TODO 主键sql
         Set<String> primarys = tableDetailInfo.getPrimarys();
@@ -96,10 +96,16 @@ public class CreateTableHandler extends SqlProductionAbstractHandler {
         return TextFillUtil.fillStr(SqlModelEnum.CREATE_TABLE_PRIMARY_KEY.getSqlModel(), CollectionUtil.join(primaryNames, ","));
     }
 
-    private String createTableIndexKeyPacking(List<IndexInfo> indexInfos) {
-        if(CollectionUtil.isEmpty(indexInfos)) return "";
+    private String createTableIndexKeyPacking(TableDetailInfo tableDetailInfo, List<IndexInfo> indexInfos) {
+        if (CollectionUtil.isEmpty(indexInfos)) return "";
+        Set<String> primarys = tableDetailInfo.getPrimarys();
         List<String> sql = new ArrayList<>();
         for (IndexInfo indexInfo : indexInfos) {
+            if ("PRIMARY".equals(indexInfo.getIndexName())
+                    && this.checkPrimaryIndex(indexInfo.getColumns(), primarys)) {
+                //默认主键唯一索引 建表中不需要重复构建
+                continue;
+            }
             String indexType = "KEY";
             if (indexInfo.isUniqueIndex()) {
                 indexType = "UNIQUE KEY";
@@ -114,5 +120,18 @@ public class CreateTableHandler extends SqlProductionAbstractHandler {
                     CollectionUtil.join(CollectionUtil.newArrayList(columns), ",")));
         }
         return CollectionUtil.join(sql, ", \n");
+    }
+
+    private boolean checkPrimaryIndex(List<IndexInfo.IndexColumn> columns, Set<String> primarys) {
+        boolean check = false;
+        if (columns.size() == primarys.size()) {
+            for (IndexInfo.IndexColumn column : columns) {
+                if (!primarys.contains(column.getColumnName())) {
+                    check = true;
+                    break;
+                }
+            }
+        }
+        return check;
     }
 }

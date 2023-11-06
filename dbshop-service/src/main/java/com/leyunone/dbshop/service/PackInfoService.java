@@ -104,6 +104,7 @@ public class PackInfoService {
                 info.setCardinality(indexInfo.getInt("CARDINALITY"));
                 info.setIndexName(indexInfo.getString("INDEX_NAME"));
                 info.setTableName(indexInfo.getString("TABLE_NAME"));
+                info.setPrimaryIndex("PRIMARY".equals(info.getIndexName()));
                 info.setUniqueIndex(!indexInfo.getBoolean("NON_UNIQUE"));
                 info.setType(indexInfo.getInt("TYPE"));
                 info.getColumns().add(IndexInfo.IndexColumn.builder().index(indexInfo.getInt("ORDINAL_POSITION")).columnName(indexInfo.getString("COLUMN_NAME")).build());
@@ -112,7 +113,7 @@ public class PackInfoService {
         }
         return CollectionUtil.newArrayList(indexMap.values());
     }
-    
+
     public List<ColumnInfo> getColumns(DatabaseMetaData meta,String dbName,String tableName) {
         List<ColumnInfo> columnInfos = new ArrayList<>();
         try {
@@ -145,7 +146,7 @@ public class PackInfoService {
         }
         return columnInfos;
     }
-    
+
     //No operations allowed after connection closed.
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         DatabaseMetaData databaseMetaData = ConnectService.toTest();
@@ -153,7 +154,7 @@ public class PackInfoService {
         List<TableDetailInfo> test20231 = packInfoService.getTables(databaseMetaData, "test2023");
         List<ColumnInfo> columns = packInfoService.getColumns(databaseMetaData, "test2023", null);
         List<TableDetailInfo> test2023 = packInfoService.getTables(databaseMetaData, "test2023");
-        
+
         System.out.println(test2023.size());
         System.out.println(columns.size());
     }

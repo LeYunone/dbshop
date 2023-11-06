@@ -268,6 +268,12 @@ public class ContrastService {
         return ResponseCell.build(different, result);
     }
 
+    /**
+     * 使用伪一致hashcode[字段和顺序一致]
+     * @param leftIndex
+     * @param rightIndex
+     * @return
+     */
     private boolean indexCompare(IndexInfo leftIndex, IndexInfo rightIndex) {
         boolean c = leftIndex.getColumns().hashCode() == rightIndex.getColumns().hashCode();
         boolean type = leftIndex.getType().equals(rightIndex.getType());

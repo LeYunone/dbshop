@@ -34,6 +34,7 @@ public class UpdateIndexHandler extends SqlProductionAbstractHandler{
     @Override
     public String handler(JSONObject json) {
         IndexInfo indexInfo = SqlPackUtil.resoleJsonData(json, IndexInfo.class);
+        if("PRIMARY".equals(indexInfo.getIndexName())) return null;
         String deleteIndex = sqlProductionExcutor.execute(SqlModelEnum.DELETE_INDEX, indexInfo);
         String addIndex = sqlProductionExcutor.execute(SqlModelEnum.ADD_INDEX, indexInfo);
         return TextFillUtil.fillStr(SqlModelEnum.UPDATE_INDEX.getSqlModel(),deleteIndex,addIndex);

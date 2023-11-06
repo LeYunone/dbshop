@@ -68,8 +68,8 @@ public class AnalysisSqlService {
             //主表字段为主键
             if(mainColumn.getPrimaryKey()){
                 //主表为主键 设置主键
-                resultSql.add(AnalysisSqlBO.builder().
-                        sql(sqlProductionExcutor.execute(SqlModelEnum.ADD_PRIMARY_KEY,mainColumn)).sqlModel(SqlModelEnum.ADD_PRIMARY_KEY).build());
+//                resultSql.add(AnalysisSqlBO.builder().
+//                        sql(sqlProductionExcutor.execute(SqlModelEnum.ADD_PRIMARY_KEY,mainColumn)).sqlModel(SqlModelEnum.ADD_PRIMARY_KEY).build());
             }else {
                 //主表无主键 删除
                 resultSql.add(AnalysisSqlBO.builder().

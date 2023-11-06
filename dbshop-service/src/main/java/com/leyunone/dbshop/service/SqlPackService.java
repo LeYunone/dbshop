@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * :)
@@ -74,10 +75,10 @@ public class SqlPackService {
             return new ArrayList<>();
         List<String> result = new ArrayList<>();
         for (TableContrastDTO table : dbs) {
+            TableDetailInfo mainTable = sqlProductionDTO.getLeftOrRight().equals(0) ? table.getLeftTableDetailInfo() : table.getRightTableDetailInfo();
+            TableDetailInfo anotherTable = !sqlProductionDTO.getLeftOrRight().equals(0) ? table.getLeftTableDetailInfo() : table.getRightTableDetailInfo();
             if (table.getNameDifference()) {
                 //表名字不同 猜疑是新增表或删除表
-                TableDetailInfo mainTable = sqlProductionDTO.getLeftOrRight().equals(0) ? table.getLeftTableDetailInfo() : table.getRightTableDetailInfo();
-                TableDetailInfo anotherTable = !sqlProductionDTO.getLeftOrRight().equals(0) ? table.getLeftTableDetailInfo() : table.getRightTableDetailInfo();
                 List<ColumnInfo> columnInfos = sqlProductionDTO.getLeftOrRight().equals(0) ? table.getLeftColumnInfo() : table.getRightColumnInfo();
                 List<IndexInfo> indexs = sqlProductionDTO.getLeftOrRight().equals(0) ? table.getLeftIndexInfo() : table.getRightIndexInfo();
 
@@ -97,14 +98,29 @@ public class SqlPackService {
                 continue;
             }
             if (table.getHasDifference()) {
-                //表名相同，但是有差异，则关注里面的字段
                 result.addAll(this.getColumnCompareSqls(table.getColumnContrasts(), sqlProductionDTO));
+                //表名相同，但是有差异，则关注里面的字段
+                if(!this.checkSamePrimary(mainTable.getPrimarys(),anotherTable.getPrimarys())){
+                    //两表主键不相同
+                    result.add(sqlProductionExcutor.execute(SqlModelEnum.PRIMARY_COLUMN,mainTable));
+                }
                 result.addAll(this.getIndexCompareSqls(table.getIndexContrasts(), sqlProductionDTO));
             }
         }
         //进入类型转化策略流中
         List<String> resultsql = strategysDoing(result, sqlProductionDTO.getTransformReg(), sqlProductionDTO.getProductionStrategys());
         return resultsql;
+    }
+
+    private boolean checkSamePrimary(Set<String> mainTable,Set<String> anotherTable){
+        boolean same = true;
+        for (String main : mainTable) {
+            if(!anotherTable.contains(main)){
+                same = false;
+                break;
+            }
+        }
+        return same;
     }
 
     /**
@@ -176,9 +192,11 @@ public class SqlPackService {
             //0 左表主 1 右表主
             IndexInfo mainIndex = sqlProductionDTO.getLeftOrRight().equals(0) ? indexContrastDTO.getLeftIndex() : indexContrastDTO.getRightIndex();
             IndexInfo anotherIndex = !sqlProductionDTO.getLeftOrRight().equals(0) ? indexContrastDTO.getLeftIndex() : indexContrastDTO.getRightIndex();
+            //名字相同
             if(!indexContrastDTO.getNameDifferent()){
+                //索引存在差异
                 if(indexContrastDTO.getHasDifferent()){
-                    //索引存在差异
+                    //主键索引过滤
                     resultSql.add(sqlProductionExcutor.execute(SqlModelEnum.UPDATE_INDEX,mainIndex));
                 }
             }else{

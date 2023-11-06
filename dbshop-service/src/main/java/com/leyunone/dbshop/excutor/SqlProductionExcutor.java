@@ -12,6 +12,7 @@ import com.leyunone.dbshop.handler.sql.SqlProductionAbstractHandler;
 import com.leyunone.dbshop.system.factory.AbstractRuleFactory;
 import com.leyunone.dbshop.system.factory.SqlProductionHandlerFactory;
 import com.leyunone.dbshop.util.SqlPackUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,6 +69,6 @@ public class SqlProductionExcutor {
         if (ObjectUtil.isNotNull(handler)) {
             result = handler.handler(json);
         }
-        return result;
+        return StringUtils.isBlank(result) ? "" : result;
     }
 }
