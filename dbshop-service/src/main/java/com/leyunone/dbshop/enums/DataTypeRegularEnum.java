@@ -21,7 +21,9 @@ public enum DataTypeRegularEnum {
 
     BIT1_TO_TINYINT1(1, "BIT[(][1][)]", "TINYINT(1)", "bit(1)类型变为tinyint(1)"),
 
-    JSON_TO_0(2,"JSON[(][0-9]*[)]","JSON(0)","json(?)类型变为json(0)")
+    JSON_TO_0(2,"JSON[(][0-9]*[)]","JSON(0)","json(?)类型变为json(0)"),
+
+    LONGTEXT_TO_0(3,"LONGTEXT[(][0-9]*[)]","LONGTEXT","Longtext(?)类型变为Longtext")
     ;
 
     DataTypeRegularEnum(Integer type, String reg, String toBecome, String desc) {

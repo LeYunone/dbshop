@@ -34,6 +34,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * :)
@@ -156,8 +158,9 @@ public class DbShopStartAPIServiceImpl implements DbShopStartAPIService {
      * @param dbDTO           表连接信息
      * @param annotationClass 注解
      * @param filePath        文件路径
+     * @param dbCode_ true为代码为准  false为数据库为准
      */
-    public void checkUselessTable(DbShopDbDTO dbDTO, Class<? extends Annotation> annotationClass, String filePath) {
+    public void checkUselessTable(DbShopDbDTO dbDTO, Class<? extends Annotation> annotationClass, String filePath,boolean dbCode_) {
         if (StringUtils.isBlank(filePath)) return;
         if (!new File(filePath).exists()) return;
         DBQuery dbQuery = new DBQuery();
@@ -168,6 +171,30 @@ public class DbShopStartAPIServiceImpl implements DbShopStartAPIService {
 
         //加载数据库
         configService.loadConnectionToData(dbQuery);
+        List<TableDetailInfo> tableData = dataFactory.getTableData(DbStrategyUtil.getDbStrategy(dbQuery));
+        List<Class> clazzs = new ArrayList<>();
+        Set<String> tableMap = tableData.stream().map(TableDetailInfo::getTableName).collect(Collectors.toSet());
+        List<String> codeTable = new ArrayList<>();
+        clazzs.forEach(clazz->{
+            Annotation annotation = clazz.getAnnotation(annotationClass);
+            String tableName = clazz.getSimpleName();
+            if(dbCode_) {
+                codeTable.add(tableName);
+            }else{
+                tableMap.remove(tableName);
+            }
+        });
+        //未被代码使用到的表
+        if(!dbCode_ && CollectionUtil.isNotEmpty(tableMap)){
+            System.out.println("未被代码使用到的表：=========");
+            tableMap.forEach(System.out::println);
+            System.out.println("======================");
+        }
+        if(dbCode_ && CollectionUtil.isNotEmpty(codeTable)){
+            System.out.println("未创建的表，多余的实体类：=======");
+            codeTable.forEach(System.out::println);
+            System.out.println("=======================");
+        }
 
     }
 
