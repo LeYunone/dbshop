@@ -27,7 +27,7 @@
         </dependency>
         <dependency>
             <groupId>com.leyunone</groupId>
-            <artifactId>dbshop-service</artifactId>
+            <artifactId>dbshop-core</artifactId>
         </dependency>
     </dependencies>
 

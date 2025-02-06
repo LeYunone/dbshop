@@ -5,12 +5,12 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.DataResponse;
-import com.leyunone.dbshop.bean.info.ColumnInfoVO;
 import com.leyunone.dbshop.bean.query.ContrastQuery;
 import com.leyunone.dbshop.bean.vo.ColumnContrastVO;
+import com.leyunone.dbshop.bean.vo.ColumnInfoVO;
 import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
-import com.leyunone.dbshop.service.ContrastService;
+import com.leyunone.dbshop.service.core.impl.ContrastServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +29,7 @@ import java.util.List;
 public class ContrastController {
 
     @Autowired
-    private ContrastService contrastService;
+    private ContrastServiceImpl contrastService;
 
     /**
      * 左右表对比

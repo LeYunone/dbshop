@@ -29,7 +29,7 @@
 ```xml
 <dependency>
   <groupId>com.leyunone</groupId>
-  <artifactId>dbshop-service</artifactId>
+  <artifactId>dbshop-core</artifactId>
   <version>1.0.1-RELEASE</version>
 </dependency>
 ```
@@ -77,7 +77,7 @@ public class ApiTestService {
 | -------------- | ------------------- |
 | dbshop-api     | dbshop-API版本      |
 | dbshop-web     | dbshop-页面版本     |
-| dbshop-service | dbshop-自动装配版本 |
+| dbshop-core | dbshop-自动装配版本 |
 
 ## TODO
 

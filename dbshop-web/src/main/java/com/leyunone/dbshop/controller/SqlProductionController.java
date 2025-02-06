@@ -5,12 +5,11 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.DataResponse;
 import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
-import com.leyunone.dbshop.bean.dto.TableColumnContrastDTO;
 import com.leyunone.dbshop.bean.dto.TableContrastDTO;
 import com.leyunone.dbshop.bean.query.ContrastQuery;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
-import com.leyunone.dbshop.service.ContrastService;
-import com.leyunone.dbshop.service.SqlPackService;
+import com.leyunone.dbshop.service.core.impl.ContrastServiceImpl;
+import com.leyunone.dbshop.service.core.impl.SqlPackServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,9 +30,9 @@ import java.util.List;
 public class SqlProductionController {
 
     @Autowired
-    private SqlPackService sqlPackService;
+    private SqlPackServiceImpl sqlPackService;
     @Autowired
-    private ContrastService contrastService;
+    private ContrastServiceImpl contrastService;
 
     /**
      * 表字段 级别 生成

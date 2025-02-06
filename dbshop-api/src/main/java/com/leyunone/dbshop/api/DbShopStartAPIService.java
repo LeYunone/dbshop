@@ -19,5 +19,5 @@ public interface DbShopStartAPIService {
     /**
      * 左右数据库比较
      */
-    void leftRightDb(DbShopDbDTO leftDto, DbShopDbDTO rightDto, SqlRuleDTO sqlRuleDTO);
+    void leftRightDbCompare(DbShopDbDTO leftDto, DbShopDbDTO rightDto, SqlRuleDTO sqlRuleDTO);
 }

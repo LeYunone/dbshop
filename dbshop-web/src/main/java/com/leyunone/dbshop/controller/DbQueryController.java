@@ -2,10 +2,10 @@ package com.leyunone.dbshop.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.leyunone.dbshop.bean.DataResponse;
-import com.leyunone.dbshop.bean.info.ColumnInfoVO;
 import com.leyunone.dbshop.bean.query.DBQuery;
+import com.leyunone.dbshop.bean.vo.ColumnInfoVO;
 import com.leyunone.dbshop.bean.vo.TableInfoVO;
-import com.leyunone.dbshop.service.DBQueryService;
+import com.leyunone.dbshop.service.core.impl.DBQueryServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +25,7 @@ import java.util.List;
 public class DbQueryController {
 
     @Autowired
-    private DBQueryService dbQueryService;
+    private DBQueryServiceImpl dbQueryService;
 
     /**
      * 一个指定数据库库的信息

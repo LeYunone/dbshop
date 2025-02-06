@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
-
 /**
  * :)
  *
@@ -49,6 +47,6 @@ public class ApiTestService {
         sqlRuleDTO.setDeleteTable(true);
         //类型转化规则        	       
         sqlRuleDTO.setTransformReg(CollectionUtil.newArrayList(DataTypeRegularEnum.BIT1_TO_TINYINT1,DataTypeRegularEnum.DATETIME_TO_0));
-        dbShopStartAPIService.leftRightDb(leftQuery,rightQuery,sqlRuleDTO);
+        dbShopStartAPIService.leftRightDbCompare(leftQuery,rightQuery,sqlRuleDTO);
     }
 }
