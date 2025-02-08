@@ -1,6 +1,5 @@
 package com.leyunone.dbshop.handler.sql;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.annotate.SqlHandler;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
@@ -10,10 +9,12 @@ import com.leyunone.dbshop.enums.SqlAssembleEnum;
 import com.leyunone.dbshop.enums.SqlModelEnum;
 import com.leyunone.dbshop.system.factory.AbstractSqlProductionFactory;
 import com.leyunone.dbshop.system.factory.SqlProductionHandlerFactory;
+import com.leyunone.dbshop.util.MyCollectionUtils;
 import com.leyunone.dbshop.util.SqlPackUtil;
 import com.leyunone.dbshop.util.TextFillUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ public class CreateTableHandler extends AbstractSqlProductionHandler {
 
     //新增表中 字段语句的包装
     private String createTableInColumnPacking(List<ColumnInfo> columnInfos) {
-        if (CollectionUtil.isEmpty(columnInfos)) {
+        if (CollectionUtils.isEmpty(columnInfos)) {
             return null;
         }
         List<String> sql = new ArrayList<>();
@@ -74,22 +75,22 @@ public class CreateTableHandler extends AbstractSqlProductionHandler {
             sql.add(TextFillUtil.fillStr(SqlModelEnum.CREATE_TABLE_COLUMN.getSqlModel(),
                     columnInfo.getColumnName(), columnInfo.getTypeName(), columnInfo.getColumnSize(), attr.toString(), columnInfo.getRemarks()));
         }
-        return CollectionUtil.join(sql, ", \n");
+        return MyCollectionUtils.join(sql, ", \n");
     }
 
     //新增表中 主键语句的包装
     private String createTableprimaryKeyPacking(TableDetailInfo tableDetailInfo, List<ColumnInfo> columnInfos) {
-        if (CollectionUtil.isEmpty(columnInfos)) {
+        if (CollectionUtils.isEmpty(columnInfos)) {
             return null;
         }
 
         //TODO 主键sql
         Set<String> primarys = tableDetailInfo.getPrimarys();
-        if (CollectionUtil.isEmpty(primarys) || CollectionUtil.isEmpty(columnInfos)) {
+        if (CollectionUtils.isEmpty(primarys) || CollectionUtils.isEmpty(columnInfos)) {
             return "";
         }
         List<String> primaryNames = new ArrayList<>();
-        if (CollectionUtil.isNotEmpty(primarys)) {
+        if (!CollectionUtils.isEmpty(primarys)) {
             //匹配主键
             columnInfos.forEach((columnInfo) -> {
                 if (primarys.contains(columnInfo.getColumnName())) {
@@ -98,14 +99,14 @@ public class CreateTableHandler extends AbstractSqlProductionHandler {
             });
         }
         //阈值保护
-        if (CollectionUtil.isEmpty(primaryNames)) {
+        if (CollectionUtils.isEmpty(primaryNames)) {
             return "";
         }
-        return TextFillUtil.fillStr(SqlModelEnum.CREATE_TABLE_PRIMARY_KEY.getSqlModel(), CollectionUtil.join(primaryNames, ","));
+        return TextFillUtil.fillStr(SqlModelEnum.CREATE_TABLE_PRIMARY_KEY.getSqlModel(), MyCollectionUtils.join(primaryNames, ","));
     }
 
     private String createTableIndexKeyPacking(TableDetailInfo tableDetailInfo, List<IndexInfo> indexInfos) {
-        if (CollectionUtil.isEmpty(indexInfos)) {
+        if (CollectionUtils.isEmpty(indexInfos)) {
             return "";
         }
         Set<String> primarys = tableDetailInfo.getPrimarys();
@@ -123,15 +124,15 @@ public class CreateTableHandler extends AbstractSqlProductionHandler {
                 //FIXME 强行判断 MYSQL 5.7版本 ：为空为 FULLTEXT
                 indexType = "FULLTEXT KEY";
             }
-            if (CollectionUtil.isEmpty(indexInfo.getColumns())) {
+            if (CollectionUtils.isEmpty(indexInfo.getColumns())) {
                 return "";
             }
             String[] columns = new String[indexInfo.getColumns().size()];
             indexInfo.getColumns().forEach((t) -> columns[t.getIndex() - 1] = t.getColumnName());
             sql.add(TextFillUtil.fillStr(SqlModelEnum.CREATE_TABLE_INDEX.getSqlModel(), indexType, indexInfo.getIndexName(),
-                    CollectionUtil.join(CollectionUtil.newArrayList(columns), ",")));
+                    MyCollectionUtils.join(MyCollectionUtils.newArrayList(columns), ",")));
         }
-        return CollectionUtil.join(sql, ", \n");
+        return MyCollectionUtils.join(sql, ", \n");
     }
 
     private boolean checkPrimaryIndex(List<IndexInfo.IndexColumn> columns, Set<String> primarys) {

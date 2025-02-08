@@ -1,15 +1,14 @@
 package com.leyunone.dbshop.service.core.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ObjectUtil;
+import ch.qos.logback.classic.db.names.TableName;
 import com.leyunone.dbshop.bean.info.TableDetailInfo;
-import com.leyunone.dbshop.bean.query.DBQuery;
+import com.leyunone.dbshop.bean.query.DbQuery;
 import com.leyunone.dbshop.service.core.CodeAnalysisService;
-import com.leyunone.dbshop.system.factory.DBDataFactory;
+import com.leyunone.dbshop.system.factory.DbDataFactory;
 import com.leyunone.dbshop.util.DbStrategyUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
-import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
@@ -23,9 +22,9 @@ import java.util.List;
 @Service
 public class CodeAnalysisServiceImpl implements CodeAnalysisService {
 
-    private final DBDataFactory dbDataFactory;
+    private final DbDataFactory dbDataFactory;
 
-    public CodeAnalysisServiceImpl(DBDataFactory dbDataFactory) {
+    public CodeAnalysisServiceImpl(DbDataFactory dbDataFactory) {
         this.dbDataFactory = dbDataFactory;
     }
 
@@ -36,20 +35,18 @@ public class CodeAnalysisServiceImpl implements CodeAnalysisService {
      * 2、mapper.xml中没有这张表的Sql
      */
     @Override
-    public void useLessTable(Class<? extends Annotation> annotation, File file, DBQuery query) {
-        if (ObjectUtil.isNull(file)) {
-            return;
-        }
+    public void useLessTable(Class<? extends Annotation> annotation, DbQuery query) {
         List<TableDetailInfo> tableData = dbDataFactory.getTableData(DbStrategyUtil.getTableStrategy(query));
-        if (CollectionUtil.isEmpty(tableData)) {
+        if (CollectionUtils.isEmpty(tableData)) {
             return;
         }
 
-        if (ObjectUtil.isNull(annotation)) {
+        if (annotation == null) {
             //TODO 注解为空的情况下 老项目读取配置文件
         } else {
             //读取文件，拿到所有被指定注解修饰的类.java或.class
-
+            if (annotation.isAssignableFrom(TableName.class)) {
+            }
         }
     }
 }

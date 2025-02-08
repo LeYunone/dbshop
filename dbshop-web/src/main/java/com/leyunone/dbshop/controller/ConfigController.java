@@ -2,7 +2,7 @@ package com.leyunone.dbshop.controller;
 
 import com.leyunone.dbshop.bean.DataResponse;
 import com.leyunone.dbshop.bean.info.DbInfo;
-import com.leyunone.dbshop.bean.query.DBQuery;
+import com.leyunone.dbshop.bean.query.DbQuery;
 import com.leyunone.dbshop.service.core.impl.ConfigServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +26,7 @@ public class ConfigController {
      * @return
      */
     @RequestMapping("/loadConnection")
-    public DataResponse<DbInfo> loadConnection(DBQuery dbQuery){
+    public DataResponse<DbInfo> loadConnection(DbQuery dbQuery){
         DbInfo dbInfo = configService.loadConnectionToData(dbQuery);
         return DataResponse.of(dbInfo);
     }

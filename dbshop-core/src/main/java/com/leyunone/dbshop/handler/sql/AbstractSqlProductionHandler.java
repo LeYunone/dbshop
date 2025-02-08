@@ -1,19 +1,14 @@
 package com.leyunone.dbshop.handler.sql;
 
-import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.leyunone.dbshop.annotate.RuleHandler;
 import com.leyunone.dbshop.annotate.SqlHandler;
 import com.leyunone.dbshop.bean.ResponseCode;
 import com.leyunone.dbshop.enums.SqlModelEnum;
-import com.leyunone.dbshop.system.factory.AbstractRuleFactory;
 import com.leyunone.dbshop.system.factory.AbstractSqlProductionFactory;
 import com.leyunone.dbshop.util.AssertUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.annotation.AnnotationUtils;
 
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * :)
@@ -27,7 +22,7 @@ public abstract class AbstractSqlProductionHandler implements InitializingBean {
 
     private SqlModelEnum setIdentif() {
         SqlHandler annotation = AnnotationUtils.getAnnotation(this.getClass(), SqlHandler.class);
-        AssertUtil.isFalse(ObjectUtil.isNull(annotation), ResponseCode.RULE_LOAD_FAIL);
+        AssertUtil.isFalse(annotation == null, ResponseCode.RULE_LOAD_FAIL);
         return annotation.value();
     }
 
@@ -36,7 +31,7 @@ public abstract class AbstractSqlProductionHandler implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         AbstractSqlProductionFactory abstractSqlProductionFactory = registFactory();
-        if(ObjectUtil.isNull(abstractSqlProductionFactory)) {
+        if (abstractSqlProductionFactory == null) {
             return;
         }
         //没有注册工厂 退回规则

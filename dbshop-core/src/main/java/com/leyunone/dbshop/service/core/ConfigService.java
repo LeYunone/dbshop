@@ -1,7 +1,7 @@
 package com.leyunone.dbshop.service.core;
 
 import com.leyunone.dbshop.bean.info.*;
-import com.leyunone.dbshop.bean.query.DBQuery;
+import com.leyunone.dbshop.bean.query.DbQuery;
 
 /**
  * @author LeYunone
@@ -15,5 +15,5 @@ public interface ConfigService {
      *
      * @param query
      */
-    DbInfo loadConnectionToData(DBQuery query);
+    DbInfo loadConnectionToData(DbQuery query);
 }

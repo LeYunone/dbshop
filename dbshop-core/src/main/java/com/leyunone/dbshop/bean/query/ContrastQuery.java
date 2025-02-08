@@ -1,34 +1,28 @@
 package com.leyunone.dbshop.bean.query;
 
 
+import com.leyunone.dbshop.bean.rule.SqlCompareRule;
+
 /**
  * @author LeYunone
  * @email 365627310@qq.com
  * @date 2023-05-18
  */
 public class ContrastQuery {
-    
+
     private String leftUrl;
-    
+
     private String rightUrl;
-    
+
     private String leftDbName;
-    
+
     private String rightDbName;
-    
+
     private String leftTableName;
-    
+
     private String rightTableName;
 
-    /**
-     * 是否进行深度比对 true是
-     */
-    private Boolean goDeep;
-
-    /**
-     * 是否进行备注级比对 true是
-     */
-    private Boolean goRemark;
+    private SqlCompareRule sqlCompareRule;
 
     public String getLeftUrl() {
         return leftUrl;
@@ -84,21 +78,12 @@ public class ContrastQuery {
         return this;
     }
 
-    public Boolean getGoDeep() {
-        return goDeep;
+    public SqlCompareRule getSqlCompareRule() {
+        return sqlCompareRule;
     }
 
-    public ContrastQuery setGoDeep(Boolean goDeep) {
-        this.goDeep = goDeep;
-        return this;
-    }
-
-    public Boolean getGoRemark() {
-        return goRemark;
-    }
-
-    public ContrastQuery setGoRemark(Boolean goRemark) {
-        this.goRemark = goRemark;
+    public ContrastQuery setSqlCompareRule(SqlCompareRule sqlCompareRule) {
+        this.sqlCompareRule = sqlCompareRule;
         return this;
     }
 }

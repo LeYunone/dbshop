@@ -1,12 +1,12 @@
 package com.leyunone.dbshop.controller;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.leyunone.dbshop.bean.DataResponse;
-import com.leyunone.dbshop.bean.query.DBQuery;
+import com.leyunone.dbshop.bean.query.DbQuery;
 import com.leyunone.dbshop.bean.vo.ColumnInfoVO;
 import com.leyunone.dbshop.bean.vo.TableInfoVO;
 import com.leyunone.dbshop.service.core.impl.DBQueryServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,13 +31,13 @@ public class DbQueryController {
      * 一个指定数据库库的信息
      */
     @GetMapping("/tables")
-    public DataResponse<List<TableInfoVO>> dbTables(DBQuery query) {
+    public DataResponse<List<TableInfoVO>> dbTables(DbQuery query) {
         List<TableInfoVO> tableInfos = dbQueryService.getTableInfos(query);
         //FIXME 后台做tree树结构封装
-        if (CollectionUtil.isNotEmpty(tableInfos)) {
+        if (!CollectionUtils.isEmpty(tableInfos)) {
             tableInfos.forEach((table -> {
                 table.setLabel(table.getTableName());
-                if (CollectionUtil.isNotEmpty(table.getColumns())) {
+                if (!CollectionUtils.isEmpty(table.getColumns())) {
                     table.getColumns().forEach((column) -> column.setLabel(column.getColumnName()));
                 }
             }));
@@ -53,7 +53,7 @@ public class DbQueryController {
      * @return
      */
     @GetMapping("/columns")
-    public DataResponse<List<ColumnInfoVO>> dbColumns(DBQuery query) {
+    public DataResponse<List<ColumnInfoVO>> dbColumns(DbQuery query) {
         List<ColumnInfoVO> columnInfos = dbQueryService.getColumnInfos(query);
         return DataResponse.of(columnInfos);
     }

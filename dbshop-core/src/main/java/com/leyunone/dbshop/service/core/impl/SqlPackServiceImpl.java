@@ -1,7 +1,5 @@
 package com.leyunone.dbshop.service.core.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.bo.AnalysisSqlBO;
 import com.leyunone.dbshop.bean.dto.IndexContrastDTO;
@@ -19,8 +17,10 @@ import com.leyunone.dbshop.excutor.RulePointExcutor;
 import com.leyunone.dbshop.excutor.SqlProductionExcutor;
 import com.leyunone.dbshop.service.core.SqlPackService;
 import com.leyunone.dbshop.system.factory.TransformRuleHandlerFactory;
+import com.leyunone.dbshop.util.MyCollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +56,7 @@ public class SqlPackServiceImpl implements SqlPackService {
     @Override
     public List<String> columnContrastPack(SqlProductionDTO sqlProductionDTO) {
         List<TableContrastDTO> columns = sqlProductionDTO.getTables();
-        if (CollectionUtil.isEmpty(columns) || ObjectUtil.isNull(sqlProductionDTO.getLeftOrRight())) {
+        if (CollectionUtils.isEmpty(columns) || null == sqlProductionDTO.getLeftOrRight()) {
             return new ArrayList<>();
         }
 
@@ -74,7 +74,7 @@ public class SqlPackServiceImpl implements SqlPackService {
     @Override
     public List<String> tableContrastPack(SqlProductionDTO sqlProductionDTO) {
         List<TableContrastDTO> dbs = sqlProductionDTO.getTables();
-        if (CollectionUtil.isEmpty(dbs) || ObjectUtil.isNull(sqlProductionDTO.getLeftOrRight())) {
+        if (CollectionUtils.isEmpty(dbs) || null == sqlProductionDTO.getLeftOrRight()) {
             return new ArrayList<>();
         }
         List<String> result = new ArrayList<>();
@@ -86,16 +86,16 @@ public class SqlPackServiceImpl implements SqlPackService {
                 List<ColumnInfo> columnInfos = sqlProductionDTO.getLeftOrRight().equals(0) ? table.getLeftColumnInfo() : table.getRightColumnInfo();
                 List<IndexInfo> indexs = sqlProductionDTO.getLeftOrRight().equals(0) ? table.getLeftIndexInfo() : table.getRightIndexInfo();
 
-                if (ObjectUtil.isNull(mainTable) &&
-                        ObjectUtil.isNotNull(sqlProductionDTO.getDeleteTable())
+                if (null == mainTable &&
+                        null != sqlProductionDTO.getDeleteTable()
                         && DbShopConstant.RULE_YES.equals(sqlProductionDTO.getDeleteTable())) {
                     //删除
-                    if (ObjectUtil.isNotNull(anotherTable)) {
+                    if (null != anotherTable) {
                         result.add(sqlProductionExcutor.execute(SqlModelEnum.DROP_TABLE, anotherTable, null));
                     }
                 } else {
                     //新增，封装语句
-                    if (ObjectUtil.isNotNull(mainTable)) {
+                    if (null != mainTable) {
                         result.add(sqlProductionExcutor.execute(SqlModelEnum.CREATE_TABLE, mainTable, columnInfos, indexs));
                     }
                 }
@@ -146,7 +146,7 @@ public class SqlPackServiceImpl implements SqlPackService {
             if (!columnContrastDTO.getNameDifferent()) {
                 //修改字段sql集
                 List<AnalysisSqlBO> modifySqls = analysisSqlServiceImpl.modifyColumnSql(columnContrastDTO, sqlProductionDTO);
-                if (CollectionUtil.isNotEmpty(modifySqls)) {
+                if (!CollectionUtils.isEmpty(modifySqls)) {
                     /**
                      * 单表规则
                      * 删除自增sql和删除主键在最前面 ，  删除自增sql在删除主键前面
@@ -166,7 +166,7 @@ public class SqlPackServiceImpl implements SqlPackService {
                 }
             } else {
                 //字段名不同 新增或删除
-                if (ObjectUtil.isNull(mainColumn)) {
+                if (null == mainColumn) {
                     //主表不存在字段则删除
                     resultSql.add(sqlProductionExcutor.execute(SqlModelEnum.DELETE_COLUMN, anotherColumn));
                 } else {
@@ -205,7 +205,7 @@ public class SqlPackServiceImpl implements SqlPackService {
                 }
             } else {
                 //新增或修改
-                if (ObjectUtil.isNull(mainIndex)) {
+                if (null == mainIndex) {
                     //主表不存在字段则删除
                     resultSql.add(sqlProductionExcutor.execute(SqlModelEnum.DELETE_INDEX, anotherIndex));
                 } else {
@@ -218,7 +218,7 @@ public class SqlPackServiceImpl implements SqlPackService {
     }
 
     private List<String> strategysDoing(List<String> resultSql, List<DataTypeRegularEnum> transformRegs, List<String> strategys) {
-        if (CollectionUtil.isEmpty(resultSql) || CollectionUtil.isEmpty(transformRegs)) {
+        if (CollectionUtils.isEmpty(resultSql) || CollectionUtils.isEmpty(transformRegs)) {
             return resultSql;
         }
         //sql转化规则
@@ -228,11 +228,11 @@ public class SqlPackServiceImpl implements SqlPackService {
         sqlDataTypeTransformRule.setPendingData(JSONObject.toJSONString(resultSql));
         sqlDataTypeTransformRule.setStrategys(strategys);
         //TODO 测试
-        sqlDataTypeTransformRule.setStrategys(CollectionUtil.newArrayList("type_transform"));
+        sqlDataTypeTransformRule.setStrategys(MyCollectionUtils.newArrayList("type_transform"));
         List<String> execute = rulePointExcutor.execute(factory, sqlDataTypeTransformRule);
         //二次处理结果集
         //TODO 最后一条结果为最终转化结果 ； （可能需要考虑到规则的执行顺序）
-        String resultJson = CollectionUtil.getLast(execute);
+        String resultJson = MyCollectionUtils.getLast(execute);
         return JSONObject.parseArray(resultJson, String.class);
     }
 }

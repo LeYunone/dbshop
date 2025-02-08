@@ -1,39 +1,33 @@
 package com.leyunone.dbshop.api;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.io.file.FileAppender;
-import cn.hutool.core.util.ObjectUtil;
-import com.alibaba.fastjson.JSONObject;
+import ch.qos.logback.classic.db.names.TableName;
+import ch.qos.logback.core.FileAppender;
+import com.leyunone.dbshop.annotate.VersionDescribe;
+import com.leyunone.dbshop.bean.ResponseCell;
 import com.leyunone.dbshop.bean.dto.DbShopDbDTO;
 
-import com.leyunone.dbshop.bean.dto.SqlProductionDTO;
 import com.leyunone.dbshop.bean.dto.SqlRuleDTO;
-import com.leyunone.dbshop.bean.dto.TableContrastDTO;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
-import com.leyunone.dbshop.bean.info.TableDetailInfo;
 import com.leyunone.dbshop.bean.info.TableInfo;
-import com.leyunone.dbshop.bean.query.ContrastQuery;
-import com.leyunone.dbshop.bean.query.DBQuery;
+import com.leyunone.dbshop.bean.query.DbQuery;
+import com.leyunone.dbshop.bean.rule.SqlCompareRule;
 import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
-import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
-import com.leyunone.dbshop.constant.DbShopConstant;
-import com.leyunone.dbshop.service.core.impl.ConfigServiceImpl;
 import com.leyunone.dbshop.service.core.impl.ContrastServiceImpl;
 import com.leyunone.dbshop.service.core.impl.SqlPackServiceImpl;
-import com.leyunone.dbshop.system.factory.DBDataFactory;
+import com.leyunone.dbshop.service.helper.ContrastHelper;
+import com.leyunone.dbshop.service.helper.DbLoadingHelper;
+import com.leyunone.dbshop.system.factory.DbDataFactory;
 import com.leyunone.dbshop.util.CollectionFunctionUtils;
+import com.leyunone.dbshop.util.DbShopFileUtil;
 import com.leyunone.dbshop.util.DbStrategyUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * :)
@@ -48,16 +42,12 @@ import java.util.stream.Collectors;
 @Service
 public class DbShopStartAPIServiceImpl implements DbShopStartAPIService {
 
-    private final ConfigServiceImpl configService;
-    private final ContrastServiceImpl contrastService;
-    private final SqlPackServiceImpl sqlPackService;
-    private final DBDataFactory dataFactory;
+    private final DbLoadingHelper dbLoadingHelper;
+    private final ContrastHelper contrastHelper;
 
-    public DbShopStartAPIServiceImpl(ConfigServiceImpl configService, ContrastServiceImpl contrastService, SqlPackServiceImpl sqlPackService, DBDataFactory dataFactory) {
-        this.configService = configService;
-        this.contrastService = contrastService;
-        this.sqlPackService = sqlPackService;
-        this.dataFactory = dataFactory;
+    public DbShopStartAPIServiceImpl(DbLoadingHelper dbLoadingHelper, ContrastHelper contrastHelper) {
+        this.dbLoadingHelper = dbLoadingHelper;
+        this.contrastHelper = contrastHelper;
     }
 
     @Override
@@ -66,93 +56,37 @@ public class DbShopStartAPIServiceImpl implements DbShopStartAPIService {
 
     @Override
     public void leftRightDbCompare(DbShopDbDTO leftDto, DbShopDbDTO rightDto, SqlRuleDTO sqlRuleDTO) {
-        DBQuery leftQuery = new DBQuery();
-        leftQuery.setUrl(leftDto.getUrl());
-        leftQuery.setDbName(leftDto.getDbName());
-        leftQuery.setUserName(leftDto.getUserName());
-        leftQuery.setPassWord(leftDto.getPassWord());
-        DBQuery rightQuery = new DBQuery();
-        rightQuery.setUrl(rightDto.getUrl());
-        rightQuery.setDbName(rightDto.getDbName());
-        rightQuery.setUserName(rightDto.getUserName());
-        rightQuery.setPassWord(rightDto.getPassWord());
-
         /**
          * 加载数据库
          */
-        configService.loadConnectionToData(leftQuery);
-        configService.loadConnectionToData(rightQuery);
+        dbLoadingHelper.loadingData(leftDto.getUrl(), leftDto.getDbName(), leftDto.getUserName(), leftDto.getPassWord());
+        dbLoadingHelper.loadingData(rightDto.getUrl(), rightDto.getDbName(), rightDto.getUserName(), rightDto.getPassWord());
 
-        ContrastQuery contrastQuery = new ContrastQuery();
-        contrastQuery.setGoRemark(sqlRuleDTO.getGoRemark());
-        contrastQuery.setGoDeep(sqlRuleDTO.getGoDeep());
+        SqlCompareRule sqlCompareRule = new SqlCompareRule()
+                .setGoDeep(sqlRuleDTO.getGoDeep())
+                .setGoRemark(sqlRuleDTO.getGoRemark())
+                .setLeftOrRight(sqlRuleDTO.getLeftOrRight())
+                .setTransformReg(sqlRuleDTO.getTransformReg())
+                .setDeleteTable(sqlRuleDTO.getDeleteTable());
+        //数据库对比
+        ResponseCell<List<DbTableContrastVO>, List<String>> compareResult = contrastHelper.dbCompare(leftDto.getUrl(), rightDto.getUrl(), leftDto.getDbName(), rightDto.getDbName(), sqlCompareRule);
 
-        contrastQuery.setLeftDbName(leftQuery.getDbName());
-        contrastQuery.setRightDbName(rightQuery.getDbName());
+        //打印比较结果
+        contrastHelper.printComparerResult(compareResult.getCellData(), sqlCompareRule);
 
-        contrastQuery.setLeftUrl(leftQuery.getUrl());
-        contrastQuery.setRightUrl(rightQuery.getUrl());
-        List<DbTableContrastVO> dbTableContrast = contrastService.dbTableContrast(contrastQuery);
-
-        //输出两表对比结果
-        System.out.println("=============对比结果===============");
-        System.out.println();
-        List<String> newTable = new ArrayList<>();
-        for (DbTableContrastVO dbTableContrastVO : dbTableContrast) {
-            TableDetailInfo mainTable = sqlRuleDTO.getLeftOrRight().equals(0) ? dbTableContrastVO.getLeftTableDetailInfo() : dbTableContrastVO.getRightTableDetailInfo();
-            TableDetailInfo anotherTable = !sqlRuleDTO.getLeftOrRight().equals(0) ? dbTableContrastVO.getLeftTableDetailInfo() : dbTableContrastVO.getRightTableDetailInfo();
-            if (dbTableContrastVO.getNameDifference()) {
-                if (ObjectUtil.isNull(mainTable)) {
-                    newTable.add("删除表： " + anotherTable.getTableName());
-                } else {
-                    newTable.add("新增表： " + mainTable.getTableName());
-                }
-                continue;
-            }
-            if (dbTableContrastVO.getHasDifference()) {
-                System.out.println("表： [" + mainTable.getTableName() + "] 中以下字段有差异");
-                List<TableColumnContrastVO> columnContrasts = dbTableContrastVO.getColumnContrasts();
-                for (TableColumnContrastVO columnContrastVO : columnContrasts) {
-                    if (columnContrastVO.getNameDifferent() || columnContrastVO.getTypeDifferent() ||
-                            columnContrastVO.getSizeDifferent() || columnContrastVO.getAutoincrementDifferent()
-                            || columnContrastVO.getPrimaryKeyDifferent() || (DbShopConstant.RULE_YES.equals(sqlRuleDTO.getGoRemark()) && columnContrastVO.getRemarkDifferent())) {
-                        String columnName = ObjectUtil.isNotNull(columnContrastVO.getRightColumn()) ? columnContrastVO.getRightColumn().getColumnName() : columnContrastVO.getLeftColumn().getColumnName();
-                        System.out.println("字段:" + columnName);
-                    }
-
-                }
-                System.out.println();
-            }
-        }
-        System.out.println("-----------表级操作------------");
-        newTable.forEach(System.out::println);
-        System.out.println("-----------------------------");
-        System.out.println();
-
-        SqlProductionDTO sqlProductionDTO = new SqlProductionDTO();
-        sqlProductionDTO.setLeftOrRight(sqlRuleDTO.getLeftOrRight());
-        sqlProductionDTO.setGoRemark(contrastQuery.getGoRemark());
-        sqlProductionDTO.setTransformReg(sqlRuleDTO.getTransformReg());
-        sqlProductionDTO.setDeleteTable(sqlRuleDTO.getDeleteTable());
-        //TODO HUTOOL 版本问题 谨慎使用BeanUtil.copyToList
-        sqlProductionDTO.setTables(JSONObject.parseArray(JSONObject.toJSONString(dbTableContrast), TableContrastDTO.class));
-        List<String> resultSql = sqlPackService.tableContrastPack(sqlProductionDTO);
+        //打印SQL至控制台
+        compareResult.getMateData().forEach(System.out::println);
 
         //写文件
         System.out.println("开始写文件，目标文件: /dbshop.sql");
         File file = new File("dbshop.sql");
-        file.delete();
+        file.deleteOnExit();
         FileAppender writer = new FileAppender(file, 16, true);
-        for (String sql : resultSql) {
+        for (String sql : compareResult.getMateData()) {
             writer.append(sql);
         }
         writer.flush();
         System.out.println("写入完成");
-
-        //打印至控制台
-        for (String sql : resultSql) {
-            System.out.println(sql);
-        }
     }
 
     /**
@@ -160,93 +94,112 @@ public class DbShopStartAPIServiceImpl implements DbShopStartAPIService {
      *
      * @param dbDTO           表连接信息
      * @param annotationClass 注解
-     * @param filePath        文件路径
-     * @param dbCode_         true为代码为准  false为数据库为准
      */
-    public void checkUselessTable(DbShopDbDTO dbDTO, Class<? extends Annotation> annotationClass, String filePath, boolean dbCode_) {
-        if (StringUtils.isBlank(filePath) || !new File(filePath).exists()) {
-            return;
-        }
-        DBQuery dbQuery = new DBQuery();
-        dbQuery.setUrl(dbDTO.getUrl());
-        dbQuery.setDbName(dbDTO.getDbName());
-        dbQuery.setUserName(dbDTO.getUserName());
-        dbQuery.setPassWord(dbDTO.getPassWord());
-
+    @SafeVarargs
+    @Override
+    @VersionDescribe(
+            version = "V1.0.1",
+            describe = "版本适用：" +
+                    " 仅Mybatis-plus")
+    public final void checkUselessTable(DbShopDbDTO dbDTO, Class<? extends Annotation>... annotationClass) {
         //加载数据库
-        configService.loadConnectionToData(dbQuery);
-        List<TableDetailInfo> tableData = dataFactory.getTableData(DbStrategyUtil.getDbStrategy(dbQuery));
-        List<Class> clazzs = new ArrayList<>();
-        Set<String> tableMap = tableData.stream().map(TableDetailInfo::getTableName).collect(Collectors.toSet());
-        List<String> codeTable = new ArrayList<>();
-        clazzs.forEach(clazz -> {
-            Annotation annotation = clazz.getAnnotation(annotationClass);
-            String tableName = clazz.getSimpleName();
-            if (dbCode_) {
-                codeTable.add(tableName);
-            } else {
-                tableMap.remove(tableName);
-            }
-        });
-        //未被代码使用到的表
-        if (!dbCode_ && CollectionUtil.isNotEmpty(tableMap)) {
+        dbLoadingHelper.loadingData(dbDTO.getUrl(), dbDTO.getDbName(), dbDTO.getUserName(), dbDTO.getPassWord());
+
+        List<Class<?>> classes = DbShopFileUtil.iterationForJavaClass();
+
+
+        //未被代码使用到的表`
+        if (!CollectionUtils.isEmpty(tableMap)) {
             System.out.println("未被代码使用到的表：=========");
             tableMap.forEach(System.out::println);
             System.out.println("======================");
         }
-        if (dbCode_ && CollectionUtil.isNotEmpty(codeTable)) {
+        codeTable.removeIf(tableMap::contains);
+        if (!CollectionUtils.isEmpty(codeTable)) {
             System.out.println("未创建的表，多余的实体类：=======");
             codeTable.forEach(System.out::println);
             System.out.println("=======================");
         }
-
     }
 
     /**
-     * 根据指定注解 检查表与代码字段是否一致
+     * 根据指定实体类注解 检查表与代码字段是否一致
      */
-    public void checkTableToCode(DbShopDbDTO dbDTO, Class<? extends Annotation> annotationClass, File file) {
-        List<Class> clazzs = new ArrayList<>();
-        List<Class> tableEntry = new ArrayList<>();
-        clazzs.forEach(clazz -> {
-            if (ObjectUtil.isNotNull(clazz.getAnnotation(annotationClass))) {
-                tableEntry.add(clazz);
+    @SafeVarargs
+    @Override
+    @VersionDescribe(
+            version = "V1.0.1",
+            describe = "版本适用：" +
+                    " 仅Mybatis-plus")
+    public final void checkTableColumnToCode(DbShopDbDTO dbDTO, Class<? extends Annotation>... annotationClass) {
+        List<Class<?>> classes = DbShopFileUtil.iterationForJavaClass();
+        Map<String, Class<?>> tableEntryMap = new HashMap<>();
+        classes.forEach(clazz -> {
+            Annotation annotation = clazz.getAnnotation(annotationClass);
+            if (ObjectUtil.isNull(annotation)) {
+                return;
+            }
+
+            if (annotationClass.isAssignableFrom(TableName.class)) {
+                //mybatis-plus
+                tableEntryMap.put(clazz.getAnnotation(TableName.class).value(), clazz);
             }
         });
-        DBQuery dbQuery = new DBQuery();
+        DbQuery dbQuery = new DbQuery();
         dbQuery.setUrl(dbDTO.getUrl());
         dbQuery.setDbName(dbDTO.getDbName());
         dbQuery.setUserName(dbDTO.getUserName());
         dbQuery.setPassWord(dbDTO.getPassWord());
         configService.loadConnectionToData(dbQuery);
 
-        for (Class aClass : tableEntry) {
-            Field[] fields = aClass.getFields();
-            Field[] declaredFields = aClass.getDeclaredFields();
-            ArrayList<Field> allField = CollectionUtil.newArrayList(fields);
-            allField.addAll(CollectionUtil.newArrayList(declaredFields));
-            Annotation annotation = aClass.getAnnotation(annotationClass);
-//            dbQuery.setTableName();
+        tableEntryMap.forEach((tableName, tableEntry) -> {
+            if (StringUtils.isBlank(tableName)) {
+                return;
+            }
+            //属性比表多的
+            List<String> fieldDiffs = new ArrayList<>();
+
+            Field[] fields = this.deepFields(tableEntry);
+            dbQuery.setTableName(tableName);
             TableInfo tableInfo = dataFactory.getTableInfo(DbStrategyUtil.getTableStrategy(dbQuery));
             List<ColumnInfo> columnInfos = tableInfo.getColumnInfos();
-            if (CollectionUtil.isNotEmpty(columnInfos)) {
+            if (!CollectionUtils.isEmpty(columnInfos)) {
                 Map<String, ColumnInfo> tableColumns = CollectionFunctionUtils.mapTo(columnInfos, ColumnInfo::getColumnName);
-                boolean hasDifferent = false;
 
-                //属性比表多的
-                List<String> fieldDiffs = new ArrayList<>();
                 //属性比表少的 fieldDiff
-                for (Field field : allField) {
+                for (Field field : fields) {
                     if (!tableColumns.containsKey(field.getName())) {
-                        hasDifferent = true;
-                        fieldDiffs.add(file.getName());
+                        fieldDiffs.add(field.getName());
                     }
+                    tableColumns.remove(field.getName());
                 }
-
-                if (hasDifferent) {
-
-                }
+                System.out.println("表：" + tableName + " 实体类未存在的字段");
+                tableColumns.forEach((columnName, info) -> {
+                    System.out.println(columnName + "   :" + info.getRemarks());
+                });
             }
-        }
+
+            System.out.println("实体类：" + tableName + " 多余的字段");
+            fieldDiffs.forEach(System.out::println);
+
+        });
     }
+
+    private Field[] deepFields(Class<?> clazz) {
+        List<Field> allFields = new ArrayList<>();
+        while (clazz != null) {
+            Field[] declaredFields = clazz.getDeclaredFields();
+            for (Field declaredField : declaredFields) {
+                //mybatis判断
+                TableField tableField = declaredField.getAnnotation(TableField.class);
+                if (ObjectUtil.isNotNull(tableField) && !tableField.exist()) {
+                    continue;
+                }
+                allFields.add(declaredField);
+            }
+            clazz = clazz.getSuperclass();
+        }
+        return allFields.toArray(new Field[]{});
+    }
+
 }

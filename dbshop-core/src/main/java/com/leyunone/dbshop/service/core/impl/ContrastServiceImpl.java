@@ -1,7 +1,5 @@
 package com.leyunone.dbshop.service.core.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ObjectUtil;
 import com.leyunone.dbshop.bean.ResponseCell;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.IndexInfo;
@@ -14,12 +12,13 @@ import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import com.leyunone.dbshop.bean.vo.TableContrastVO;
 import com.leyunone.dbshop.constant.DbShopConstant;
 import com.leyunone.dbshop.service.core.ContrastService;
-import com.leyunone.dbshop.system.factory.DBDataFactory;
+import com.leyunone.dbshop.system.factory.DbDataFactory;
 import com.leyunone.dbshop.util.AssertUtil;
 import com.leyunone.dbshop.util.CollectionFunctionUtils;
 import com.leyunone.dbshop.util.DbStrategyUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +36,10 @@ import java.util.stream.Collectors;
 @Service
 public class ContrastServiceImpl implements ContrastService {
 
-    private final DBDataFactory dataFactory;
+    private final DbDataFactory dataFactory;
     private final PackInfoServiceImpl packInfoService;
 
-    public ContrastServiceImpl(DBDataFactory dataFactory, PackInfoServiceImpl packInfoService) {
+    public ContrastServiceImpl(DbDataFactory dataFactory, PackInfoServiceImpl packInfoService) {
         this.dataFactory = dataFactory;
         this.packInfoService = packInfoService;
     }
@@ -56,7 +55,7 @@ public class ContrastServiceImpl implements ContrastService {
         //右表索引
         List<IndexInfo> rightIndex = dataFactory.getIndexData(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, false)));
 
-        List<TableColumnContrastVO> columnData = this.columnContrastdoing(leftColumn, rightColumn, contrastQuery.getGoRemark()).getMateData();
+        List<TableColumnContrastVO> columnData = this.columnContrastdoing(leftColumn, rightColumn, contrastQuery.getSqlCompareRule().getGoRemark()).getMateData();
         List<IndexContrastVO> indexData = this.indexContrastdoing(leftIndex, rightIndex).getMateData();
         return new TableContrastVO().setColumnContrasts(columnData).setIndexContrasts(indexData);
     }
@@ -82,14 +81,14 @@ public class ContrastServiceImpl implements ContrastService {
             TableDetailInfo leftTableDetailInfo = dbTableContrastVO.getLeftTableDetailInfo();
             TableDetailInfo rightTableDetailInfo = dbTableContrastVO.getRightTableDetailInfo();
             //字段值
-            if (ObjectUtil.isNotNull(leftTableDetailInfo)) {
+            if (null != leftTableDetailInfo) {
                 contrastQuery.setLeftTableName(leftTableDetailInfo.getTableName());
                 leftInfo = dataFactory.getTableInfo(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, true)));
                 //设置左表字段信息
                 dbTableContrastVO.setLeftColumnInfo(leftInfo.getColumnInfos());
                 dbTableContrastVO.setLeftIndexInfo(leftInfo.getIndexInfos());
             }
-            if (ObjectUtil.isNotNull(rightTableDetailInfo)) {
+            if (null != rightTableDetailInfo) {
                 contrastQuery.setRightTableName(rightTableDetailInfo.getTableName());
                 rightInfo = dataFactory.getTableInfo(DbStrategyUtil.getTableStrategy(DbStrategyUtil.loadContrastRule(contrastQuery, false)));
                 //设置右表字段信息
@@ -97,11 +96,11 @@ public class ContrastServiceImpl implements ContrastService {
                 dbTableContrastVO.setRightIndexInfo(rightInfo.getIndexInfos());
             }
             //当两表存在 且名字相同时，进行表字段间的结果对比
-            if (ObjectUtil.isNotNull(leftTableDetailInfo) && ObjectUtil.isNotNull(rightTableDetailInfo) && !dbTableContrastVO.getNameDifference()) {
+            if (null != leftTableDetailInfo && null != rightTableDetailInfo && !dbTableContrastVO.getNameDifference()) {
                 /**
                  * 字段间对比
                  */
-                ResponseCell<Boolean, List<TableColumnContrastVO>> columnDoing = this.columnContrastdoing(leftInfo.getColumnInfos(), rightInfo.getColumnInfos(), contrastQuery.getGoRemark());
+                ResponseCell<Boolean, List<TableColumnContrastVO>> columnDoing = this.columnContrastdoing(leftInfo.getColumnInfos(), rightInfo.getColumnInfos(), contrastQuery.getSqlCompareRule().getGoRemark());
                 dbTableContrastVO.setColumnContrasts(columnDoing.getMateData());
                 //索引间对比
                 ResponseCell<Boolean, List<IndexContrastVO>> indexDoing = this.indexContrastdoing(leftInfo.getIndexInfos(), rightInfo.getIndexInfos());
@@ -126,7 +125,7 @@ public class ContrastServiceImpl implements ContrastService {
     private ResponseCell<Boolean, List<TableColumnContrastVO>> columnContrastdoing(List<ColumnInfo> left, List<ColumnInfo> right, Boolean goRemark) {
         List<TableColumnContrastVO> result = new ArrayList<>();
         //对比表不存在
-        AssertUtil.isFalse(CollectionUtil.isEmpty(right) || CollectionUtil.isEmpty(left), "表不存在");
+        AssertUtil.isFalse(CollectionUtils.isEmpty(right) || CollectionUtils.isEmpty(left), "表不存在");
         Map<String, ColumnInfo> rightMap = right.stream().collect(Collectors.toMap(ColumnInfo::getColumnName, Function.identity()));
         boolean different = false;
         //比较相同字段名 并且填充空白
@@ -144,7 +143,7 @@ public class ContrastServiceImpl implements ContrastService {
             result.add(tableColumnContrastVO);
         }
         //处理未匹配集合
-        if (CollectionUtil.isNotEmpty(rightMap)) {
+        if (!CollectionUtils.isEmpty(rightMap)) {
             different = true;
             rightMap.values().forEach((t) -> {
                 TableColumnContrastVO tableColumnContrastVO = new TableColumnContrastVO();
@@ -177,7 +176,7 @@ public class ContrastServiceImpl implements ContrastService {
                     hasDifferent = true;
                 }
                 //规则级确认 goRemark = 1 备注
-                if (ObjectUtil.isNotNull(goRemark) && DbShopConstant.RULE_YES.equals(goRemark) && contrast.getRemarkDifferent()) {
+                if (DbShopConstant.RULE_YES.equals(goRemark) && contrast.getRemarkDifferent()) {
                     different = true;
                     hasDifferent = true;
                 }
@@ -195,7 +194,7 @@ public class ContrastServiceImpl implements ContrastService {
      */
     private List<DbTableContrastVO> tableContrastdoing(List<TableDetailInfo> left, List<TableDetailInfo> right) {
         List<DbTableContrastVO> result = new ArrayList<>();
-        if (CollectionUtil.isEmpty(right)) {
+        if (CollectionUtils.isEmpty(right)) {
             //对比数据库中没有表存在
         }
         Map<String, TableDetailInfo> rightMap = right.stream().collect(Collectors.toMap(TableDetailInfo::getTableName, Function.identity()));
@@ -214,7 +213,7 @@ public class ContrastServiceImpl implements ContrastService {
             dbTableContrastVO.setHasDifference(hasDifference);
             result.add(dbTableContrastVO);
         }
-        if (CollectionUtil.isNotEmpty(rightMap)) {
+        if (!CollectionUtils.isEmpty(rightMap)) {
             //左表不存在的表
             rightMap.values().forEach((t) -> {
                 DbTableContrastVO dbTableContrastVO = new DbTableContrastVO();
@@ -235,7 +234,7 @@ public class ContrastServiceImpl implements ContrastService {
         for (IndexInfo leftIndex : left) {
             IndexContrastVO indexContrastVO = new IndexContrastVO();
             indexContrastVO.setLeftIndex(leftIndex);
-            if (CollectionUtil.isNotEmpty(rightMap) && rightMap.containsKey(leftIndex.getIndexName())) {
+            if (!CollectionUtils.isEmpty(rightMap) && rightMap.containsKey(leftIndex.getIndexName())) {
                 indexContrastVO.setRightIndex(rightMap.get(leftIndex.getIndexName()));
                 indexContrastVO.setNameDifferent(DbShopConstant.SAME);
                 rightMap.remove(leftIndex.getIndexName());
@@ -246,7 +245,7 @@ public class ContrastServiceImpl implements ContrastService {
             result.add(indexContrastVO);
         }
         //剩余未匹配集合
-        if (CollectionUtil.isNotEmpty(rightMap)) {
+        if (!CollectionUtils.isEmpty(rightMap)) {
             different = true;
             rightMap.values().forEach((t) -> {
                 IndexContrastVO indexContrastVO = new IndexContrastVO();

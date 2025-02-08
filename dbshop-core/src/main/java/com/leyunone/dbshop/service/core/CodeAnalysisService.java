@@ -1,16 +1,8 @@
 package com.leyunone.dbshop.service.core;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ObjectUtil;
-import com.leyunone.dbshop.bean.info.TableDetailInfo;
-import com.leyunone.dbshop.bean.query.DBQuery;
-import com.leyunone.dbshop.system.factory.DBDataFactory;
-import com.leyunone.dbshop.util.DbStrategyUtil;
-import org.springframework.stereotype.Service;
+import com.leyunone.dbshop.bean.query.DbQuery;
 
-import java.io.File;
 import java.lang.annotation.Annotation;
-import java.util.List;
 
 /**
  * :)
@@ -27,5 +19,5 @@ public interface CodeAnalysisService {
      * 1、注解中没有这个值
      * 2、mapper.xml中没有这张表的Sql
      */
-    void useLessTable(Class<? extends Annotation> annotation, File file, DBQuery query);
+    void useLessTable(Class<? extends Annotation> annotation, DbQuery query);
 }

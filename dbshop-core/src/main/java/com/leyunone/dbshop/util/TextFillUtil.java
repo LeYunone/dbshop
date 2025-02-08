@@ -1,6 +1,5 @@
 package com.leyunone.dbshop.util;
 
-import cn.hutool.core.util.ObjectUtil;
 import com.leyunone.dbshop.constant.DbShopConstant;
 
 /**
@@ -14,12 +13,13 @@ public class TextFillUtil {
 
     /**
      * {} 消息填充
+     *
      * @param fill
      * @param content
      * @return
      */
-    public static String fillStr(String fill, String ... content) {
-        if (ObjectUtil.isEmpty(content)) {
+    public static String fillStr(String fill, String... content) {
+        if (null == content || content.length == 0) {
             return fill;
         }
         StringBuilder sbuf = new StringBuilder(fill.length() + 50);

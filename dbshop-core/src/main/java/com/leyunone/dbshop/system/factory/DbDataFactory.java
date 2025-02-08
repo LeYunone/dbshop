@@ -1,7 +1,6 @@
 package com.leyunone.dbshop.system.factory;
 
 
-import cn.hutool.core.util.ObjectUtil;
 import com.leyunone.dbshop.bean.info.*;
 import com.mysql.cj.xdevapi.DbDocFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +23,7 @@ import java.util.Map;
  * @date 2023-05-17
  */
 @Component
-public class DBDataFactory {
+public class DbDataFactory {
 
     /**
      * 存储策略 数据库 URL + db名
@@ -65,7 +64,7 @@ public class DBDataFactory {
     public List<ColumnInfo> getColumnData(String strategy){
         List<ColumnInfo> columnInfos = new ArrayList<>();
         TableInfo tableInfo = tableMap.get(strategy);
-        if(ObjectUtil.isNotNull(tableInfo)){
+        if(null != tableInfo){
             columnInfos = tableInfo.getColumnInfos();
         }
         return columnInfos;
@@ -74,7 +73,7 @@ public class DBDataFactory {
     public List<IndexInfo> getIndexData(String strategy){
         List<IndexInfo> indexInfos = new ArrayList<>();
         TableInfo tableInfo = tableMap.get(strategy);
-        if(ObjectUtil.isNotNull(tableInfo)){
+        if(tableInfo != null){
             indexInfos = tableInfo.getIndexInfos();
         }
         return indexInfos;

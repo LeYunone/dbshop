@@ -1,6 +1,5 @@
 package com.leyunone.dbshop.service.core.impl;
 
-import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.service.core.ConnectService;
 import org.slf4j.Logger;
@@ -83,7 +82,7 @@ public class ConnectServiceImpl implements ConnectService {
     @Override
     public Connection getLongConnection(String url, String userName, String passWord) {
         Connection connection = this.getConnection(url, userName, passWord);
-        if (ObjectUtil.isNotNull(connection)) {
+        if (connection != null) {
         }
         return connection;
     }

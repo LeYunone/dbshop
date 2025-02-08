@@ -46,7 +46,7 @@ public class ApiTestService {
         //是否封装删除表sql
         sqlRuleDTO.setDeleteTable(true);
         //类型转化规则        	       
-        sqlRuleDTO.setTransformReg(CollectionUtil.newArrayList(DataTypeRegularEnum.BIT1_TO_TINYINT1,DataTypeRegularEnum.DATETIME_TO_0));
+        sqlRuleDTO.setTransformReg(MyCollectionUtils.newArrayList(DataTypeRegularEnum.BIT1_TO_TINYINT1,DataTypeRegularEnum.DATETIME_TO_0));
         dbShopStartAPIService.leftRightDbCompare(leftQuery,rightQuery,sqlRuleDTO);
     }
 }

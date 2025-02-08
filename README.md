@@ -64,7 +64,7 @@ public class ApiTestService {
         sqlRuleDTO.setGoDeep(1);
         sqlRuleDTO.setLeftOrRight(0);
         sqlRuleDTO.setDeleteTable(1);
-        sqlRuleDTO.setTransformReg(CollectionUtil.newArrayList(DataTypeRegularEnum.BIT1_TO_TINYINT1,DataTypeRegularEnum.DATETIME_TO_0));
+        sqlRuleDTO.setTransformReg(MyCollectionUtils.newArrayList(DataTypeRegularEnum.BIT1_TO_TINYINT1,DataTypeRegularEnum.DATETIME_TO_0));
         dbShopStartAPIService.leftRightDb(leftQuery,rightQuery,sqlRuleDTO);
     }
 }

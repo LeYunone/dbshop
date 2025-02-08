@@ -1,6 +1,7 @@
 package com.leyunone.dbshop.enums;
 
-import cn.hutool.core.collection.CollectionUtil;
+
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +77,7 @@ public enum DataTypeRegularEnum {
 
     public static List<DataTypeRegularEnum> getEnums(List<Integer> types) {
         List<DataTypeRegularEnum> enums = new ArrayList<>();
-        if(CollectionUtil.isEmpty(types)) {
+        if(CollectionUtils.isEmpty(types)) {
             return enums;
         }
         for(Integer type:types){

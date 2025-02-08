@@ -1,7 +1,7 @@
 package com.leyunone.dbshop.service.core;
 
 
-import com.leyunone.dbshop.bean.query.DBQuery;
+import com.leyunone.dbshop.bean.query.DbQuery;
 import com.leyunone.dbshop.bean.vo.ColumnInfoVO;
 import com.leyunone.dbshop.bean.vo.TableInfoVO;
 
@@ -19,8 +19,8 @@ public interface DBQueryService {
      * 
      * @param query
      */
-    List<TableInfoVO> getTableInfos(DBQuery query);
+    List<TableInfoVO> getTableInfos(DbQuery query);
     
-    List<ColumnInfoVO> getColumnInfos(DBQuery query);
+    List<ColumnInfoVO> getColumnInfos(DbQuery query);
     
 }

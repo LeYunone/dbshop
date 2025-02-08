@@ -1,7 +1,5 @@
 package com.leyunone.dbshop.excutor;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.IndexInfo;
@@ -13,6 +11,7 @@ import com.leyunone.dbshop.util.SqlPackUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -44,7 +43,7 @@ public class SqlProductionExcutor {
     public String execute(SqlModelEnum sqlModelEnum, Object... objects) {
         JSONObject json = new JSONObject();
         for (Object o : objects) {
-            if (ObjectUtil.isNull(o)) {
+            if (o == null) {
                 continue;
             }
             String data = JSONObject.toJSONString(o);
@@ -55,7 +54,7 @@ public class SqlProductionExcutor {
             } else if (o.getClass().isAssignableFrom(IndexInfo.class)) {
                 json.put(SqlPackUtil.INDEX, data);
             } else if (List.class.isAssignableFrom(o.getClass())) {
-                if (CollectionUtil.isNotEmpty(((List) o))) {
+                if (!CollectionUtils.isEmpty(((List) o))) {
                     if (((List) o).get(0).getClass().isAssignableFrom(ColumnInfo.class)) {
                         json.put(SqlPackUtil.COLUMNS, data);
                     } else if (((List) o).get(0).getClass().isAssignableFrom(IndexInfo.class)) {
@@ -66,7 +65,7 @@ public class SqlProductionExcutor {
         }
         AbstractSqlProductionHandler handler = sqlProductionHandlerFactory.getHandler(sqlModelEnum);
         String result = null;
-        if (ObjectUtil.isNotNull(handler)) {
+        if (null != handler) {
             result = handler.handler(json);
         }
         return StringUtils.isBlank(result) ? "" : result;

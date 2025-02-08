@@ -1,7 +1,5 @@
 package com.leyunone.dbshop.service.core.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ObjectUtil;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.DbInfo;
 import com.leyunone.dbshop.bean.info.IndexInfo;
@@ -9,6 +7,7 @@ import com.leyunone.dbshop.bean.info.TableDetailInfo;
 import com.leyunone.dbshop.enums.ColumnResultEnum;
 import com.leyunone.dbshop.enums.TableResultEnum;
 import com.leyunone.dbshop.service.core.PackInfoService;
+import com.leyunone.dbshop.util.MyCollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -74,7 +73,7 @@ public class PackInfoServiceImpl implements PackInfoService {
                 TableDetailInfo tableDetailInfo = new TableDetailInfo()
                         .setTableName(rs.getString(TableResultEnum.TABLE_NAME.getType()))
                         .setTableType(rs.getString(TableResultEnum.TABLE_TYPE.getType()))
-                        .setPrimarys(CollectionUtil.newHashSet())
+                        .setPrimarys(new HashSet<>())
                         .setRemarks(rs.getString(TableResultEnum.REMARKS.getType()));
                 ResultSet primaryKeys = meta.getPrimaryKeys(dbName, null, tableDetailInfo.getTableName());
                 while (primaryKeys.next()) {
@@ -103,7 +102,7 @@ public class PackInfoServiceImpl implements PackInfoService {
             while (indexInfo.next()) {
                 String indexName = indexInfo.getString("INDEX_NAME");
                 IndexInfo info = indexMap.get(indexName);
-                if (ObjectUtil.isNull(info)) {
+                if (null == info) {
                     info = new IndexInfo();
                     indexMap.put(indexName, info);
                 }
@@ -122,7 +121,7 @@ public class PackInfoServiceImpl implements PackInfoService {
             }
         } catch (Exception e) {
         }
-        return CollectionUtil.newArrayList(indexMap.values());
+        return MyCollectionUtils.newArrayList(indexMap.values());
     }
 
     @Override

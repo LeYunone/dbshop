@@ -1,11 +1,7 @@
 package com.leyunone.dbshop.util;
 
 import com.leyunone.dbshop.bean.query.ContrastQuery;
-import com.leyunone.dbshop.bean.query.DBQuery;
-import org.springframework.util.ReflectionUtils;
-
-import java.lang.reflect.Field;
-import java.util.concurrent.atomic.AtomicLong;
+import com.leyunone.dbshop.bean.query.DbQuery;
 
 /**
  * @author LeYunOne
@@ -21,19 +17,19 @@ public class DbStrategyUtil {
     public static final String TABLE_INFO_STRATEGY = ":detail";
 
 
-    public static String getDbStrategy(DBQuery query) {
+    public static String getDbStrategy(DbQuery query) {
         return query.getUrl() + ":" + query.getDbName() + DB_STRATEGY;
     }
 
-    public static String getDetailStrategy(DBQuery query) {
+    public static String getDetailStrategy(DbQuery query) {
         return query.getUrl() + ":" + query.getDbName() + TABLE_STRATEGY;
     }
 
-    public static String getTableStrategy(DBQuery query) {
+    public static String getTableStrategy(DbQuery query) {
         return query.getUrl() + ":" + query.getDbName() + ":" + query.getTableName() + TABLE_INFO_STRATEGY;
     }
 
-    public static DBQuery loadContrastRule(ContrastQuery contrastQuery, boolean yesLeft) {
+    public static DbQuery loadContrastRule(ContrastQuery contrastQuery, boolean yesLeft) {
         String tableName = null;
         String dbName = null;
         String url = null;
@@ -50,6 +46,6 @@ public class DbStrategyUtil {
         } catch (Exception e) {
             AssertUtil.isFalse(true, "参数非法");
         }
-        return new DBQuery().setTableName(tableName).setDbName(dbName).setUrl(url);
+        return new DbQuery().setTableName(tableName).setDbName(dbName).setUrl(url);
     }
 }

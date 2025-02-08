@@ -1,7 +1,5 @@
 package com.leyunone.dbshop.excutor;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ObjectUtil;
 import com.leyunone.dbshop.annotate.RuleHandler;
 import com.leyunone.dbshop.bean.rule.TargetRule;
 import com.leyunone.dbshop.enums.RuleTypeEnum;
@@ -9,6 +7,7 @@ import com.leyunone.dbshop.handler.rule.AbstractRule;
 import com.leyunone.dbshop.system.factory.AbstractRuleFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,28 +35,28 @@ public class RulePointExcutor {
      *
      * @param factory
      */
-    public <T extends TargetRule>List<String> execute(AbstractRuleFactory factory, T t ) {
+    public <T extends TargetRule> List<String> execute(AbstractRuleFactory factory, T t) {
         List<String> strategys = t.getStrategys();
         //无策略
-        if(CollectionUtil.isEmpty(strategys)) {
+        if (CollectionUtils.isEmpty(strategys)) {
             return new ArrayList<>();
         }
         List<String> result = new ArrayList<>();
-        strategys.forEach((strategy)->{
+        strategys.forEach((strategy) -> {
             AbstractRule abstractRule = factory.getHandler(strategy);
-            if(ObjectUtil.isNotNull(abstractRule)){
+            if (null != abstractRule) {
                 RuleHandler annotation = AnnotationUtils.getAnnotation(abstractRule.getClass(), RuleHandler.class);
-                if(ObjectUtil.isNull(annotation)) {
+                if (null == annotation) {
                     return;
                 }
                 RuleTypeEnum type = annotation.type();
-                switch (type){
+                switch (type) {
                     case NONE:
                         abstractRule.runHandler(t);
                         break;
                     case RESULT:
                         result.add(abstractRule.runResultHandler(t));
-                    break;
+                        break;
                     default:
                 }
             }

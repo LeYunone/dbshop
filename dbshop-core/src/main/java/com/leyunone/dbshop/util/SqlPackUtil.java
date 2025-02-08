@@ -1,17 +1,11 @@
 package com.leyunone.dbshop.util;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.info.ColumnInfo;
 import com.leyunone.dbshop.bean.info.IndexInfo;
 import com.leyunone.dbshop.bean.info.TableDetailInfo;
-import com.leyunone.dbshop.enums.SqlAssembleEnum;
-import com.leyunone.dbshop.enums.SqlModelEnum;
-import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * :)

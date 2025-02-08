@@ -1,8 +1,5 @@
 package com.leyunone.dbshop.controller;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.leyunone.dbshop.bean.DataResponse;
 import com.leyunone.dbshop.bean.query.ContrastQuery;
@@ -11,7 +8,9 @@ import com.leyunone.dbshop.bean.vo.ColumnInfoVO;
 import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
 import com.leyunone.dbshop.bean.vo.TableColumnContrastVO;
 import com.leyunone.dbshop.service.core.impl.ContrastServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,7 +41,7 @@ public class ContrastController {
         //FIXME 后台做页面上的数据分析 因为不会js TAT
         ColumnContrastVO columnContrastVO = new ColumnContrastVO();
         columnContrastVO.setContrastColumnResults(columnContrasts);
-        if (CollectionUtil.isNotEmpty(columnContrasts)) {
+        if (!CollectionUtils.isEmpty(columnContrasts)) {
             List<ColumnInfoVO> leftContrast = new ArrayList<>();
             List<ColumnInfoVO> rightContrast = new ArrayList<>();
             columnContrastVO.setLeftContrast(leftContrast);
@@ -52,18 +51,18 @@ public class ContrastController {
                 ColumnInfoVO rightColumn = JSONObject.parseObject(JSONObject.toJSONString(tableColumnContrastVO.getRightColumn()), ColumnInfoVO.class);
                 if (tableColumnContrastVO.getNameDifferent()) {
                     //新增或删除
-                    if (ObjectUtil.isNotNull(tableColumnContrastVO.getLeftColumn())) {
+                    if (null != tableColumnContrastVO.getLeftColumn()) {
                         //右表新增
                         rightColumn = new ColumnInfoVO();
-                        BeanUtil.copyProperties(leftColumn,rightColumn);
+                        BeanUtils.copyProperties(leftColumn, rightColumn);
                         leftColumn.setAddColumn(true);
                         rightContrast.add(leftColumn);
                         leftContrast.add(rightColumn);
                     }
-                    if (ObjectUtil.isNotNull(tableColumnContrastVO.getRightColumn())) {
+                    if (null != tableColumnContrastVO.getRightColumn()) {
                         //左表新增
                         leftColumn = new ColumnInfoVO();
-                        BeanUtil.copyProperties(rightColumn,leftColumn);
+                        BeanUtils.copyProperties(rightColumn, leftColumn);
                         rightColumn.setAddColumn(true);
                         leftContrast.add(rightColumn);
                         rightContrast.add(leftColumn);

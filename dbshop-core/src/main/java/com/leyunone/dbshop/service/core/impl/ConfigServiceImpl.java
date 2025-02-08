@@ -1,10 +1,9 @@
 package com.leyunone.dbshop.service.core.impl;
 
-import cn.hutool.core.util.ObjectUtil;
 import com.leyunone.dbshop.bean.info.*;
-import com.leyunone.dbshop.bean.query.DBQuery;
+import com.leyunone.dbshop.bean.query.DbQuery;
 import com.leyunone.dbshop.service.core.ConfigService;
-import com.leyunone.dbshop.system.factory.DBDataFactory;
+import com.leyunone.dbshop.system.factory.DbDataFactory;
 import com.leyunone.dbshop.util.AssertUtil;
 import com.leyunone.dbshop.util.DbClose;
 import com.leyunone.dbshop.util.DbStrategyUtil;
@@ -28,7 +27,7 @@ public class ConfigServiceImpl implements ConfigService {
     @Autowired
     private PackInfoServiceImpl packInfoService;
     @Autowired
-    private DBDataFactory dbDataFactory;
+    private DbDataFactory dbDataFactory;
 
 
     /**
@@ -37,7 +36,7 @@ public class ConfigServiceImpl implements ConfigService {
      * @param query
      */
     @Override
-    public DbInfo loadConnectionToData(DBQuery query) {
+    public DbInfo loadConnectionToData(DbQuery query) {
         String url = query.getUrl();
         Connection connection = connectService.getConnection(url, query.getUserName(), query.getPassWord());
 //        AssertUtil.isFalse(ObjectUtil.isNull(connectionToData),"connection is fail");
@@ -48,7 +47,7 @@ public class ConfigServiceImpl implements ConfigService {
             metaData = connection.getMetaData();
         } catch (Exception e) {
         }
-        AssertUtil.isFalse(ObjectUtil.isNull(metaData));
+        AssertUtil.isFalse(metaData == null);
         //加载数据库信息
         DbInfo dbInfo = packInfoService.getDbInfo(metaData);
         dbInfo.setDbName(query.getDbName());

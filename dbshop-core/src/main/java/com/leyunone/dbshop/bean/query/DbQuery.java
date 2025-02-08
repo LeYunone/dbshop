@@ -6,7 +6,7 @@ package com.leyunone.dbshop.bean.query;
  * @email 365627310@qq.com
  * @date 2023-05-14
  */
-public class DBQuery {
+public class DbQuery {
 
     /**
      * url
@@ -31,7 +31,7 @@ public class DBQuery {
         return url;
     }
 
-    public DBQuery setUrl(String url) {
+    public DbQuery setUrl(String url) {
         this.url = url;
         return this;
     }
@@ -40,7 +40,7 @@ public class DBQuery {
         return tableName;
     }
 
-    public DBQuery setTableName(String tableName) {
+    public DbQuery setTableName(String tableName) {
         this.tableName = tableName;
         return this;
     }
@@ -49,7 +49,7 @@ public class DBQuery {
         return dbName;
     }
 
-    public DBQuery setDbName(String dbName) {
+    public DbQuery setDbName(String dbName) {
         this.dbName = dbName;
         return this;
     }
@@ -58,7 +58,7 @@ public class DBQuery {
         return userName;
     }
 
-    public DBQuery setUserName(String userName) {
+    public DbQuery setUserName(String userName) {
         this.userName = userName;
         return this;
     }
@@ -67,7 +67,7 @@ public class DBQuery {
         return passWord;
     }
 
-    public DBQuery setPassWord(String passWord) {
+    public DbQuery setPassWord(String passWord) {
         this.passWord = passWord;
         return this;
     }
