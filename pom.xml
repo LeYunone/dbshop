@@ -5,7 +5,7 @@
 
     <groupId>com.leyunone</groupId>
     <artifactId>dbshop</artifactId>
-    <version>1.0.1-RELEASE</version>
+    <version>1.0.2-SNAPSHOT</version>
     <name>dbshop</name>
     <packaging>pom</packaging>
     

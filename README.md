@@ -30,7 +30,7 @@
 <dependency>
   <groupId>com.leyunone</groupId>
   <artifactId>dbshop-core</artifactId>
-  <version>1.0.1-RELEASE</version>
+  <version>1.0.2-SNAPSHOT</version>
 </dependency>
 ```
 
