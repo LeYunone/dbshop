@@ -18,12 +18,17 @@ import java.util.jar.JarFile;
  */
 public class DbShopFileUtil {
 
+    public static List<Class<?>> CACHE = null;
+
     /**
      * 迭代找到.java 文件
      *
      * @param
      */
     public static List<Class<?>> iterationForJavaClass() {
+        if (null != CACHE) {
+            return CACHE;
+        }
         List<Class<?>> classes = new ArrayList<>();
         try {
             // 获取当前线程的上下文类加载器
@@ -46,6 +51,7 @@ public class DbShopFileUtil {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+        CACHE = classes;
         return classes;
     }
 

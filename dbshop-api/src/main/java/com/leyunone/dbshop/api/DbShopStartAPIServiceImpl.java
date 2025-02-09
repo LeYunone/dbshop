@@ -1,32 +1,22 @@
 package com.leyunone.dbshop.api;
 
-import ch.qos.logback.classic.db.names.TableName;
-import ch.qos.logback.core.FileAppender;
 import com.leyunone.dbshop.annotate.VersionDescribe;
 import com.leyunone.dbshop.bean.ResponseCell;
 import com.leyunone.dbshop.bean.dto.DbShopDbDTO;
 
 import com.leyunone.dbshop.bean.dto.SqlRuleDTO;
-import com.leyunone.dbshop.bean.info.ColumnInfo;
-import com.leyunone.dbshop.bean.info.TableInfo;
-import com.leyunone.dbshop.bean.query.DbQuery;
 import com.leyunone.dbshop.bean.rule.SqlCompareRule;
 import com.leyunone.dbshop.bean.vo.DbTableContrastVO;
-import com.leyunone.dbshop.service.core.impl.ContrastServiceImpl;
-import com.leyunone.dbshop.service.core.impl.SqlPackServiceImpl;
+import com.leyunone.dbshop.manager.AnnotateLoadingManager;
+import com.leyunone.dbshop.service.helper.CheckHelper;
 import com.leyunone.dbshop.service.helper.ContrastHelper;
 import com.leyunone.dbshop.service.helper.DbLoadingHelper;
-import com.leyunone.dbshop.system.factory.DbDataFactory;
-import com.leyunone.dbshop.util.CollectionFunctionUtils;
 import com.leyunone.dbshop.util.DbShopFileUtil;
-import com.leyunone.dbshop.util.DbStrategyUtil;
-import org.apache.commons.lang3.StringUtils;
+import com.leyunone.dbshop.util.FileAppender;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.File;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -44,10 +34,12 @@ public class DbShopStartAPIServiceImpl implements DbShopStartAPIService {
 
     private final DbLoadingHelper dbLoadingHelper;
     private final ContrastHelper contrastHelper;
+    private final CheckHelper checkHelper;
 
-    public DbShopStartAPIServiceImpl(DbLoadingHelper dbLoadingHelper, ContrastHelper contrastHelper) {
+    public DbShopStartAPIServiceImpl(DbLoadingHelper dbLoadingHelper, ContrastHelper contrastHelper, CheckHelper checkHelper) {
         this.dbLoadingHelper = dbLoadingHelper;
         this.contrastHelper = contrastHelper;
+        this.checkHelper = checkHelper;
     }
 
     @Override
@@ -93,21 +85,21 @@ public class DbShopStartAPIServiceImpl implements DbShopStartAPIService {
      * 根据指定注解 检查没用的表
      *
      * @param dbDTO           表连接信息
-     * @param annotationClass 注解
+     * @param annotateObjects 使用者不使用工具搭建的注解解析 自定义设置判断表名的注解 见 {@link AnnotateLoadingManager}
      */
-    @SafeVarargs
     @Override
     @VersionDescribe(
-            version = "V1.0.1",
-            describe = "版本适用：" +
-                    " 仅Mybatis-plus")
-    public final void checkUselessTable(DbShopDbDTO dbDTO, Class<? extends Annotation>... annotationClass) {
+            version = "V1.0.2",
+            describe = "版本描述：" +
+                    " 当前默认配置仅有：Mybatis-plus  建议自行打上解析注解AnnotateObject")
+    public final void checkUselessTable(DbShopDbDTO dbDTO, AnnotateLoadingManager.AnnotateObject... annotateObjects) {
         //加载数据库
         dbLoadingHelper.loadingData(dbDTO.getUrl(), dbDTO.getDbName(), dbDTO.getUserName(), dbDTO.getPassWord());
 
-        List<Class<?>> classes = DbShopFileUtil.iterationForJavaClass();
-
-
+        List<Class<?>> allClass = DbShopFileUtil.iterationForJavaClass();
+        ResponseCell<Set<String>, Set<String>> checkUseLessResult = checkHelper.checkUseLessTable(allClass, dbDTO.getUrl(), dbDTO.getDbName(), dbDTO.getUserName(), dbDTO.getPassWord(), annotateObjects);
+        Set<String> tableMap = checkUseLessResult.getCellData();
+        Set<String> codeTable = checkUseLessResult.getMateData();
         //未被代码使用到的表`
         if (!CollectionUtils.isEmpty(tableMap)) {
             System.out.println("未被代码使用到的表：=========");
@@ -125,81 +117,27 @@ public class DbShopStartAPIServiceImpl implements DbShopStartAPIService {
     /**
      * 根据指定实体类注解 检查表与代码字段是否一致
      */
-    @SafeVarargs
     @Override
     @VersionDescribe(
-            version = "V1.0.1",
-            describe = "版本适用：" +
-                    " 仅Mybatis-plus")
-    public final void checkTableColumnToCode(DbShopDbDTO dbDTO, Class<? extends Annotation>... annotationClass) {
+            version = "V1.0.2",
+            describe = "版本描述：" +
+                    " 当前默认配置仅有：Mybatis-plus  建议自行打上解析注解AnnotateObject")
+    public final void checkTableColumnToCode(DbShopDbDTO dbDTO, AnnotateLoadingManager.AnnotateObject... annotationClass) {
         List<Class<?>> classes = DbShopFileUtil.iterationForJavaClass();
-        Map<String, Class<?>> tableEntryMap = new HashMap<>();
-        classes.forEach(clazz -> {
-            Annotation annotation = clazz.getAnnotation(annotationClass);
-            if (ObjectUtil.isNull(annotation)) {
-                return;
-            }
+        //加载数据库
+        dbLoadingHelper.loadingData(dbDTO.getUrl(), dbDTO.getDbName(), dbDTO.getUserName(), dbDTO.getPassWord());
 
-            if (annotationClass.isAssignableFrom(TableName.class)) {
-                //mybatis-plus
-                tableEntryMap.put(clazz.getAnnotation(TableName.class).value(), clazz);
-            }
+        ResponseCell<Map<String, List<String>>, Map<String, List<String>>> checkUseLessResult = checkHelper.checkUseLessField(classes, dbDTO.getUrl(), dbDTO.getDbName(), dbDTO.getUserName(), dbDTO.getPassWord(), annotationClass);
+        Map<String, List<String>> codeUseLess = checkUseLessResult.getCellData();
+        Map<String, List<String>> tableUseLess = checkUseLessResult.getMateData();
+        codeUseLess.forEach((key, value) -> {
+            System.out.println("表：" + key + " 实体类(/可能未存在)未存在的字段");
+            value.forEach(System.out::println);
         });
-        DbQuery dbQuery = new DbQuery();
-        dbQuery.setUrl(dbDTO.getUrl());
-        dbQuery.setDbName(dbDTO.getDbName());
-        dbQuery.setUserName(dbDTO.getUserName());
-        dbQuery.setPassWord(dbDTO.getPassWord());
-        configService.loadConnectionToData(dbQuery);
-
-        tableEntryMap.forEach((tableName, tableEntry) -> {
-            if (StringUtils.isBlank(tableName)) {
-                return;
-            }
-            //属性比表多的
-            List<String> fieldDiffs = new ArrayList<>();
-
-            Field[] fields = this.deepFields(tableEntry);
-            dbQuery.setTableName(tableName);
-            TableInfo tableInfo = dataFactory.getTableInfo(DbStrategyUtil.getTableStrategy(dbQuery));
-            List<ColumnInfo> columnInfos = tableInfo.getColumnInfos();
-            if (!CollectionUtils.isEmpty(columnInfos)) {
-                Map<String, ColumnInfo> tableColumns = CollectionFunctionUtils.mapTo(columnInfos, ColumnInfo::getColumnName);
-
-                //属性比表少的 fieldDiff
-                for (Field field : fields) {
-                    if (!tableColumns.containsKey(field.getName())) {
-                        fieldDiffs.add(field.getName());
-                    }
-                    tableColumns.remove(field.getName());
-                }
-                System.out.println("表：" + tableName + " 实体类未存在的字段");
-                tableColumns.forEach((columnName, info) -> {
-                    System.out.println(columnName + "   :" + info.getRemarks());
-                });
-            }
-
-            System.out.println("实体类：" + tableName + " 多余的字段");
-            fieldDiffs.forEach(System.out::println);
-
+        tableUseLess.forEach((key, value) -> {
+            System.out.println("实体类：" + key + " 多余的字段");
+            value.forEach(System.out::println);
         });
-    }
-
-    private Field[] deepFields(Class<?> clazz) {
-        List<Field> allFields = new ArrayList<>();
-        while (clazz != null) {
-            Field[] declaredFields = clazz.getDeclaredFields();
-            for (Field declaredField : declaredFields) {
-                //mybatis判断
-                TableField tableField = declaredField.getAnnotation(TableField.class);
-                if (ObjectUtil.isNotNull(tableField) && !tableField.exist()) {
-                    continue;
-                }
-                allFields.add(declaredField);
-            }
-            clazz = clazz.getSuperclass();
-        }
-        return allFields.toArray(new Field[]{});
     }
 
 }

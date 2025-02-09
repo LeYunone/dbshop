@@ -2,6 +2,7 @@ package com.leyunone.dbshop.api;
 
 import com.leyunone.dbshop.bean.dto.DbShopDbDTO;
 import com.leyunone.dbshop.bean.dto.SqlRuleDTO;
+import com.leyunone.dbshop.manager.AnnotateLoadingManager;
 
 import java.lang.annotation.Annotation;
 
@@ -24,18 +25,18 @@ public interface DbShopStartAPIService {
     void leftRightDbCompare(DbShopDbDTO leftDto, DbShopDbDTO rightDto, SqlRuleDTO sqlRuleDTO);
 
     /**
-     * 检查无用表
+     * 根据指定注解 检查没用的表
      *
-     * @param dbDTO
-     * @param annotationClass
+     * @param dbDTO           表连接信息
+     * @param annotateObjects 使用者不使用工具搭建的注解解析 自定义设置判断表名的注解 见 {@link AnnotateLoadingManager}
      */
-    void checkUselessTable(DbShopDbDTO dbDTO, Class<? extends Annotation>... annotationClass);
+    void checkUselessTable(DbShopDbDTO dbDTO, AnnotateLoadingManager.AnnotateObject... annotateObjects);
 
     /**
      * 检查表中无用字段
      *
      * @param dbDTO
-     * @param annotationClass
+     * @param annotateObjects
      */
-    void checkTableColumnToCode(DbShopDbDTO dbDTO, Class<? extends Annotation>... annotationClass);
+    void checkTableColumnToCode(DbShopDbDTO dbDTO, AnnotateLoadingManager.AnnotateObject... annotateObjects);
 }

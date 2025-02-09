@@ -47,7 +47,7 @@ public class ConfigServiceImpl implements ConfigService {
             metaData = connection.getMetaData();
         } catch (Exception e) {
         }
-        AssertUtil.isFalse(metaData == null);
+        AssertUtil.isFalse(metaData == null,"db connection is fail");
         //加载数据库信息
         DbInfo dbInfo = packInfoService.getDbInfo(metaData);
         dbInfo.setDbName(query.getDbName());

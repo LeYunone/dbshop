@@ -16,15 +16,29 @@ public class DbStrategyUtil {
 
     public static final String TABLE_INFO_STRATEGY = ":detail";
 
-
+    /**
+     * 数据库信息的策略
+     * @param query
+     * @return
+     */
     public static String getDbStrategy(DbQuery query) {
         return query.getUrl() + ":" + query.getDbName() + DB_STRATEGY;
     }
 
+    /**
+     * 所有表的策略
+     * @param query
+     * @return
+     */
     public static String getDetailStrategy(DbQuery query) {
         return query.getUrl() + ":" + query.getDbName() + TABLE_STRATEGY;
     }
 
+    /**
+     * 一张表中的详情策略
+     * @param query
+     * @return
+     */
     public static String getTableStrategy(DbQuery query) {
         return query.getUrl() + ":" + query.getDbName() + ":" + query.getTableName() + TABLE_INFO_STRATEGY;
     }
