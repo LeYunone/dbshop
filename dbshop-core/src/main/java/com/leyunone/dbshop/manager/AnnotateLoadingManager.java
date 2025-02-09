@@ -97,7 +97,6 @@ public class AnnotateLoadingManager {
             MybatisPlusExplain.TableNameAnnotate tableName = new MybatisPlusExplain.TableNameAnnotate((Class<? extends Annotation>) aClass, "value");
             MybatisPlusExplain.addTableAnnotate(tableName);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
@@ -108,7 +107,6 @@ public class AnnotateLoadingManager {
             MybatisPlusExplain.TableFieldAnnotate tableName = new MybatisPlusExplain.TableFieldAnnotate((Class<? extends Annotation>) aClass, "value");
             MybatisPlusExplain.addTableAnnotate(tableName);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
