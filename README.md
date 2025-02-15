@@ -39,7 +39,7 @@
 <dependency>
   <groupId>com.leyunone</groupId>
   <artifactId>dbshop-core</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.2-RELEASE</version>
 </dependency>
 ```
 
@@ -124,7 +124,7 @@ public class ApiTestService {
 <dependency>
   <groupId>com.leyunone</groupId>
   <artifactId>dbshop-web</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.2-RELEASE</version>
 </dependency>
 ```
 

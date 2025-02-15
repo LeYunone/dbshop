@@ -9,7 +9,7 @@
     <parent>
         <groupId>com.leyunone</groupId>
         <artifactId>dbshop</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
+        <version>1.0.2-RELEASE</version>
     </parent>
     
     <dependencies>
@@ -54,4 +54,15 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <classifier>exec</classifier>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

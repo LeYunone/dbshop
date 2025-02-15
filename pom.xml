@@ -1,35 +1,27 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>com.leyunone</groupId>
     <artifactId>dbshop</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2-RELEASE</version>
     <name>dbshop</name>
     <packaging>pom</packaging>
-    
     <description>数据库对比工具</description>
-    
     <modules>
         <module>dbshop-core</module>
         <module>dbshop-api</module>
         <module>dbshop-web</module>
     </modules>
-
     <properties>
         <java.version>8</java.version>
         <spring-boot.version>2.3.2.RELEASE</spring-boot.version>
+        <publish.service.id>central</publish.service.id>
     </properties>
-
     <parent>
         <groupId>org.springframework.boot</groupId>
         <version>2.3.2.RELEASE</version>
         <artifactId>spring-boot-starter-parent</artifactId>
     </parent>
-
-
-    <!--协议-->
+    <!-- 协议 -->
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -37,136 +29,34 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
-    <!--我的信息-->
+    <!-- 我的信息 -->
     <developers>
         <developer>
+            <id>${publish.service.id}</id>
             <name>leyunone</name>
             <email>365627310@qq.com</email>
             <organization>https://leyunone.com</organization>
         </developer>
     </developers>
-    
-    <!--本项目仓库-->
+    <!-- 本项目仓库 -->
     <scm>
         <connection>scm:git@github.com:leyunone/dbshop.git</connection>
         <developerConnection>scm:git@github.com:leyunone/dbshop.git</developerConnection>
         <url>git@github.com:leyunone/dbshop.git</url>
     </scm>
-
     <profiles>
         <profile>
-            <!--此id必须与setting.xml中指定的一致-->
-            <!--            <id>ossrh</id>-->
-            <id>release</id>
+            <!-- 此id必须与setting.xml中指定的一致 -->
+            <!--             <id>ossrh</id> -->
+            <id>${publish.service.id}</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
-            <build>
-                <!--发布到中央SNAPSHOT仓库插件-->
-                <pluginManagement>
-                    <plugins>
-                        <!--测试包插件-->
-<!--                        <plugin>-->
-<!--                            <groupId>org.sonatype.plugins</groupId>-->
-<!--                            <artifactId>nexus-staging-maven-plugin</artifactId>-->
-<!--                            <version>1.6.7</version>-->
-<!--                            <extensions>true</extensions>-->
-<!--                            <configuration>-->
-<!--                                <serverId>ossrh</serverId>-->
-<!--                                <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>-->
-<!--                                &lt;!&ndash;                                <autoReleaseAfterClose>true</autoReleaseAfterClose>&ndash;&gt;-->
-<!--                            </configuration>-->
-<!--                        </plugin>-->
-
-                        <!--正式环境插件-->
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-release-plugin</artifactId>
-                            <version>2.5.3</version>
-                            <configuration>
-                                <autoVersionSubmodules>true</autoVersionSubmodules>
-                                <useReleaseProfile>false</useReleaseProfile>
-                                <releaseProfiles>release</releaseProfiles>
-                                <goals>deploy</goals>
-                            </configuration>
-                        </plugin>
-
-
-                        <!--生成API文档插件-->
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-javadoc-plugin</artifactId>
-                            <version>2.10.3</version>
-                            <configuration>
-                                <!-- 忽略生成文档中的错误 -->
-                                <additionalparam>-Xdoclint:none</additionalparam>
-                                <aggregate>true</aggregate>
-                                <charset>UTF-8</charset><!-- utf-8读取文件 -->
-                                <encoding>UTF-8</encoding><!-- utf-8进行编码代码 -->
-                                <docencoding>UTF-8</docencoding><!-- utf-8进行编码文档 -->
-                            </configuration>
-                            <executions>
-                                <execution>
-                                    <id>attach-javadocs</id>
-                                    <goals>
-                                        <goal>jar</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                        </plugin>
-
-                        <!--生成源码插件-->
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-source-plugin</artifactId>
-                            <version>3.0.0</version>
-                            <executions>
-                                <execution>
-                                    <id>attach-sources</id>
-                                    <goals>
-                                        <goal>jar-no-fork</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                        </plugin>
-
-                        <!--gpg插件-->
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-gpg-plugin</artifactId>
-                            <version>1.6</version>
-                            <executions>
-                                <execution>
-                                    <id>sign-artifacts</id>
-                                    <phase>verify</phase>
-                                    <goals>
-                                        <goal>sign</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                        </plugin>
-
-                    </plugins>
-                </pluginManagement>
-            </build>
-
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>ossrh</id>
-                    <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
-                </snapshotRepository>
-                <repository>
-                    <id>release</id>
-                    <url>https://s01.oss.sonatype.org/content/repositories/releases/</url>
-                </repository>
-            </distributionManagement>
         </profile>
     </profiles>
-
     <dependencyManagement>
         <dependencies>
-            <!-- spring boot 依赖 -->
+            <!--  spring boot 依赖  -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -186,7 +76,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
     <build>
         <resources>
             <resource>
@@ -204,11 +93,79 @@
                 <filtering>false</filtering>
             </resource>
         </resources>
-
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <resources>
+                        <resource>
+                            <directory>src/main/resources</directory>
+                            <filtering>false</filtering>
+                        </resource>
+                    </resources>
+                </configuration>
+            </plugin>
+            <!--    central发布插件     -->
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.4.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>${publish.service.id}</publishingServerId>
+                    <tokenAuth>true</tokenAuth>
+                </configuration>
+            </plugin>
+            <!--    source源码插件  -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--    javadoc插件  -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <charset>UTF-8</charset>
+                    <encoding>UTF-8</encoding>
+                    <docencoding>UTF-8</docencoding>
+                    <additionalJOption>-Xdoclint:none</additionalJOption>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- gpg加密 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

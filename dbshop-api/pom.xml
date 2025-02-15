@@ -9,13 +9,15 @@
     <parent>
         <groupId>com.leyunone</groupId>
         <artifactId>dbshop</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
+        <version>1.0.2-RELEASE</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>com.leyunone</groupId>
             <artifactId>dbshop-core</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
